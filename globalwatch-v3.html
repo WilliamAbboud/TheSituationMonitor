@@ -2049,24 +2049,68 @@ function initClockDrag() {
 initClockDrag();
 
 // ═══════════════ MARKETS TICKER ═══════════════
-const MARKET_DATA = [
-  {sym:'BRENT',price:'82.47',change:'+1.23',up:true}, {sym:'WTI',price:'78.92',change:'+0.87',up:true},
-  {sym:'GOLD',price:'2,847',change:'+12.30',up:true}, {sym:'DXY',price:'103.42',change:'-0.18',up:false},
-  {sym:'LMT',price:'487.20',change:'+3.15',up:true}, {sym:'RTX',price:'112.45',change:'+1.82',up:true},
-  {sym:'BTC',price:'67,234',change:'-892',up:false}, {sym:'ETH',price:'3,456',change:'-45',up:false},
-  {sym:'BDI',price:'1,847',change:'+23',up:true}, {sym:'NG',price:'2.34',change:'-0.08',up:false},
-  {sym:'SPY',price:'512.30',change:'+2.45',up:true}, {sym:'VIX',price:'18.42',change:'+1.20',up:true},
-  {sym:'EUR/USD',price:'1.0842',change:'-0.0012',up:false}, {sym:'GBP/USD',price:'1.2634',change:'+0.0023',up:true},
-  {sym:'TLT',price:'92.15',change:'-0.34',up:false}, {sym:'USO',price:'76.23',change:'+0.92',up:true},
+const MARKET_FALLBACK = [
+  {sym:'BRENT',price:'—',change:'—',up:true}, {sym:'WTI',price:'—',change:'—',up:true},
+  {sym:'GOLD',price:'—',change:'—',up:true}, {sym:'DXY',price:'—',change:'—',up:false},
+  {sym:'LMT',price:'—',change:'—',up:true}, {sym:'RTX',price:'—',change:'—',up:true},
+  {sym:'BTC',price:'—',change:'—',up:false}, {sym:'ETH',price:'—',change:'—',up:false},
+  {sym:'BDI',price:'—',change:'—',up:true}, {sym:'NG',price:'—',change:'—',up:false},
+  {sym:'SPY',price:'—',change:'—',up:true}, {sym:'VIX',price:'—',change:'—',up:true},
+  {sym:'EUR/USD',price:'—',change:'—',up:false}, {sym:'GBP/USD',price:'—',change:'—',up:true},
+  {sym:'TLT',price:'—',change:'—',up:false},
 ];
 
-function buildTicker() {
-  const t = document.getElementById('tickerTrack');
-  const items = MARKET_DATA.map(m=>`<span class="ticker-item"><span class="ticker-symbol">${m.sym}</span><span class="ticker-price">${m.price}</span><span class="ticker-change ${m.up?'up':'down'}">${m.change}</span></span><span class="ticker-dot"></span>`).join('');
-  t.innerHTML = items + items; // duplicate for seamless scroll
-}
-buildTicker();
+const TICKER_SYMBOLS = ['BRENT','WTI','GOLD','DXY','LMT','RTX','BTC','ETH','BDI','NG','SPY','VIX','EUR/USD','GBP/USD','TLT'];
 
+function fmtPrice(sym, val) {
+  if (val == null || val === 0) return '—';
+  if (sym === 'BTC') return val.toLocaleString('en-US', {maximumFractionDigits: 0});
+  if (sym === 'ETH') return val.toLocaleString('en-US', {maximumFractionDigits: 0});
+  if (sym === 'GOLD') return val.toLocaleString('en-US', {maximumFractionDigits: 0});
+  if (sym.includes('/')) return val.toFixed(4);
+  if (val > 1000) return val.toLocaleString('en-US', {maximumFractionDigits: 0});
+  return val.toFixed(2);
+}
+
+function fmtChange(sym, val) {
+  if (val == null) return '—';
+  const abs = Math.abs(val);
+  let str;
+  if (sym === 'BTC' || sym === 'ETH' || sym === 'GOLD') str = abs.toFixed(0);
+  else if (sym.includes('/')) str = abs.toFixed(4);
+  else str = abs.toFixed(2);
+  return (val >= 0 ? '+' : '-') + str;
+}
+
+function buildTicker(data) {
+  const t = document.getElementById('tickerTrack');
+  if (!t) return;
+  const items = TICKER_SYMBOLS.map(sym => {
+    const d = data[sym] || { price: null, change: null };
+    const up = d.change == null ? true : d.change >= 0;
+    const price = fmtPrice(sym, d.price);
+    const change = fmtChange(sym, d.change);
+    return `<span class="ticker-item"><span class="ticker-symbol">${sym}</span><span class="ticker-price">${price}</span><span class="ticker-change ${up?'up':'down'}">${change}</span></span><span class="ticker-dot"></span>`;
+  }).join('');
+  t.innerHTML = items + items;
+}
+
+async function fetchMarketData() {
+  try {
+    const res = await fetch('/api/market');
+    if (!res.ok) throw new Error('Market API error');
+    const data = await res.json();
+    buildTicker(data);
+  } catch (err) {
+    console.warn('Market data unavailable:', err.message);
+    const fallbackMap = {};
+    MARKET_FALLBACK.forEach(m => fallbackMap[m.sym] = { price: null, change: null });
+    buildTicker(fallbackMap);
+  }
+}
+
+fetchMarketData();
+setInterval(fetchMarketData, 60000);
 // ═══════════════ LANGUAGE SELECTOR ═══════════════
 const TRANSLATIONS = {
   en: {
