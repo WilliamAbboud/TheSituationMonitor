@@ -23,13 +23,9 @@
     }
   ],
   "functions": {
-   "api/news.js": {
-      "memory": 128,
-      "maxDuration": 10
-    },
-    "api/market.js": {
-      "memory": 128,
-      "maxDuration": 10
+    "api/news.js":    { "memory": 512, "maxDuration": 10 },
+    "api/market.js":  { "memory": 512, "maxDuration": 15 },
+    "api/vessels.js": { "memory": 512, "maxDuration": 15 }
     }
   }
 }
