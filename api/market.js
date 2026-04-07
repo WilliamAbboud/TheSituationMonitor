@@ -11,8 +11,21 @@
 
 const FINNHUB_BASE = 'https://finnhub.io/api/v1';
 
-// All Finnhub symbols to fetch
 const SYMBOLS = ['LMT', 'RTX', 'SPY', 'TLT', 'GLD', 'BNO', 'USO', 'UNG', 'UUP', 'BDRY', 'VIXY'];
+
+const DISPLAY_MAP = {
+  BNO:  'BRENT',
+  USO:  'WTI',
+  GLD:  'GOLD',
+  UUP:  'DXY',
+  UNG:  'NG',
+  BDRY: 'BDI',
+  VIXY: 'VIX',
+  LMT:  'LMT',
+  RTX:  'RTX',
+  SPY:  'SPY',
+  TLT:  'TLT',
+};
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,17 +40,27 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // 1. Finnhub — stocks + ETF proxies (parallel)
-    const stockData = await Promise.all(
-      SYMBOLS.map(sym =>
-        fetch(`${FINNHUB_BASE}/quote?symbol=${sym}&token=${apiKey}`, {
+    // 1. Finnhub — fetch sequentially to avoid burst rate limiting
+    const result = {};
+    for (const sym of SYMBOLS) {
+      try {
+        const r = await fetch(`${FINNHUB_BASE}/quote?symbol=${sym}&token=${apiKey}`, {
           headers: { 'User-Agent': 'SituationMonitor/1.0' },
-        })
-          .then(r => r.json())
-          .then(d => ({ sym, price: d.c, change: d.d, pct: d.dp, prev: d.pc }))
-          .catch(() => ({ sym, price: null, change: null, pct: null }))
-      )
-    );
+        });
+        const d = await r.json();
+        const key = DISPLAY_MAP[sym] || sym;
+        // Finnhub returns c:0 when no data — treat as null
+        result[key] = {
+          price:  (d.c && d.c !== 0) ? d.c  : null,
+          change: d.d  ?? null,
+          pct:    d.dp ?? null,
+        };
+      } catch (e) {
+        console.error(`Finnhub fetch failed for ${sym}:`, e.message);
+        const key = DISPLAY_MAP[sym] || sym;
+        result[key] = { price: null, change: null, pct: null };
+      }
+    }
 
     // 2. CoinGecko — BTC + ETH (free, no key)
     const cryptoData = await fetch(
@@ -45,40 +68,6 @@ module.exports = async function handler(req, res) {
       { headers: { 'User-Agent': 'SituationMonitor/1.0' } }
     ).then(r => r.json()).catch(() => ({}));
 
-    // 3. Frankfurter — EUR/USD, GBP/USD (free, no key)
-    const forexData = await fetch(
-      'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP',
-      { headers: { 'User-Agent': 'SituationMonitor/1.0' } }
-    ).then(r => r.json()).catch(() => ({ rates: {} }));
-
-    // Build unified response keyed by display symbol
-    const result = {};
-
-    // Map ETF proxies → display names
-    const DISPLAY_MAP = {
-      BNO:  'BRENT',
-      USO:  'WTI',
-      GLD:  'GOLD',
-      UUP:  'DXY',
-      UNG:  'NG',
-      BDRY: 'BDI',
-      VIXY: 'VIX',
-      LMT:  'LMT',
-      RTX:  'RTX',
-      SPY:  'SPY',
-      TLT:  'TLT',
-    };
-
-    stockData.forEach(s => {
-      const key = DISPLAY_MAP[s.sym] || s.sym;
-      result[key] = {
-        price:  s.price  != null ? s.price  : null,
-        change: s.change != null ? s.change : null,
-        pct:    s.pct    != null ? s.pct    : null,
-      };
-    });
-
-    // Crypto
     const btcPrice  = cryptoData.bitcoin?.usd;
     const btcChange = cryptoData.bitcoin?.usd_24h_change;
     const ethPrice  = cryptoData.ethereum?.usd;
@@ -86,13 +75,17 @@ module.exports = async function handler(req, res) {
     result['BTC'] = { price: btcPrice ?? null, change: btcChange != null ? (btcPrice * btcChange / 100) : null, pct: btcChange ?? null };
     result['ETH'] = { price: ethPrice ?? null, change: ethChange != null ? (ethPrice * ethChange / 100) : null, pct: ethChange ?? null };
 
-    // Forex — Frankfurter returns FROM=USD, so EUR/USD = 1 / rate
+    // 3. Frankfurter — EUR/USD, GBP/USD (free, no key)
+    const forexData = await fetch(
+      'https://api.frankfurter.app/latest?from=USD&to=EUR,GBP',
+      { headers: { 'User-Agent': 'SituationMonitor/1.0' } }
+    ).then(r => r.json()).catch(() => ({ rates: {} }));
+
     const eurRate = forexData.rates?.EUR;
     const gbpRate = forexData.rates?.GBP;
     result['EUR/USD'] = { price: eurRate ? parseFloat((1 / eurRate).toFixed(4)) : null, change: null, pct: null };
     result['GBP/USD'] = { price: gbpRate ? parseFloat((1 / gbpRate).toFixed(4)) : null, change: null, pct: null };
 
-    // Cache for 60s — market data doesn't need to be real-time to the second
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
     return res.status(200).json(result);
 
