@@ -23,7 +23,11 @@
     }
   ],
   "functions": {
-    "api/news.js": {
+   "api/news.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/market.js": {
       "memory": 128,
       "maxDuration": 10
     }
