@@ -62,7 +62,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .topbar-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── GLOBE CONTROLS PANEL ── */
-.globe-controls { position:absolute; top:8px; left:8px; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
+.globe-controls { position:absolute; top:42px; right:10px; left:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
 .globe-controls.visible { display:block; }
 .gc-title { font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
 .gc-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
@@ -171,7 +171,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .pip-body iframe { width:100%; height:100%; border:none; }
 
 /* ── RIGHT PANEL ── */
-.right-panel { width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.right-panel { position:relative; z-index:1500; width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
 .panel-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--bg-secondary); flex-shrink:0; }
 .panel-tab { flex:1; padding:9px 0; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; letter-spacing:.5px; }
 .panel-tab:hover { color:var(--text-secondary); }
@@ -294,7 +294,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theater-corners { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:rgba(6,182,212,0.25); font-size:8px; font-family:'JetBrains Mono',monospace; letter-spacing:2px; pointer-events:none; }
 
 /* ── APPEARANCE FLOAT BUTTON (inside globe) ── */
-.appear-float-btn { position:absolute; bottom:14px; left:14px; z-index:500; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
+.appear-float-btn { position:absolute; top:8px; right:10px; bottom:auto; left:auto; z-index:501; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── PANEL RESIZE HANDLE ── */
@@ -719,9 +719,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <span class="sub-arrow" onclick="openSubMenu(event,'subWeather',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subWeather">
       <div class="sub-layer-head">WEATHER LAYERS</div>
-      <div class="sub-item" style="--sub-color:#22d3ee;cursor:pointer" onclick="event.stopPropagation();var p=document.getElementById('windy-panel');p.style.display=p.style.display==='flex'?'none':'flex'">
-        <span class="sub-chk"></span>🌐 Windy Live View
-      </div>
       <div class="sub-item sub-on" style="--sub-color:#7dd3fc" data-sublayer="wx-clouds" onclick="toggleSub(event,this,'weather')">
         <span class="sub-chk"></span>☁ Clouds
       </div>
@@ -812,9 +809,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
         <div class="gc-presets" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
           <button class="gc-preset active-preset" id="preset-satellite" onclick="applyPreset('satellite')">SATELLITE</button>
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
-          <button class="gc-preset" id="preset-map"       onclick="applyPreset('map')">MAP</button>
-          <button class="gc-preset" id="preset-ocean"     onclick="applyPreset('ocean')">OCEAN</button>
-          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 WINDY LIVE</button>
+          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 ADVANCED WEATHER MAP</button>
         </div>
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
@@ -2918,9 +2913,9 @@ function initCesium() {
     // Apply imagery settings — bright and clear like Google Earth by default
     const baseLayer = viewer.imageryLayers.get(0);
     if (baseLayer) {
-      baseLayer.brightness = 1.0;   // full brightness — let the user dial down via controls
-      baseLayer.contrast  = 1.05;
-      baseLayer.saturation = 1.0;
+      baseLayer.brightness = 0.92;  // slightly subdued — more tactical ops-room feel
+      baseLayer.contrast  = 1.12;
+      baseLayer.saturation = 0.82;
       baseLayer.gamma = 1.0;
     }
     // Sync sliders to match
@@ -3001,8 +2996,8 @@ const MARKER_STYLE_DEFS = [
   },
   {
     id: 'matte',
-    name: 'Matte Pin',
-    desc: 'Clean matte circles',
+    name: 'Pin',
+    desc: 'Flat pin style',
   },
 ];
 
@@ -3093,25 +3088,32 @@ function _makeMarkerCanvasForStyle(type, styleOverride, size) {
   const style = styleOverride || markerStylePreset || 'geometric';
 
   if (style === 'matte') {
-    // Clean matte pin — subtle drop-shadow, solid circle with dark border, no glow
-    const radius = H * 0.58;
-    // Matte shadow (subtle, no glow)
-    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = Math.floor(S * 0.12);
-    g.shadowOffsetY = Math.floor(S * 0.04);
-    // Filled circle — slightly desaturated/matte look
+    // Flat teardrop pin — Apple Maps style, no gloss
+    const pr  = H * 0.36;
+    const pcx = H;
+    const pcy = H * 0.50;
+    // Drop shadow
+    g.shadowColor = 'rgba(0,0,0,0.4)'; g.shadowBlur = S * 0.18; g.shadowOffsetY = S * 0.09; g.shadowOffsetX = S * 0.03;
+    // Teardrop body
+    g.beginPath();
+    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
+    g.lineTo(pcx, pcy + pr * 1.9);
+    g.closePath();
     g.fillStyle = col;
-    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
-    g.shadowBlur = 0; g.shadowOffsetY = 0;
-    // Inner highlight (matte sheen)
-    const grad = g.createRadialGradient(H - radius*0.25, H - radius*0.3, 0, H, H, radius);
-    grad.addColorStop(0, 'rgba(255,255,255,0.22)');
-    grad.addColorStop(0.6, 'rgba(255,255,255,0.04)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.12)');
-    g.fillStyle = grad;
-    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
-    // Dark ring border
-    g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = Math.max(1, S * 0.06);
-    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.stroke();
+    g.fill();
+    g.shadowBlur = 0; g.shadowOffsetY = 0; g.shadowOffsetX = 0;
+    // Thin border
+    g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = Math.max(1, S * 0.045);
+    g.beginPath();
+    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
+    g.lineTo(pcx, pcy + pr * 1.9);
+    g.closePath();
+    g.stroke();
+    // White centre dot
+    g.beginPath();
+    g.arc(pcx, pcy, pr * 0.34, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(255,255,255,0.90)';
+    g.fill();
 
   } else {
     // ── GEOMETRIC (default) ── type-specific shapes
