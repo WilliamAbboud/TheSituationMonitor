@@ -784,6 +784,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 <div class="main-container">
   <div class="globe-container">
     <div id="cesiumContainer"></div>
+    <div id="windy-fullscreen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:2;background:#0a0a0f;">
+      <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
+    </div>
 
     <!-- Theater Map HUD Title -->
     <div class="theater-title">
@@ -811,6 +814,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
           <button class="gc-preset" id="preset-map"       onclick="applyPreset('map')">MAP</button>
           <button class="gc-preset" id="preset-ocean"     onclick="applyPreset('ocean')">OCEAN</button>
+          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 WINDY LIVE</button>
         </div>
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
@@ -1617,6 +1621,20 @@ function updateGlobeAppearance() {
 
 function applyPreset(name) {
   if (!viewer) return;
+
+  // WINDY mode — show fullscreen iframe, suspend Cesium interaction
+  const windyDiv = document.getElementById('windy-fullscreen');
+  if (name === 'windy') {
+    windyDiv.style.display = 'block';
+    document.getElementById('cesiumContainer').style.pointerEvents = 'none';
+    document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
+    document.getElementById('preset-windy').classList.add('active-preset');
+    return;
+  }
+  // Leaving Windy — restore Cesium
+  windyDiv.style.display = 'none';
+  document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
+
   currentMapStyle = name;
 
   // Swap the base imagery source
