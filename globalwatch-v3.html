@@ -1270,7 +1270,7 @@ const activeSubLayers = {
 const OWM_KEY = '5b35f566bbbe2b684b0cedcc045f79cd'; // Replace with real key
 const WX_URLS = {
   'wx-clouds': `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-  'wx-precip': null, // Rainviewer — loaded dynamically below
+'wx-precip': `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
   'wx-wind':   `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
   'wx-temp':   `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
 };
@@ -1330,7 +1330,7 @@ function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-      const url = (sublayer === 'wx-precip' && rainviewerPrecipUrl) ? rainviewerPrecipUrl : WX_TILE_URLS[sublayer];
+    const url = (sublayer === 'wx-precip' && rainviewerPrecipUrl) ? rainviewerPrecipUrl : WX_TILE_URLS[sublayer];   if (!url) return;
       if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
