@@ -719,6 +719,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <span class="sub-arrow" onclick="openSubMenu(event,'subWeather',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subWeather">
       <div class="sub-layer-head">WEATHER LAYERS</div>
+      <div class="sub-item" style="--sub-color:#22d3ee;cursor:pointer" onclick="event.stopPropagation();var p=document.getElementById('windy-panel');p.style.display=p.style.display==='flex'?'none':'flex'">
+        <span class="sub-chk"></span>🌐 Windy Live View
+      </div>
       <div class="sub-item sub-on" style="--sub-color:#7dd3fc" data-sublayer="wx-clouds" onclick="toggleSub(event,this,'weather')">
         <span class="sub-chk"></span>☁ Clouds
       </div>
@@ -2770,7 +2773,86 @@ document.addEventListener('keydown', function(e) {
 
 // ═══════════════ CESIUM GLOBE ═══════════════
 let weatherLayer = null;
+let weatherMarkers = [];
 
+function wxEmoji(id) {
+  if (!id) return '🌡';
+  if (id >= 200 && id < 300) return '⛈';
+  if (id >= 300 && id < 600) return '🌧';
+  if (id >= 600 && id < 700) return '❄';
+  if (id === 781) return '🌪';
+  if (id >= 700 && id < 800) return '🌫';
+  if (id === 800) return '☀';
+  if (id <= 802) return '⛅';
+  return '☁';
+}
+
+function clearWeatherMarkers() {
+  weatherMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(_){} });
+  weatherMarkers = [];
+}
+
+function renderWeatherMarkers(spots) {
+  clearWeatherMarkers();
+  spots.forEach(spot => {
+    if (spot.error || spot.lat == null) return;
+    const emoji = wxEmoji(spot.weather_id);
+    const temp  = spot.temp != null ? spot.temp + '°C' : '—';
+    const clr   = spot.severity === 'severe'   ? Cesium.Color.fromCssColorString('#ef4444') :
+                  spot.severity === 'moderate' ? Cesium.Color.fromCssColorString('#f59e0b') :
+                  Cesium.Color.fromCssColorString('#22d3ee');
+    const windStr = spot.wind_knots != null ? spot.wind_knots + 'kt ' + (spot.wind_dir||'') : '—';
+    const visStr  = spot.visibility != null ? spot.visibility + 'km vis' : '';
+    const desc = '<div style="font-family:Inter,monospace;font-size:13px;color:#e5e7eb;min-width:220px">'
+      + '<div style="font-size:15px;font-weight:700;color:#22d3ee;margin-bottom:6px">' + emoji + ' ' + spot.name + '</div>'
+      + '<div style="color:#9ca3af;margin-bottom:8px;text-transform:capitalize">' + (spot.conditions||'') + '</div>'
+      + '<div>🌡 <b>' + temp + '</b> (feels ' + (spot.feels!=null?spot.feels+'°C':'—') + ')</div>'
+      + '<div>💨 <b>' + windStr + '</b>' + (spot.wind_gust ? ' gusts ' + spot.wind_gust + 'kt' : '') + '</div>'
+      + '<div>👁 Visibility: <b>' + (visStr||'—') + '</b></div>'
+      + '<div>💧 Humidity: <b>' + (spot.humidity!=null?spot.humidity+'%':'—') + '</b></div>'
+      + '<div>📊 Pressure: <b>' + (spot.pressure!=null?spot.pressure+' hPa':'—') + '</b></div>'
+      + (spot.severity !== 'normal' ? '<div style="margin-top:8px;color:' + (spot.severity==='severe'?'#ef4444':'#f59e0b') + ';font-weight:700">⚠ ' + spot.severity.toUpperCase() + ' CONDITIONS</div>' : '')
+      + '</div>';
+    const e = viewer.entities.add({
+      name: spot.name + ' — Weather',
+      description: desc,
+      position: Cesium.Cartesian3.fromDegrees(spot.lon, spot.lat),
+      label: {
+        text: emoji + ' ' + temp,
+        font: '11px Inter,sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: new Cesium.Cartesian2(0, -10),
+        showBackground: true,
+        backgroundColor: new Cesium.Color(0.05, 0.05, 0.05, 0.82),
+        backgroundPadding: new Cesium.Cartesian2(6, 4),
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      },
+      point: {
+        pixelSize: 9,
+        color: clr,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 1.5,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      },
+    });
+    weatherMarkers.push(e);
+  });
+}
+
+async function fetchWeatherHotspots() {
+  try {
+    const res = await fetch('/api/weather');
+    if (!res.ok) throw new Error('Weather API error');
+    renderWeatherMarkers(await res.json());
+  } catch(err) {
+    console.warn('Weather hotspot data unavailable:', err.message);
+  }
+}
+  
 function initCesium() {
   try {
     Cesium.Ion.defaultAccessToken = CESIUM_TOKEN;
@@ -3211,11 +3293,13 @@ function toggleWeatherLayer(on) {
           credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6
         })
       );
-      weatherLayer.alpha = 0.4;
+      weatherLayer.alpha = 0.7;
+      fetchWeatherHotspots();
     } catch(e) { console.log('Weather layer unavailable'); }
   } else if(!on && weatherLayer) {
     viewer.imageryLayers.remove(weatherLayer);
     weatherLayer = null;
+    clearWeatherMarkers();
   }
 }
 
@@ -4160,5 +4244,12 @@ setInterval(refreshXFeed, 1200000); // re-fetch every 20 min (~72 req/day — wi
 setTimeout(fetchWorldBankIndicators, 3000);
 setInterval(fetchWorldBankIndicators, 1800000); // every 30 min (data is daily)
 </script>
+<div id="windy-panel" style="display:none;position:fixed;top:0;right:0;width:540px;height:100vh;background:#0a0a0f;border-left:1px solid rgba(255,255,255,0.12);z-index:9999;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.1);background:#0d0d14;">
+    <span style="color:#22d3ee;font-size:12px;font-weight:700;letter-spacing:0.08em;">🌐 WINDY — LIVE ANIMATED WEATHER</span>
+    <button onclick="document.getElementById('windy-panel').style.display='none'" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:20px;line-height:1;">✕</button>
+  </div>
+  <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="flex:1;border:none;width:100%;height:calc(100% - 44px);" allowfullscreen></iframe>
+</div>
 </body>
 </html>
