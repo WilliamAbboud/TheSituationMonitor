@@ -298,13 +298,13 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── PANEL RESIZE HANDLE ── */
-.panel-handle { width:8px; cursor:col-resize; background:transparent; border-left:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
-.panel-handle:hover { background:rgba(6,182,212,0.07); border-left-color:var(--accent-cyan); }
-.panel-handle-grip { width:2px; height:36px; border-radius:1px; background:var(--border); }
-.panel-handle:hover .panel-handle-grip { background:var(--accent-cyan); }
-.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:18px; height:28px; border-radius:3px; background:var(--bg-tertiary); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); transition:all .2s; z-index:2; left:-10px; }
+.panel-handle { width:4px; cursor:col-resize; background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
+.panel-handle:hover { background:rgba(6,182,212,0.05); }
+.panel-handle-grip { display:none; }
+.panel-handle:hover .panel-handle-grip { display:none; }
+.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:20px; height:48px; border-radius:6px 0 0 6px; background:var(--bg-tertiary); border:1px solid var(--border); border-right:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-muted); transition:all .2s; z-index:2; left:-20px; }
 .panel-collapse-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.1); }
-
+  
 /* ── CLOCK SETTINGS ── */
 .clock-settings-btn { width:22px; height:22px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all .2s; margin-left:2px; }
 .clock-settings-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); }
@@ -1266,14 +1266,19 @@ const activeSubLayers = {
   resources: new Set(['res-oil','res-lng','res-power','res-infra']),
 };
 
-// Map weather sub-layers to OpenWeatherMap tile URLs
-const OWM_KEY = '5b35f566bbbe2b684b0cedcc045f79cd'; // Replace with real key
-const WX_URLS = {
-  'wx-clouds': `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-'wx-precip': `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-  'wx-wind':   `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-  'wx-temp':   `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-};
+// Map weather sub-layers to Rainviewer tile URLs (no API key required)
+const WX_URLS = { 'wx-clouds': null, 'wx-precip': null, 'wx-wind': null, 'wx-temp': null };
+async function fetchRainviewerUrls() {
+  try {
+    const d = await fetch('https://api.rainviewer.com/public/weather-maps.json').then(r=>r.json());
+    const past = d.radar?.past;
+    if (past?.length) WX_URLS['wx-precip'] = `https://tilecache.rainviewer.com/v2/radar${past[past.length-1].path}/256/{z}/{x}/{y}/4/1_1.png`;
+    const sat = d.satellite?.infrared;
+    if (sat?.length) WX_URLS['wx-clouds'] = `https://tilecache.rainviewer.com/v2/satellite/infrared${sat[sat.length-1].path}/256/{z}/{x}/{y}/4/0_1.png`;
+  } catch(e) { console.warn('Rainviewer fetch failed:', e.message); }
+}
+fetchRainviewerUrls();
+setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
 const wxLayers = {};
 
 function toggleSubPill(wrap) {
@@ -1330,7 +1335,8 @@ function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-    const url = (sublayer === 'wx-precip' && rainviewerPrecipUrl) ? rainviewerPrecipUrl : WX_TILE_URLS[sublayer];   if (!url) return;
+    const url = WX_TILE_URLS[sublayer];
+if (!url) return;
       if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
@@ -2133,19 +2139,7 @@ fetchMarketData();
 setInterval(fetchMarketData, 60000);
 
 // Rainviewer — live precipitation radar (free, no key, much better than OWM)
-let rainviewerPrecipUrl = null;
-async function fetchRainviewerUrl() {
-  try {
-    const data = await fetch('https://api.rainviewer.com/public/weather-maps.json').then(r => r.json());
-    const past = data.radar?.past;
-    if (past && past.length > 0) {
-      const latest = past[past.length - 1];
-      rainviewerPrecipUrl = `https://tilecache.rainviewer.com/v2/radar${latest.path}/{z}/{x}/{y}/4/1_1.png`;
-    }
-  } catch(e) { console.warn('Rainviewer fetch failed:', e.message); }
-}
-fetchRainviewerUrl();
-setInterval(fetchRainviewerUrl, 10 * 60 * 1000);
+  
 // ═══════════════ LANGUAGE SELECTOR ═══════════════
 const TRANSLATIONS = {
   en: {
@@ -3328,8 +3322,7 @@ function toggleWeatherLayer(on) {
     try {
       weatherLayer = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
-          url:'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=5b35f566bbbe2b684b0cedcc045f79cd',
-          credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6
+          WX_TILE_URLS['wx-clouds'] || ''
         })
       );
       weatherLayer.alpha = 0.7;
