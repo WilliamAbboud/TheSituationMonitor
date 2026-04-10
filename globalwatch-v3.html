@@ -62,8 +62,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .topbar-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── GLOBE CONTROLS PANEL ── */
-.globe-controls { position:absolute; top:42px; right:10px; left:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
-.globe-controls.visible { display:block; }
+.globe-controls { position:absolute; top:80px; left:10px; right:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
+.globe-controls.visible { display:block; } .globe-controls.windy-mode #gc-map-only-controls { display:none; }
 .gc-title { font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
 .gc-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
 .gc-close:hover { color:var(--text-primary); }
@@ -294,7 +294,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theater-corners { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:rgba(6,182,212,0.25); font-size:8px; font-family:'JetBrains Mono',monospace; letter-spacing:2px; pointer-events:none; }
 
 /* ── APPEARANCE FLOAT BUTTON (inside globe) ── */
-.appear-float-btn { position:absolute; top:8px; right:10px; bottom:auto; left:auto; z-index:501; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
+.appear-float-btn { position:absolute; top:46px; left:10px; right:auto; bottom:auto; z-index:501; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── PANEL RESIZE HANDLE ── */
@@ -781,7 +781,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 <div class="main-container">
   <div class="globe-container">
     <div id="cesiumContainer"></div>
-    <div id="windy-fullscreen" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:2;background:#0a0a0f;">
+    <div id="windy-fullscreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;background:#0a0a0f;">
       <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
     </div>
 
@@ -795,12 +795,12 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <button class="intel-globe-btn" id="analyticsBtn" onclick="toggleAnalytics()">📊 INTEL</button>
 
     <!-- Appearance Float Button (inside globe) -->
-    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ APPEARANCE</button>
+    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ MAP APPEARANCE</button>
 
     <!-- Appearance Controls -->
     <div class="globe-controls" id="globeControls">
       <div class="gc-title">
-        APPEARANCE
+        MAP APPEARANCE
         <button class="gc-close" onclick="toggleGlobeControls()">&times;</button>
       </div>
       <!-- Map style presets — switches actual imagery source -->
@@ -811,6 +811,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
           <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 ADVANCED WEATHER MAP</button>
         </div>
+        <div id="gc-map-only-controls">
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
           <input id="customTileUrl" placeholder="https://…/{z}/{y}/{x}" style="width:100%;padding:5px 8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:9px;outline:none;font-family:'JetBrains Mono',monospace;" onfocus="this.style.borderColor='var(--accent-cyan)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')applyCustomTile()">
@@ -847,6 +848,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
           <!-- Cards injected by JS -->
         </div>
       </div>
+      </div><!-- /#gc-map-only-controls -->
     </div>
 
     <!-- Camera FAB — hover to expand -->
@@ -1268,7 +1270,7 @@ const activeSubLayers = {
 const OWM_KEY = '5b35f566bbbe2b684b0cedcc045f79cd'; // Replace with real key
 const WX_URLS = {
   'wx-clouds': `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
-  'wx-precip': `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-precip': null, // Rainviewer — loaded dynamically below
   'wx-wind':   `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
   'wx-temp':   `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
 };
@@ -1328,10 +1330,10 @@ function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-      const url = WX_URLS[sublayer];
+      const url = (sublayer === 'wx-precip' && rainviewerPrecipUrl) ? rainviewerPrecipUrl : WX_TILE_URLS[sublayer];
       if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
-        new Cesium.UrlTemplateImageryProvider({ url, credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
+        new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
       );
       l.alpha = 0.45;
       wxLayers[sublayer] = l;
@@ -1624,11 +1626,13 @@ function applyPreset(name) {
     document.getElementById('cesiumContainer').style.pointerEvents = 'none';
     document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
     document.getElementById('preset-windy').classList.add('active-preset');
+    document.getElementById('globeControls').classList.add('windy-mode');
     return;
   }
   // Leaving Windy — restore Cesium
   windyDiv.style.display = 'none';
   document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
+  document.getElementById('globeControls').classList.remove('windy-mode');
 
   currentMapStyle = name;
 
@@ -2127,6 +2131,21 @@ async function fetchMarketData() {
 
 fetchMarketData();
 setInterval(fetchMarketData, 60000);
+
+// Rainviewer — live precipitation radar (free, no key, much better than OWM)
+let rainviewerPrecipUrl = null;
+async function fetchRainviewerUrl() {
+  try {
+    const data = await fetch('https://api.rainviewer.com/public/weather-maps.json').then(r => r.json());
+    const past = data.radar?.past;
+    if (past && past.length > 0) {
+      const latest = past[past.length - 1];
+      rainviewerPrecipUrl = `https://tilecache.rainviewer.com/v2/radar${latest.path}/{z}/{x}/{y}/4/1_1.png`;
+    }
+  } catch(e) { console.warn('Rainviewer fetch failed:', e.message); }
+}
+fetchRainviewerUrl();
+setInterval(fetchRainviewerUrl, 10 * 60 * 1000);
 // ═══════════════ LANGUAGE SELECTOR ═══════════════
 const TRANSLATIONS = {
   en: {
