@@ -25,6 +25,7 @@
   "functions": {
     "api/news.js":    { "memory": 512, "maxDuration": 10 },
     "api/market.js":  { "memory": 512, "maxDuration": 15 },
-    "api/vessels.js": { "memory": 512, "maxDuration": 15 }
+   "api/vessels.js": { "memory": 512, "maxDuration": 15 },
+    "api/weather.js": { "memory": 256, "maxDuration": 15 }
   }
 }
