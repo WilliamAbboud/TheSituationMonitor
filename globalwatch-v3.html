@@ -64,6 +64,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 /* ── GLOBE CONTROLS PANEL ── */
 .globe-controls { position:absolute; top:80px; left:10px; right:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
 .globe-controls.visible { display:block; } .globe-controls.windy-mode #gc-map-only-controls { display:none; }
+.globe-controls.windy-mode .gc-row { display:none; }
+#camFab.windy-hidden { display:none !important; }
 .gc-title { font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
 .gc-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
 .gc-close:hover { color:var(--text-primary); }
@@ -1279,6 +1281,36 @@ async function fetchRainviewerUrls() {
 }
 fetchRainviewerUrls();
 setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
+
+// Auto-dismiss panels on map click
+document.addEventListener('mousedown', function(e) {
+  const cc = document.getElementById('cesiumContainer');
+  if (!cc || !cc.contains(e.target)) return;
+  const gc = document.getElementById('globeControls');
+  if (gc && gc.classList.contains('visible')) {
+    gc.classList.remove('visible');
+    const btn = document.getElementById('globeCtrlBtn');
+    if (btn) btn.classList.remove('active-btn');
+  }
+  const camFab = document.getElementById('camFab');
+  if (camFab) {
+    const trigger = camFab.querySelector('.cam-fab-trigger');
+    const panel = camFab.querySelector('.cam-fab-panel');
+    if (panel && panel.offsetParent !== null) trigger && trigger.click();
+  }
+});
+window.addEventListener('blur', function() {
+  setTimeout(function() {
+    const wf = document.getElementById('windy-fullscreen');
+    if (!wf || wf.style.display === 'none') return;
+    const gc = document.getElementById('globeControls');
+    if (gc && gc.classList.contains('visible')) {
+      gc.classList.remove('visible');
+      const btn = document.getElementById('globeCtrlBtn');
+      if (btn) btn.classList.remove('active-btn');
+    }
+  }, 50);
+});
 const wxLayers = {};
 
 function toggleSubPill(wrap) {
@@ -1632,12 +1664,13 @@ function applyPreset(name) {
     document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
     document.getElementById('preset-windy').classList.add('active-preset');
     document.getElementById('globeControls').classList.add('windy-mode');
+    document.getElementById('camFab').classList.add('windy-hidden');
     return;
   }
-  // Leaving Windy — restore Cesium
   windyDiv.style.display = 'none';
   document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
   document.getElementById('globeControls').classList.remove('windy-mode');
+  document.getElementById('camFab').classList.remove('windy-hidden');
 
   currentMapStyle = name;
 
