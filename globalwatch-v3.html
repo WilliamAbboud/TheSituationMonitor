@@ -1335,9 +1335,8 @@ function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-    const url = WX_TILE_URLS[sublayer];
-if (!url) return;
-      if (!url) return;
+    const url = WX_URLS[sublayer];
+    if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
       );
@@ -3322,7 +3321,8 @@ function toggleWeatherLayer(on) {
     try {
       weatherLayer = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
-          WX_TILE_URLS['wx-clouds'] || ''
+        url: WX_URLS['wx-clouds'] || '', credit: 'RainViewer', minimumLevel:1, maximumLevel:6
+      })
         })
       );
       weatherLayer.alpha = 0.7;
