@@ -3323,7 +3323,6 @@ function toggleWeatherLayer(on) {
         new Cesium.UrlTemplateImageryProvider({
         url: WX_URLS['wx-clouds'] || '', credit: 'RainViewer', minimumLevel:1, maximumLevel:6
       })
-        })
       );
       weatherLayer.alpha = 0.7;
       fetchWeatherHotspots();
