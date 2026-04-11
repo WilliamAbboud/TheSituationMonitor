@@ -1284,6 +1284,73 @@ async function fetchRainviewerUrls() {
 fetchRainviewerUrls();
 setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
 
+// ═══════════════ VESSEL TRACKING ═══════════════
+let vesselMarkers = [];
+let vesselRefreshInterval = null;
+
+function clearVesselMarkers() {
+  vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
+  vesselMarkers = [];
+}
+
+function createVesselIcon(cssColor, heading) {
+  const S = 32;
+  const c = document.createElement('canvas');
+  c.width = S; c.height = S;
+  const g = c.getContext('2d');
+  const cx = S / 2, cy = S / 2;
+  g.save();
+  g.translate(cx, cy);
+  g.rotate(((heading || 0) - 90) * Math.PI / 180);
+  g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 5;
+  g.fillStyle = cssColor;
+  g.beginPath();
+  g.moveTo(12, 0); g.lineTo(-8, -7); g.lineTo(-5, 0); g.lineTo(-8, 7); g.closePath();
+  g.fill();
+  g.shadowBlur = 0;
+  g.strokeStyle = 'rgba(255,255,255,0.7)'; g.lineWidth = 1;
+  g.stroke();
+  g.restore();
+  return c.toDataURL();
+}
+
+async function fetchVessels() {
+  if (!viewer || !activeLayers.has('ships')) return;
+  try {
+    const data = await fetch('/api/vessels').then(r => r.json());
+    if (!data.vessels || !data.vessels.length) return;
+    clearVesselMarkers();
+    data.vessels.forEach(v => {
+      const col = v.type === 'warship' ? '#ef4444' : v.type === 'tanker' ? '#f97316' : '#38bdf8';
+      const e = viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
+        billboard: {
+          image: createVesselIcon(col, v.heading),
+          width: 32, height: 32,
+          verticalOrigin: Cesium.VerticalOrigin.CENTER,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          scaleByDistance: new Cesium.NearFarScalar(1.5e6, 1.2, 1.5e8, 0.4),
+        },
+        description: `<div style="font-family:monospace;font-size:12px;color:#e2e8f0;background:#0f172a;padding:10px;border-radius:6px">
+          <b style="color:#38bdf8">${v.name}</b><br>
+          MMSI: ${v.mmsi}<br>
+          Type: ${v.type.toUpperCase()}<br>
+          Speed: ${v.speed} kt &nbsp; Heading: ${v.heading}°<br>
+          Chokepoint: <span style="color:#fbbf24">${v.chokepoint}</span>
+        </div>`,
+        _layerType: 'ships',
+      });
+      vesselMarkers.push(e);
+    });
+    // update Ships count badge
+    const badge = [...document.querySelectorAll('.layer-pill')].find(el => el.textContent.includes('Ships'));
+    if (badge) {
+      const cnt = badge.querySelector('.layer-count');
+      if (cnt) cnt.textContent = data.count;
+    }
+  } catch(e) { console.warn('Vessel fetch failed:', e.message); }
+}
+
 // Auto-dismiss panels on map click
 document.addEventListener('mousedown', function(e) {
   const cc = document.getElementById('cesiumContainer');
@@ -1324,6 +1391,16 @@ function toggleSubPill(wrap) {
   if (layer === 'weather') {
     const on = activeLayers.has('weather');
     activeSubLayers.weather.forEach(sl => toggleWxLayer(sl, on));
+  }
+  if (layer === 'ships') {
+    if (activeLayers.has('ships')) {
+      fetchVessels();
+      clearInterval(vesselRefreshInterval);
+      vesselRefreshInterval = setInterval(fetchVessels, 60000);
+    } else {
+      clearVesselMarkers();
+      clearInterval(vesselRefreshInterval);
+    }
   }
 }
 
