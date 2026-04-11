@@ -54,9 +54,9 @@ module.exports = async function handler(req, res) {
         ws.send(JSON.stringify({
           APIKey: apiKey,
           BoundingBoxes: CHOKEPOINTS.map(c => [
-            [c.bbox[0], c.bbox[1]],
-            [c.bbox[2], c.bbox[3]]
-          ]),
+              [c.bbox[1], c.bbox[0]],
+              [c.bbox[3], c.bbox[2]]
+            ]),
           FilterMessageTypes: ['PositionReport'],
         }));
       });
@@ -84,7 +84,7 @@ module.exports = async function handler(req, res) {
             lon:       meta.longitude,
             speed:     pos.Sog,
             heading:   pos.Cog,
-            type:      classifyVessel(0),
+            type: classifyVessel(meta.ShipType || pos.ShipAndCargoType || 0),
             chokepoint: chokepoint?.name || 'Unknown',
           });
 
