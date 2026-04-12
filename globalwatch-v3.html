@@ -62,12 +62,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .topbar-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── GLOBE CONTROLS PANEL ── */
-.globe-controls { position:absolute; top:80px; left:10px; right:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
-.globe-controls.visible { display:block; } .globe-controls.windy-mode #gc-map-only-controls { display:none; }
-.globe-controls.windy-mode .gc-row { display:none; }
-.globe-controls.windy-mode #bordersToggleRow { display:none; }
-.globe-controls.windy-mode .marker-picker-section { display:none; }
-#camFab.windy-hidden { display:none !important; }
+.globe-controls { position:absolute; top:8px; left:8px; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
+.globe-controls.visible { display:block; }
 .gc-title { font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
 .gc-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
 .gc-close:hover { color:var(--text-primary); }
@@ -175,7 +171,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .pip-body iframe { width:100%; height:100%; border:none; }
 
 /* ── RIGHT PANEL ── */
-.right-panel { position:relative; z-index:1500; width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.right-panel { width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
 .panel-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--bg-secondary); flex-shrink:0; }
 .panel-tab { flex:1; padding:9px 0; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; letter-spacing:.5px; }
 .panel-tab:hover { color:var(--text-secondary); }
@@ -298,17 +294,17 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theater-corners { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:rgba(6,182,212,0.25); font-size:8px; font-family:'JetBrains Mono',monospace; letter-spacing:2px; pointer-events:none; }
 
 /* ── APPEARANCE FLOAT BUTTON (inside globe) ── */
-.appear-float-btn { position:absolute; top:46px; left:10px; right:auto; bottom:auto; z-index:501; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
+.appear-float-btn { position:absolute; bottom:14px; left:14px; z-index:500; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── PANEL RESIZE HANDLE ── */
-.panel-handle { width:4px; cursor:col-resize; background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
-.panel-handle:hover { background:rgba(6,182,212,0.05); }
-.panel-handle-grip { display:none; }
-.panel-handle:hover .panel-handle-grip { display:none; }
-.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:20px; height:48px; border-radius:6px 0 0 6px; background:var(--bg-tertiary); border:1px solid var(--border); border-right:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-muted); transition:all .2s; z-index:2; left:-20px; }
+.panel-handle { width:8px; cursor:col-resize; background:transparent; border-left:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
+.panel-handle:hover { background:rgba(6,182,212,0.07); border-left-color:var(--accent-cyan); }
+.panel-handle-grip { width:2px; height:36px; border-radius:1px; background:var(--border); }
+.panel-handle:hover .panel-handle-grip { background:var(--accent-cyan); }
+.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:18px; height:28px; border-radius:3px; background:var(--bg-tertiary); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); transition:all .2s; z-index:2; left:-10px; }
 .panel-collapse-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.1); }
-  
+
 /* ── CLOCK SETTINGS ── */
 .clock-settings-btn { width:22px; height:22px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all .2s; margin-left:2px; }
 .clock-settings-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); }
@@ -335,6 +331,15 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .sub-chk { width:13px; height:13px; border:1px solid var(--border); border-radius:3px; background:var(--bg-tertiary); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:9px; color:transparent; transition:all .15s; }
 .sub-item.sub-on .sub-chk { background:var(--sub-color, var(--accent-cyan)); border-color:var(--sub-color, var(--accent-cyan)); color:var(--bg-primary); }
 .sub-item.sub-on .sub-chk::after { content:'✓'; }
+
+/* ── AIS SHIP FILTER ROWS ── */
+.sf-row {
+  display:flex; align-items:center; gap:6px;
+  padding:3px 0; cursor:pointer; font-size:11px; color:var(--text-secondary);
+  font-family:'JetBrains Mono',monospace;
+}
+.sf-row input[type=checkbox] { accent-color:var(--accent-cyan); cursor:pointer; }
+.sf-row:hover span { color:var(--accent-cyan); }
 
 /* ── MARKER STYLE PICKER ── */
 .marker-picker-section { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
@@ -696,20 +701,19 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     </div>
   </div>
   <!-- Ships pill with sub-layer dropdown -->
-  <div class="sub-layer-wrap active" id="pill-ships" data-layer="ships" style="--pill-color:#06b6d4;--pill-bg:rgba(6,182,212,0.08);--pill-glow:rgba(6,182,212,0.1)" onclick="toggleSubPill(this)">
+  <div class="sub-layer-wrap" id="pill-ships" data-layer="ships" style="--pill-color:#06b6d4;--pill-bg:rgba(6,182,212,0.08);--pill-glow:rgba(6,182,212,0.1)" onclick="toggleSubPill(this)">
     <div class="pill-dot"></div><span data-i18n="ships">Ships</span><span class="pill-count">847</span>
     <span class="sub-arrow" onclick="openSubMenu(event,'subShips',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subShips">
-      <div class="sub-layer-head">VESSEL TYPES</div>
-      <div class="sub-item sub-on" style="--sub-color:#ef4444" data-sublayer="ships-warship" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>⚔ Warships
-      </div>
-      <div class="sub-item sub-on" style="--sub-color:#06b6d4" data-sublayer="ships-cargo" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>📦 Cargo
-      </div>
-      <div class="sub-item sub-on" style="--sub-color:#f59e0b" data-sublayer="ships-tanker" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>🛢 Tankers
-      </div>
+      <div class="sub-layer-head">SHOW VESSEL TYPES</div>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo"><span>📦 Cargo</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker"><span>🛢 Tanker</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="passenger"><span>🛳 Passenger</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship"><span>⚔ Warship</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="fishing"><span>🎣 Fishing</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tug"><span>⚙ Tug / Service</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="highspeed"><span>💨 High Speed</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown</span></label>
     </div>
   </div>
   <div class="layer-pill" data-layer="outages" style="--pill-color:#f59e0b;--pill-bg:rgba(245,158,11,0.08);--pill-glow:rgba(245,158,11,0.1)" onclick="toggleLayer(this)"><div class="pill-dot"></div><span data-i18n="outages">Outages</span><span class="pill-count">12</span></div>
@@ -785,9 +789,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 <div class="main-container">
   <div class="globe-container">
     <div id="cesiumContainer"></div>
-    <div id="windy-fullscreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;background:#0a0a0f;">
-      <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
-    </div>
 
     <!-- Theater Map HUD Title -->
     <div class="theater-title">
@@ -799,12 +800,12 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <button class="intel-globe-btn" id="analyticsBtn" onclick="toggleAnalytics()">📊 INTEL</button>
 
     <!-- Appearance Float Button (inside globe) -->
-    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ MAP APPEARANCE</button>
+    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ APPEARANCE</button>
 
     <!-- Appearance Controls -->
     <div class="globe-controls" id="globeControls">
       <div class="gc-title">
-        MAP APPEARANCE
+        APPEARANCE
         <button class="gc-close" onclick="toggleGlobeControls()">&times;</button>
       </div>
       <!-- Map style presets — switches actual imagery source -->
@@ -813,9 +814,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
         <div class="gc-presets" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
           <button class="gc-preset active-preset" id="preset-satellite" onclick="applyPreset('satellite')">SATELLITE</button>
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
-          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 ADVANCED WEATHER MAP</button>
+          <button class="gc-preset" id="preset-map"       onclick="applyPreset('map')">MAP</button>
+          <button class="gc-preset" id="preset-ocean"     onclick="applyPreset('ocean')">OCEAN</button>
         </div>
-        <div id="gc-map-only-controls">
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
           <input id="customTileUrl" placeholder="https://…/{z}/{y}/{x}" style="width:100%;padding:5px 8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:9px;outline:none;font-family:'JetBrains Mono',monospace;" onfocus="this.style.borderColor='var(--accent-cyan)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')applyCustomTile()">
@@ -852,7 +853,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
           <!-- Cards injected by JS -->
         </div>
       </div>
-      </div><!-- /#gc-map-only-controls -->
     </div>
 
     <!-- Camera FAB — hover to expand -->
@@ -1042,7 +1042,7 @@ const GDELT_GEO_API = 'https://api.gdeltproject.org/api/v2/geo/geo?query=conflic
 
 // ═══════════════ STATE ═══════════════
 let viewer = null;
-let activeLayers = new Set(['conflicts','flights','ships']);
+let activeLayers = new Set(['conflicts','flights']); // ships OFF by default
 let customClocks = [];
 let clockIdCounter = 0;
 let selectedTz = null;
@@ -1265,146 +1265,19 @@ function toggleLayer(pill) {
 // Active sub-layers: which sub-types within each layer are shown
 const activeSubLayers = {
   flights:   new Set(['flights-civil','flights-mil','flights-private']),
-  ships:     new Set(['ships-warship','ships-cargo','ships-tanker']),
+  ships:     new Set([]),  // all OFF by default — user must select types
   weather:   new Set(['wx-clouds','wx-precip']),
   resources: new Set(['res-oil','res-lng','res-power','res-infra']),
 };
 
-// Map weather sub-layers to Rainviewer tile URLs (no API key required)
-const WX_URLS = { 'wx-clouds': null, 'wx-precip': null, 'wx-wind': null, 'wx-temp': null };
-async function fetchRainviewerUrls() {
-  try {
-    const d = await fetch('https://api.rainviewer.com/public/weather-maps.json').then(r=>r.json());
-    const past = d.radar?.past;
-    if (past?.length) WX_URLS['wx-precip'] = `https://tilecache.rainviewer.com/v2/radar${past[past.length-1].path}/256/{z}/{x}/{y}/4/1_1.png`;
-    const sat = d.satellite?.infrared;
-    if (sat?.length) WX_URLS['wx-clouds'] = `https://tilecache.rainviewer.com/v2/satellite/infrared${sat[sat.length-1].path}/256/{z}/{x}/{y}/4/0_1.png`;
-  } catch(e) { console.warn('Rainviewer fetch failed:', e.message); }
-}
-fetchRainviewerUrls();
-setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
-
-// ═══════════════ VESSEL TRACKING ═══════════════
-let vesselMarkers = [];
-let vesselRefreshInterval = null;
-
-function clearVesselMarkers() {
-  vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
-  vesselMarkers = [];
-}
-
-const VESSEL_COLORS = {
-  cargo:     '#38bdf8', tanker: '#fb923c', warship: '#ef4444',
-  passenger: '#a78bfa', fishing: '#86efac', tug: '#fbbf24',
-  highspeed: '#f472b6', unknown: '#94a3b8',
+// Map weather sub-layers to OpenWeatherMap tile URLs
+const OWM_KEY = 'demo'; // Replace with real key
+const WX_URLS = {
+  'wx-clouds': `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-precip': `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-wind':   `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-temp':   `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
 };
-function createVesselIcon(type, heading, speed) {
-  const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
-  const S = 36;
-  const c = document.createElement('canvas');
-  c.width = S; c.height = S;
-  const g = c.getContext('2d');
-  const cx = S/2, cy = S/2;
-  g.save();
-  g.translate(cx, cy);
-  g.rotate(((heading || 0) - 90) * Math.PI / 180);
-  g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 6; g.shadowOffsetY = 2;
-  g.fillStyle = col;
-  if (type === 'tanker') {
-    // Wide hull shape
-    g.beginPath(); g.moveTo(13,0); g.lineTo(-6,-9); g.lineTo(-10,-5); g.lineTo(-10,5); g.lineTo(-6,9); g.closePath();
-  } else if (type === 'warship') {
-    // Sleek naval shape
-    g.beginPath(); g.moveTo(15,0); g.lineTo(0,-5); g.lineTo(-12,-4); g.lineTo(-12,4); g.lineTo(0,5); g.closePath();
-  } else if (type === 'passenger') {
-    // Rounded bow
-    g.beginPath(); g.moveTo(14,0); g.quadraticCurveTo(14,-8,-6,-8); g.lineTo(-6,8); g.quadraticCurveTo(14,8,14,0); g.closePath();
-  } else {
-    // Standard cargo arrow
-    g.beginPath(); g.moveTo(14,0); g.lineTo(-8,-7); g.lineTo(-5,0); g.lineTo(-8,7); g.closePath();
-  }
-  g.fill();
-  g.shadowBlur = 0; g.shadowOffsetY = 0;
-  g.strokeStyle = 'rgba(255,255,255,0.65)'; g.lineWidth = 1;
-  g.stroke();
-  // Speed dot: bright if moving
-  if (speed > 1) {
-    g.beginPath(); g.arc(-3, 0, 2.5, 0, Math.PI*2);
-    g.fillStyle = 'rgba(255,255,255,0.9)'; g.fill();
-  }
-  g.restore();
-  return c.toDataURL();
-}
-
-async function fetchVessels() {
-  if (!viewer || !activeLayers.has('ships')) return;
-  try {
-    const data = await fetch('/api/vessels').then(r => r.json());
-    if (!data.vessels || !data.vessels.length) return;
-    clearVesselMarkers();
-    data.vessels.forEach(v => {
-      const e = viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
-        billboard: {
-          image: createVesselIcon(v.type, v.heading, v.speed),
-          width: 32, height: 32,
-          verticalOrigin: Cesium.VerticalOrigin.CENTER,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          scaleByDistance: new Cesium.NearFarScalar(1.5e6, 1.2, 1.5e8, 0.4),
-        },
-        description: `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e2e8f0;background:#0f172a;padding:12px 14px;border-radius:6px;border:1px solid rgba(56,189,248,0.25);min-width:200px">
-          <div style="color:#38bdf8;font-weight:700;font-size:13px;margin-bottom:6px;letter-spacing:.5px">${v.name}</div>
-          <div style="color:#94a3b8;margin-bottom:8px">MMSI: ${v.mmsi}</div>
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <tr><td style="color:#64748b;padding:2px 0">TYPE</td><td style="text-align:right;color:#f1f5f9;text-transform:uppercase">${v.type}</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">STATUS</td><td style="text-align:right;color:#f1f5f9">${v.status || '—'}</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">SPEED</td><td style="text-align:right;color:#f1f5f9">${v.speed} kt</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">HEADING</td><td style="text-align:right;color:#f1f5f9">${v.heading}°</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">REGION</td><td style="text-align:right;color:#fbbf24">${v.chokepoint}</td></tr>
-          </table>
-        </div>`,
-        _layerType: 'ships',
-      });
-      vesselMarkers.push(e);
-    });
-    // update Ships count badge
-    const badge = [...document.querySelectorAll('.layer-pill')].find(el => el.textContent.includes('Ships'));
-    if (badge) {
-      const cnt = badge.querySelector('.layer-count');
-      if (cnt) cnt.textContent = data.count;
-    }
-  } catch(e) { console.warn('Vessel fetch failed:', e.message); }
-}
-
-// Auto-dismiss panels on map click
-document.addEventListener('mousedown', function(e) {
-  const cc = document.getElementById('cesiumContainer');
-  if (!cc || !cc.contains(e.target)) return;
-  const gc = document.getElementById('globeControls');
-  if (gc && gc.classList.contains('visible')) {
-    gc.classList.remove('visible');
-    const btn = document.getElementById('globeCtrlBtn');
-    if (btn) btn.classList.remove('active-btn');
-  }
-  const camFab = document.getElementById('camFab');
-  if (camFab) {
-    const trigger = camFab.querySelector('.cam-fab-trigger');
-    const panel = camFab.querySelector('.cam-fab-panel');
-    if (panel && panel.offsetParent !== null) trigger && trigger.click();
-  }
-});
-window.addEventListener('blur', function() {
-  setTimeout(function() {
-    const wf = document.getElementById('windy-fullscreen');
-    if (!wf || wf.style.display === 'none') return;
-    const gc = document.getElementById('globeControls');
-    if (gc && gc.classList.contains('visible')) {
-      gc.classList.remove('visible');
-      const btn = document.getElementById('globeCtrlBtn');
-      if (btn) btn.classList.remove('active-btn');
-    }
-  }, 50);
-});
 const wxLayers = {};
 
 function toggleSubPill(wrap) {
@@ -1412,20 +1285,23 @@ function toggleSubPill(wrap) {
   // Toggle the main layer
   wrap.classList.toggle('active');
   activeLayers.has(layer) ? activeLayers.delete(layer) : activeLayers.add(layer);
-  updateGlobeMarkers();
   if (layer === 'weather') {
+    updateGlobeMarkers();
     const on = activeLayers.has('weather');
     activeSubLayers.weather.forEach(sl => toggleWxLayer(sl, on));
-  }
-  if (layer === 'ships') {
+  } else if (layer === 'ships') {
     if (activeLayers.has('ships')) {
       fetchVessels();
       clearInterval(vesselRefreshInterval);
       vesselRefreshInterval = setInterval(fetchVessels, 60000);
     } else {
       clearVesselMarkers();
+      vesselCache = [];
       clearInterval(vesselRefreshInterval);
     }
+    updateGlobeMarkers(); // redraw other layers
+  } else {
+    updateGlobeMarkers();
   }
 }
 
@@ -1467,14 +1343,16 @@ function toggleSub(e, item, layer) {
   }
 }
 
+// Note: ships sub-layer checkboxes are wired via DOMContentLoaded in the vessel tracking section
+
 function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-    const url = WX_URLS[sublayer];
-    if (!url) return;
+      const url = WX_URLS[sublayer];
+      if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
-        new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
+        new Cesium.UrlTemplateImageryProvider({ url, credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
       );
       l.alpha = 0.45;
       wxLayers[sublayer] = l;
@@ -1517,7 +1395,7 @@ function showCountryPopup(lat, lon, sx, sy) {
       if (!bdcRes.ok) throw new Error('Geocode failed');
       const bdc = await bdcRes.json();
       const cc  = (bdc.countryCode || '').toUpperCase();
-      if (!cc) { document.getElementById('cpBody').innerHTML = '<div class="country-loading">No country at this location</div>'; return; }
+      if (!cc) { closeCountryPopup(); return; } // ocean / no country — close silently
 
       const cRes  = await fetch(`https://restcountries.com/v3.1/alpha/${cc}?fields=name,flags,flag,capital,population,area,region,subregion,currencies,languages,timezones,borders,gini,car,idd`);
       if (!cRes.ok) throw new Error('Country data unavailable');
@@ -1597,13 +1475,8 @@ function showCountryPopup(lat, lon, sx, sy) {
         </div>`;
     } catch(err) {
       console.warn('Country popup error:', err);
-      document.getElementById('cpBody').innerHTML = `<div class="country-loading" style="color:var(--text-muted);padding:20px;text-align:center;font-size:11px">
-        <div style="font-size:22px;margin-bottom:8px">🌐</div>
-        <div style="color:var(--text-secondary);margin-bottom:4px">Data temporarily unavailable</div>
-        <div style="font-size:9px;color:var(--text-muted)">Check your internet connection or try again</div>
-      </div>`;
-      document.getElementById('cpName').textContent = 'Unknown';
-      document.getElementById('cpFlag').textContent = '🏳';
+      closeCountryPopup(); // failed to resolve — dismiss rather than show "Unknown"
+      return;
     }
   }, 400);
 }
@@ -1759,23 +1632,6 @@ function updateGlobeAppearance() {
 
 function applyPreset(name) {
   if (!viewer) return;
-
-  // WINDY mode — show fullscreen iframe, suspend Cesium interaction
-  const windyDiv = document.getElementById('windy-fullscreen');
-  if (name === 'windy') {
-    windyDiv.style.display = 'block';
-    document.getElementById('cesiumContainer').style.pointerEvents = 'none';
-    document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
-    document.getElementById('preset-windy').classList.add('active-preset');
-    document.getElementById('globeControls').classList.add('windy-mode');
-    document.getElementById('camFab').classList.add('windy-hidden');
-    return;
-  }
-  windyDiv.style.display = 'none';
-  document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
-  document.getElementById('globeControls').classList.remove('windy-mode');
-  document.getElementById('camFab').classList.remove('windy-hidden');
-
   currentMapStyle = name;
 
   // Swap the base imagery source
@@ -1795,10 +1651,10 @@ function applyPreset(name) {
       new Cesium.UrlTemplateImageryProvider({ url: OCEAN_REFERENCE_URL, maximumLevel: 13 })
     );
     viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500; // ~zoom level 13 limit
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // ~distant view, stop before reaching sun
   } else {
     viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100; // default: allow close zoom
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // cap zoom-out for all presets
   }
 
   // Re-add graticule if toggled on
@@ -2211,6 +2067,7 @@ function initClockDrag() {
 initClockDrag();
 
 // ═══════════════ MARKETS TICKER ═══════════════
+// Fallback market data — shown while live data loads or if API is unavailable
 const MARKET_FALLBACK = [
   {sym:'BRENT',price:'—',change:'—',up:true}, {sym:'WTI',price:'—',change:'—',up:true},
   {sym:'GOLD',price:'—',change:'—',up:true}, {sym:'DXY',price:'—',change:'—',up:false},
@@ -2222,6 +2079,7 @@ const MARKET_FALLBACK = [
   {sym:'TLT',price:'—',change:'—',up:false},
 ];
 
+// Display order for the ticker
 const TICKER_SYMBOLS = ['BRENT','WTI','GOLD','DXY','LMT','RTX','BTC','ETH','BDI','NG','SPY','VIX','EUR/USD','GBP/USD','TLT'];
 
 function fmtPrice(sym, val) {
@@ -2254,7 +2112,7 @@ function buildTicker(data) {
     const change = fmtChange(sym, d.change);
     return `<span class="ticker-item"><span class="ticker-symbol">${sym}</span><span class="ticker-price">${price}</span><span class="ticker-change ${up?'up':'down'}">${change}</span></span><span class="ticker-dot"></span>`;
   }).join('');
-  t.innerHTML = items + items;
+  t.innerHTML = items + items; // duplicate for seamless scroll
 }
 
 async function fetchMarketData() {
@@ -2264,18 +2122,18 @@ async function fetchMarketData() {
     const data = await res.json();
     buildTicker(data);
   } catch (err) {
-    console.warn('Market data unavailable:', err.message);
+    console.warn('Market data unavailable, using fallback:', err.message);
+    // Build ticker with fallback dashes
     const fallbackMap = {};
     MARKET_FALLBACK.forEach(m => fallbackMap[m.sym] = { price: null, change: null });
     buildTicker(fallbackMap);
   }
 }
 
+// Initial load + refresh every 60 seconds
 fetchMarketData();
-setInterval(fetchMarketData, 60000); setTimeout(fetchVessels, 2000);
+setInterval(fetchMarketData, 60000);
 
-// Rainviewer — live precipitation radar (free, no key, much better than OWM)
-  
 // ═══════════════ LANGUAGE SELECTOR ═══════════════
 const TRANSLATIONS = {
   en: {
@@ -2586,6 +2444,120 @@ const SHIP_MARKERS = [
   {lat:12.60,lon:43.15,title:'FS Charles de Gaulle R91',detail:'French carrier on patrol',type:'warship'},
   {lat:29.50,lon:34.90,title:'STENA BULK — VLCC',detail:'Oil tanker Suez-bound laden',type:'tanker'},
 ];
+
+// ═══════════════ VESSEL TRACKING ═══════════════
+let vesselCache   = [];   // raw AIS data from /api/vessels
+let vesselMarkers = [];   // Cesium entity handles
+let vesselRefreshInterval = null;
+
+// Active type filters — all OFF by default
+const shipTypeFilters = {
+  cargo:false, tanker:false, passenger:false,
+  warship:false, fishing:false, tug:false,
+  highspeed:false, unknown:false,
+};
+
+function clearVesselMarkers() {
+  vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
+  vesselMarkers = [];
+}
+
+const VESSEL_COLORS = {
+  cargo:'#38bdf8', tanker:'#fb923c', warship:'#ef4444',
+  passenger:'#a78bfa', fishing:'#86efac', tug:'#fbbf24',
+  highspeed:'#f472b6', unknown:'#94a3b8',
+};
+
+function createVesselIcon(type, heading) {
+  const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
+  const S = 24;
+  const c = document.createElement('canvas');
+  c.width = S; c.height = S;
+  const g = c.getContext('2d');
+  const cx = S / 2, cy = S / 2;
+  g.save();
+  g.translate(cx, cy);
+  g.rotate(((heading || 0) - 90) * Math.PI / 180);
+  g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3;
+  g.fillStyle = col;
+  g.beginPath();
+  g.moveTo(9, 0);      // nose
+  g.lineTo(-5, -5);    // port quarter
+  g.lineTo(-3, 0);     // stern notch
+  g.lineTo(-5, 5);     // starboard quarter
+  g.closePath();
+  g.fill();
+  g.shadowBlur = 0;
+  g.strokeStyle = 'rgba(255,255,255,0.5)';
+  g.lineWidth = 0.8;
+  g.stroke();
+  g.restore();
+  return c.toDataURL();
+}
+
+function buildVesselDescription(v) {
+  const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
+  return `<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;padding:4px 0">
+    <div style="color:${col};font-size:14px;font-weight:bold;margin-bottom:8px">${v.name || 'Unknown Vessel'}</div>
+    <table style="border-collapse:collapse;width:100%">
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">MMSI</td><td>${v.mmsi}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Type</td><td style="text-transform:capitalize;color:${col}">${v.type}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Speed</td><td>${(v.speed||0).toFixed(1)} kn</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Heading</td><td>${v.heading || 0}°</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Status</td><td>${v.status || '—'}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Position</td><td>${v.lat.toFixed(4)}°, ${v.lon.toFixed(4)}°</td></tr>
+    </table>
+  </div>`;
+}
+
+// Render only vessels whose type is currently enabled
+function renderFilteredVessels() {
+  if (!viewer) return;
+  clearVesselMarkers();
+  vesselCache.forEach(v => {
+    if (!shipTypeFilters[v.type]) return;
+    const e = viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
+      billboard: {
+        image: createVesselIcon(v.type, v.heading),
+        width: 20, height: 20,
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        scaleByDistance: new Cesium.NearFarScalar(8e5, 1.4, 1.5e8, 0.3),
+      },
+      description: buildVesselDescription(v),
+      _layerType: 'ships',
+      _vesselData: v,
+    });
+    vesselMarkers.push(e);
+  });
+}
+
+async function fetchVessels() {
+  if (!viewer || !activeLayers.has('ships')) return;
+  try {
+    const data = await fetch('/api/vessels').then(r => r.json());
+    if (!data.vessels || !data.vessels.length) return;
+    vesselCache = data.vessels.filter(v => {
+      if (!v.lat || !v.lon) return false;
+      if (Math.abs(v.lat) < 0.001 && Math.abs(v.lon) < 0.001) return false; // null island
+      if (v.lat < -90  || v.lat > 90)  return false;
+      if (v.lon < -180 || v.lon > 180) return false;
+      return true;
+    });
+    renderFilteredVessels();
+    document.getElementById('sVessels').textContent = vesselCache.length;
+  } catch(e) { console.warn('Vessel fetch failed:', e.message); }
+}
+
+// Wire up AIS type filter checkboxes once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sf-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      shipTypeFilters[cb.value] = cb.checked;
+      if (activeLayers.has('ships')) renderFilteredVessels();
+    });
+  });
+});
 
 const RESOURCE_MARKERS = [
   {lat:30.07,lon:47.93,title:'Basra Oil Terminal',detail:'Major Iraqi crude export facility — 1.5M bbl/day capacity',type:'oil'},
@@ -2935,86 +2907,7 @@ document.addEventListener('keydown', function(e) {
 
 // ═══════════════ CESIUM GLOBE ═══════════════
 let weatherLayer = null;
-let weatherMarkers = [];
 
-function wxEmoji(id) {
-  if (!id) return '🌡';
-  if (id >= 200 && id < 300) return '⛈';
-  if (id >= 300 && id < 600) return '🌧';
-  if (id >= 600 && id < 700) return '❄';
-  if (id === 781) return '🌪';
-  if (id >= 700 && id < 800) return '🌫';
-  if (id === 800) return '☀';
-  if (id <= 802) return '⛅';
-  return '☁';
-}
-
-function clearWeatherMarkers() {
-  weatherMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(_){} });
-  weatherMarkers = [];
-}
-
-function renderWeatherMarkers(spots) {
-  clearWeatherMarkers();
-  spots.forEach(spot => {
-    if (spot.error || spot.lat == null) return;
-    const emoji = wxEmoji(spot.weather_id);
-    const temp  = spot.temp != null ? spot.temp + '°C' : '—';
-    const clr   = spot.severity === 'severe'   ? Cesium.Color.fromCssColorString('#ef4444') :
-                  spot.severity === 'moderate' ? Cesium.Color.fromCssColorString('#f59e0b') :
-                  Cesium.Color.fromCssColorString('#22d3ee');
-    const windStr = spot.wind_knots != null ? spot.wind_knots + 'kt ' + (spot.wind_dir||'') : '—';
-    const visStr  = spot.visibility != null ? spot.visibility + 'km vis' : '';
-    const desc = '<div style="font-family:Inter,monospace;font-size:13px;color:#e5e7eb;min-width:220px">'
-      + '<div style="font-size:15px;font-weight:700;color:#22d3ee;margin-bottom:6px">' + emoji + ' ' + spot.name + '</div>'
-      + '<div style="color:#9ca3af;margin-bottom:8px;text-transform:capitalize">' + (spot.conditions||'') + '</div>'
-      + '<div>🌡 <b>' + temp + '</b> (feels ' + (spot.feels!=null?spot.feels+'°C':'—') + ')</div>'
-      + '<div>💨 <b>' + windStr + '</b>' + (spot.wind_gust ? ' gusts ' + spot.wind_gust + 'kt' : '') + '</div>'
-      + '<div>👁 Visibility: <b>' + (visStr||'—') + '</b></div>'
-      + '<div>💧 Humidity: <b>' + (spot.humidity!=null?spot.humidity+'%':'—') + '</b></div>'
-      + '<div>📊 Pressure: <b>' + (spot.pressure!=null?spot.pressure+' hPa':'—') + '</b></div>'
-      + (spot.severity !== 'normal' ? '<div style="margin-top:8px;color:' + (spot.severity==='severe'?'#ef4444':'#f59e0b') + ';font-weight:700">⚠ ' + spot.severity.toUpperCase() + ' CONDITIONS</div>' : '')
-      + '</div>';
-    const e = viewer.entities.add({
-      name: spot.name + ' — Weather',
-      description: desc,
-      position: Cesium.Cartesian3.fromDegrees(spot.lon, spot.lat),
-      label: {
-        text: emoji + ' ' + temp,
-        font: '11px Inter,sans-serif',
-        fillColor: Cesium.Color.WHITE,
-        outlineColor: Cesium.Color.BLACK,
-        outlineWidth: 2,
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -10),
-        showBackground: true,
-        backgroundColor: new Cesium.Color(0.05, 0.05, 0.05, 0.82),
-        backgroundPadding: new Cesium.Cartesian2(6, 4),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-      point: {
-        pixelSize: 9,
-        color: clr,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 1.5,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-    });
-    weatherMarkers.push(e);
-  });
-}
-
-async function fetchWeatherHotspots() {
-  try {
-    const res = await fetch('/api/weather');
-    if (!res.ok) throw new Error('Weather API error');
-    renderWeatherMarkers(await res.json());
-  } catch(err) {
-    console.warn('Weather hotspot data unavailable:', err.message);
-  }
-}
-  
 function initCesium() {
   try {
     Cesium.Ion.defaultAccessToken = CESIUM_TOKEN;
@@ -3034,6 +2927,10 @@ function initCesium() {
       terrainProvider: undefined,
       imageryProvider: esriImagery,
     });
+
+    // Depth occlusion — markers hidden behind globe
+    viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.translucency.enabled = false;
 
     // ── Visual scene setup — Google Earth style ──
     viewer.scene.backgroundColor = Cesium.Color.BLACK;
@@ -3062,9 +2959,9 @@ function initCesium() {
     // Apply imagery settings — bright and clear like Google Earth by default
     const baseLayer = viewer.imageryLayers.get(0);
     if (baseLayer) {
-      baseLayer.brightness = 0.92;  // slightly subdued — more tactical ops-room feel
-      baseLayer.contrast  = 1.12;
-      baseLayer.saturation = 0.82;
+      baseLayer.brightness = 1.0;   // full brightness — let the user dial down via controls
+      baseLayer.contrast  = 1.05;
+      baseLayer.saturation = 1.0;
       baseLayer.gamma = 1.0;
     }
     // Sync sliders to match
@@ -3126,6 +3023,9 @@ function initCesium() {
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
+    // Init vessel hover tooltip
+    initVesselHover();
+
     return true;
   } catch(e) {
     console.error('Cesium failed:',e);
@@ -3145,8 +3045,8 @@ const MARKER_STYLE_DEFS = [
   },
   {
     id: 'matte',
-    name: 'Pin',
-    desc: 'Flat pin style',
+    name: 'Matte Pin',
+    desc: 'Clean matte circles',
   },
 ];
 
@@ -3237,32 +3137,25 @@ function _makeMarkerCanvasForStyle(type, styleOverride, size) {
   const style = styleOverride || markerStylePreset || 'geometric';
 
   if (style === 'matte') {
-    // Flat teardrop pin — Apple Maps style, no gloss
-    const pr  = H * 0.36;
-    const pcx = H;
-    const pcy = H * 0.50;
-    // Drop shadow
-    g.shadowColor = 'rgba(0,0,0,0.4)'; g.shadowBlur = S * 0.18; g.shadowOffsetY = S * 0.09; g.shadowOffsetX = S * 0.03;
-    // Teardrop body
-    g.beginPath();
-    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
-    g.lineTo(pcx, pcy + pr * 1.9);
-    g.closePath();
+    // Clean matte pin — subtle drop-shadow, solid circle with dark border, no glow
+    const radius = H * 0.58;
+    // Matte shadow (subtle, no glow)
+    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = Math.floor(S * 0.12);
+    g.shadowOffsetY = Math.floor(S * 0.04);
+    // Filled circle — slightly desaturated/matte look
     g.fillStyle = col;
-    g.fill();
-    g.shadowBlur = 0; g.shadowOffsetY = 0; g.shadowOffsetX = 0;
-    // Thin border
-    g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = Math.max(1, S * 0.045);
-    g.beginPath();
-    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
-    g.lineTo(pcx, pcy + pr * 1.9);
-    g.closePath();
-    g.stroke();
-    // White centre dot
-    g.beginPath();
-    g.arc(pcx, pcy, pr * 0.34, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.90)';
-    g.fill();
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
+    g.shadowBlur = 0; g.shadowOffsetY = 0;
+    // Inner highlight (matte sheen)
+    const grad = g.createRadialGradient(H - radius*0.25, H - radius*0.3, 0, H, H, radius);
+    grad.addColorStop(0, 'rgba(255,255,255,0.22)');
+    grad.addColorStop(0.6, 'rgba(255,255,255,0.04)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.12)');
+    g.fillStyle = grad;
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
+    // Dark ring border
+    g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = Math.max(1, S * 0.06);
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.stroke();
 
   } else {
     // ── GEOMETRIC (default) ── type-specific shapes
@@ -3356,6 +3249,8 @@ function makeMarkerCanvas(type) {
 
 function addMarkers() {
   if(!viewer) return;
+  // Preserve vessel markers — remove them temporarily, then restore after removeAll
+  clearVesselMarkers();
   viewer.entities.removeAll();
 
   // Scale pins near→far: close-up full size, global view shrink to ~30%
@@ -3370,7 +3265,6 @@ function addMarkers() {
         image: canvas,
         scale: scale || 0.85,
         scaleByDistance: PIN_SCALE,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
         verticalOrigin: Cesium.VerticalOrigin.CENTER,
         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       }
@@ -3384,7 +3278,7 @@ function addMarkers() {
     const e = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(m.lon, m.lat, alt||0),
       point:{pixelSize:size,color:c,outlineColor:c.withAlpha(0.3),outlineWidth:Math.max(3,size-2),
-             scaleByDistance:DOT_SCALE,disableDepthTestDistance:Number.POSITIVE_INFINITY}
+             scaleByDistance:DOT_SCALE}
     });
     e._customData = m;
   };
@@ -3404,15 +3298,6 @@ function addMarkers() {
       addBillboard(m, m.type, 0.85, 10000);
     });
   }
-  if(activeLayers.has('ships')) {
-    const ss = activeSubLayers.ships;
-    SHIP_MARKERS.forEach(m => {
-      if (m.type === 'warship' && !ss.has('ships-warship')) return;
-      if (m.type === 'cargo'   && !ss.has('ships-cargo'))   return;
-      if (m.type === 'tanker'  && !ss.has('ships-tanker'))  return;
-      addBillboard(m, m.type, 0.85);
-    });
-  }
   if(activeLayers.has('resources')) {
     const sr = activeSubLayers.resources;
     RESOURCE_MARKERS.forEach(m => {
@@ -3424,6 +3309,8 @@ function addMarkers() {
     });
   }
   if(activeLayers.has('cables')) addSubseaCables();
+  // Re-render vessel markers after all other entities are placed
+  if(activeLayers.has('ships')) renderFilteredVessels();
 }
 
 function updateGlobeMarkers() { if(viewer) addMarkers(); }
@@ -3458,16 +3345,15 @@ function toggleWeatherLayer(on) {
     try {
       weatherLayer = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
-        url: WX_URLS['wx-clouds'] || '', credit: 'RainViewer', minimumLevel:1, maximumLevel:6
-      })
+          url:'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=demo',
+          credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6
+        })
       );
-      weatherLayer.alpha = 0.7;
-      fetchWeatherHotspots();
+      weatherLayer.alpha = 0.4;
     } catch(e) { console.log('Weather layer unavailable'); }
   } else if(!on && weatherLayer) {
     viewer.imageryLayers.remove(weatherLayer);
     weatherLayer = null;
-    clearWeatherMarkers();
   }
 }
 
@@ -4411,13 +4297,41 @@ setInterval(refreshXFeed, 1200000); // re-fetch every 20 min (~72 req/day — wi
 // ── World Bank economic indicators (financial intel pane refresh)
 setTimeout(fetchWorldBankIndicators, 3000);
 setInterval(fetchWorldBankIndicators, 1800000); // every 30 min (data is daily)
+// ═══════════════ VESSEL HOVER TOOLTIP ═══════════════
+function initVesselHover() {
+  const _vtt = document.getElementById('vessel-tooltip');
+  if (!_vtt || !viewer) return;
+  const _hoverHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  _hoverHandler.setInputAction(function(mv) {
+    const picked = viewer.scene.pick(mv.endPosition);
+    if (Cesium.defined(picked) && picked.id && picked.id._layerType === 'ships') {
+      const v = picked.id._vesselData;
+      if (v) {
+        const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
+        _vtt.innerHTML =
+          `<div style="color:${col};font-weight:bold;margin-bottom:3px">${v.name}</div>` +
+          `<div style="color:#94a3b8">${v.type} · ${(v.speed||0).toFixed(1)} kn</div>` +
+          `<div style="color:#64748b;font-size:10px;margin-top:2px">${v.status || ''}</div>`;
+        _vtt.style.display = 'block';
+        _vtt.style.left = (mv.endPosition.x + 18) + 'px';
+        _vtt.style.top  = (mv.endPosition.y - 10) + 'px';
+        viewer.scene.canvas.style.cursor = 'pointer';
+        return;
+      }
+    }
+    _vtt.style.display = 'none';
+    viewer.scene.canvas.style.cursor = '';
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+}
 </script>
-<div id="windy-panel" style="display:none;position:fixed;top:0;right:0;width:540px;height:100vh;background:#0a0a0f;border-left:1px solid rgba(255,255,255,0.12);z-index:9999;flex-direction:column;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.1);background:#0d0d14;">
-    <span style="color:#22d3ee;font-size:12px;font-weight:700;letter-spacing:0.08em;">🌐 WINDY — LIVE ANIMATED WEATHER</span>
-    <button onclick="document.getElementById('windy-panel').style.display='none'" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:20px;line-height:1;">✕</button>
-  </div>
-  <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="flex:1;border:none;width:100%;height:calc(100% - 44px);" allowfullscreen></iframe>
-</div>
+
+<!-- Vessel hover tooltip -->
+<div id="vessel-tooltip" style="
+  position:fixed; display:none; pointer-events:none; z-index:9999;
+  background:rgba(10,16,30,0.94); border:1px solid rgba(6,182,212,0.35);
+  border-radius:6px; padding:7px 11px; font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:#e2e8f0; backdrop-filter:blur(8px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5); max-width:200px;
+"></div>
 </body>
 </html>
