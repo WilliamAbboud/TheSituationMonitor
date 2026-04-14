@@ -712,11 +712,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo"><span>📦 Cargo</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker"><span>🛢 Tanker</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="passenger"><span>🛳 Passenger</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship"><span>⚔ Warship</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="fishing"><span>🎣 Fishing</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tug"><span>⚙ Tug / Service</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="highspeed"><span>💨 High Speed</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown / Other</span></label>
     </div>
   </div>
   <div class="layer-pill" data-layer="outages" style="--pill-color:#f59e0b;--pill-bg:rgba(245,158,11,0.08);--pill-glow:rgba(245,158,11,0.1)" onclick="toggleLayer(this)"><div class="pill-dot"></div><span data-i18n="outages">Outages</span><span class="pill-count">12</span></div>
@@ -1299,8 +1296,7 @@ let vesselRefreshInterval = null;
 // Active type filters — all OFF by default
 const shipTypeFilters = {
   cargo:false, tanker:false, passenger:false,
-  warship:false, fishing:false, tug:false,
-  highspeed:false, unknown:false,
+  fishing:false, unknown:false,
 };
 
 function clearVesselMarkers() {
@@ -1314,16 +1310,16 @@ const VESSEL_COLORS = {
   highspeed:'#f472b6', unknown:'#94a3b8',
 };
 
-function createVesselIcon(type, heading) {
+const _vesselIconCache = {};
+function createVesselIcon(type) {
+  if (_vesselIconCache[type]) return _vesselIconCache[type];
   const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
   const S = 24;
   const c = document.createElement('canvas');
   c.width = S; c.height = S;
   const g = c.getContext('2d');
-  const cx = S / 2, cy = S / 2;
   g.save();
-  g.translate(cx, cy);
-  g.rotate(((heading || 0) - 90) * Math.PI / 180);
+  g.translate(S / 2, S / 2);
   g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3;
   g.fillStyle = col;
   g.beginPath();
@@ -1338,7 +1334,8 @@ function createVesselIcon(type, heading) {
   g.lineWidth = 0.8;
   g.stroke();
   g.restore();
-  return c.toDataURL();
+  _vesselIconCache[type] = c.toDataURL();
+  return _vesselIconCache[type];
 }
 
 function buildVesselDescription(v) {
@@ -1365,9 +1362,11 @@ function renderFilteredVessels() {
     const e = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
       billboard: {
-        image: createVesselIcon(v.type, v.heading),
+        image: createVesselIcon(v.type),
         width: 20, height: 20,
         verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        rotation: Cesium.Math.toRadians((v.heading || 0) - 90),
+        alignedAxis: Cesium.Cartesian3.UNIT_Z,
         scaleByDistance: new Cesium.NearFarScalar(8e5, 1.4, 1.5e8, 0.3),
       },
       description: buildVesselDescription(v),
@@ -1546,8 +1545,32 @@ function showCountryPopup(lat, lon, sx, sy) {
       const bdcRes = await fetch(bdcUrl);
       if (!bdcRes.ok) throw new Error('Geocode failed');
       const bdc = await bdcRes.json();
-      const cc  = (bdc.countryCode || '').toUpperCase();
+      // Disputed / special territories — geocoders return inconsistent codes for these
+      const DISPUTED_OVERRIDES = {
+        'TW': { flag:'🇹🇼', name:'Taiwan', region:'East Asia', note:'Status disputed — claimed by PRC' },
+        'PS': { flag:'🇵🇸', name:'Palestinian Territories', region:'Middle East', note:'West Bank & Gaza — status disputed' },
+        'XK': { flag:'🇽🇰', name:'Kosovo', region:'Southeast Europe', note:'Partially recognised state' },
+        'EH': { flag:'🇪🇭', name:'Western Sahara', region:'North Africa', note:'Status disputed — administered by Morocco' },
+        'AQ': { flag:'🇦🇶', name:'Antarctica', region:'Antarctica', note:'No sovereign claim recognised' },
+        'SS': { flag:'🇸🇸', name:'South Sudan', region:'East Africa', note:'' },
+      };
+      let cc  = (bdc.countryCode || '').toUpperCase();
+      // BigDataCloud sometimes returns subdivision codes — strip to ISO 3166-1
+      if (cc.includes('-')) cc = cc.split('-')[0];
       if (!cc) { closeCountryPopup(); return; }
+      if (DISPUTED_OVERRIDES[cc]) {
+        const ov = DISPUTED_OVERRIDES[cc];
+        document.getElementById('cpFlag').textContent   = ov.flag;
+        document.getElementById('cpName').textContent   = ov.name;
+        document.getElementById('cpRegion').textContent = ov.region;
+        document.getElementById('cpBody').innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e2e8f0;padding:8px 0">
+          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:8px 10px;margin-bottom:10px;color:#f59e0b;font-size:10px">
+            ⚠ ${ov.note || 'Special administrative territory'}
+          </div>
+          <div style="color:#64748b;font-size:10px;padding:4px 0">Full country data unavailable for disputed or unrecognised territories. Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}°</div>
+        </div>`;
+        return;
+      }
 
       const cRes  = await fetch(`https://restcountries.com/v3.1/alpha/${cc}?fields=name,flags,flag,capital,population,area,region,subregion,currencies,languages,timezones,borders,gini,car,idd`);
       if (!cRes.ok) throw new Error('Country data unavailable');
