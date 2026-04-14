@@ -337,6 +337,14 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .sub-item.sub-on .sub-chk::after { content:'✓'; }
 
 /* ── MARKER STYLE PICKER ── */
+  /* ── AIS SHIP FILTER ROWS ── */
+.sf-row {
+  display:flex; align-items:center; gap:6px;
+  padding:3px 0; cursor:pointer; font-size:11px; color:var(--text-secondary);
+  font-family:'JetBrains Mono',monospace;
+}
+.sf-row input[type=checkbox] { accent-color:var(--accent-cyan); cursor:pointer; }
+.sf-row:hover span { color:var(--accent-cyan); }
 .marker-picker-section { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
 .marker-style-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:7px; }
 .marker-style-card { background:var(--bg-tertiary); border:1.5px solid var(--border); border-radius:6px; padding:7px 6px 5px; cursor:pointer; transition:all .18s; text-align:center; }
@@ -696,20 +704,19 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     </div>
   </div>
   <!-- Ships pill with sub-layer dropdown -->
-  <div class="sub-layer-wrap active" id="pill-ships" data-layer="ships" style="--pill-color:#06b6d4;--pill-bg:rgba(6,182,212,0.08);--pill-glow:rgba(6,182,212,0.1)" onclick="toggleSubPill(this)">
+  <div class="sub-layer-wrap" id="pill-ships" data-layer="ships" style="--pill-color:#06b6d4;--pill-bg:rgba(6,182,212,0.08);--pill-glow:rgba(6,182,212,0.1)" onclick="toggleSubPill(this)">
     <div class="pill-dot"></div><span data-i18n="ships">Ships</span><span class="pill-count">847</span>
     <span class="sub-arrow" onclick="openSubMenu(event,'subShips',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subShips">
       <div class="sub-layer-head">VESSEL TYPES</div>
-      <div class="sub-item sub-on" style="--sub-color:#ef4444" data-sublayer="ships-warship" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>⚔ Warships
-      </div>
-      <div class="sub-item sub-on" style="--sub-color:#06b6d4" data-sublayer="ships-cargo" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>📦 Cargo
-      </div>
-      <div class="sub-item sub-on" style="--sub-color:#f59e0b" data-sublayer="ships-tanker" onclick="toggleSub(event,this,'ships')">
-        <span class="sub-chk"></span>🛢 Tankers
-      </div>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo"><span>📦 Cargo</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker"><span>🛢 Tanker</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="passenger"><span>🛳 Passenger</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship"><span>⚔ Warship</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="fishing"><span>🎣 Fishing</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tug"><span>⚙ Tug / Service</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="highspeed"><span>💨 High Speed</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown</span></label>
     </div>
   </div>
   <div class="layer-pill" data-layer="outages" style="--pill-color:#f59e0b;--pill-bg:rgba(245,158,11,0.08);--pill-glow:rgba(245,158,11,0.1)" onclick="toggleLayer(this)"><div class="pill-dot"></div><span data-i18n="outages">Outages</span><span class="pill-count">12</span></div>
@@ -1042,7 +1049,7 @@ const GDELT_GEO_API = 'https://api.gdeltproject.org/api/v2/geo/geo?query=conflic
 
 // ═══════════════ STATE ═══════════════
 let viewer = null;
-let activeLayers = new Set(['conflicts','flights','ships']);
+let activeLayers = new Set(['conflicts','flights']); // ships OFF by default
 let customClocks = [];
 let clockIdCounter = 0;
 let selectedTz = null;
@@ -1265,7 +1272,7 @@ function toggleLayer(pill) {
 // Active sub-layers: which sub-types within each layer are shown
 const activeSubLayers = {
   flights:   new Set(['flights-civil','flights-mil','flights-private']),
-  ships:     new Set(['ships-warship','ships-cargo','ships-tanker']),
+  ships:     new Set([]),
   weather:   new Set(['wx-clouds','wx-precip']),
   resources: new Set(['res-oil','res-lng','res-power','res-infra']),
 };
@@ -1285,8 +1292,16 @@ fetchRainviewerUrls();
 setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
 
 // ═══════════════ VESSEL TRACKING ═══════════════
-let vesselMarkers = [];
+let vesselCache   = [];   // raw AIS data from /api/vessels
+let vesselMarkers = [];   // Cesium entity handles
 let vesselRefreshInterval = null;
+
+// Active type filters — all OFF by default
+const shipTypeFilters = {
+  cargo:false, tanker:false, passenger:false,
+  warship:false, fishing:false, tug:false,
+  highspeed:false, unknown:false,
+};
 
 function clearVesselMarkers() {
   vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
@@ -1294,46 +1309,73 @@ function clearVesselMarkers() {
 }
 
 const VESSEL_COLORS = {
-  cargo:     '#38bdf8', tanker: '#fb923c', warship: '#ef4444',
-  passenger: '#a78bfa', fishing: '#86efac', tug: '#fbbf24',
-  highspeed: '#f472b6', unknown: '#94a3b8',
+  cargo:'#38bdf8', tanker:'#fb923c', warship:'#ef4444',
+  passenger:'#a78bfa', fishing:'#86efac', tug:'#fbbf24',
+  highspeed:'#f472b6', unknown:'#94a3b8',
 };
-function createVesselIcon(type, heading, speed) {
+
+function createVesselIcon(type, heading) {
   const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
-  const S = 36;
+  const S = 24;
   const c = document.createElement('canvas');
   c.width = S; c.height = S;
   const g = c.getContext('2d');
-  const cx = S/2, cy = S/2;
+  const cx = S / 2, cy = S / 2;
   g.save();
   g.translate(cx, cy);
   g.rotate(((heading || 0) - 90) * Math.PI / 180);
-  g.shadowColor = 'rgba(0,0,0,0.6)'; g.shadowBlur = 6; g.shadowOffsetY = 2;
+  g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3;
   g.fillStyle = col;
-  if (type === 'tanker') {
-    // Wide hull shape
-    g.beginPath(); g.moveTo(13,0); g.lineTo(-6,-9); g.lineTo(-10,-5); g.lineTo(-10,5); g.lineTo(-6,9); g.closePath();
-  } else if (type === 'warship') {
-    // Sleek naval shape
-    g.beginPath(); g.moveTo(15,0); g.lineTo(0,-5); g.lineTo(-12,-4); g.lineTo(-12,4); g.lineTo(0,5); g.closePath();
-  } else if (type === 'passenger') {
-    // Rounded bow
-    g.beginPath(); g.moveTo(14,0); g.quadraticCurveTo(14,-8,-6,-8); g.lineTo(-6,8); g.quadraticCurveTo(14,8,14,0); g.closePath();
-  } else {
-    // Standard cargo arrow
-    g.beginPath(); g.moveTo(14,0); g.lineTo(-8,-7); g.lineTo(-5,0); g.lineTo(-8,7); g.closePath();
-  }
+  g.beginPath();
+  g.moveTo(9, 0);
+  g.lineTo(-5, -5);
+  g.lineTo(-3, 0);
+  g.lineTo(-5, 5);
+  g.closePath();
   g.fill();
-  g.shadowBlur = 0; g.shadowOffsetY = 0;
-  g.strokeStyle = 'rgba(255,255,255,0.65)'; g.lineWidth = 1;
+  g.shadowBlur = 0;
+  g.strokeStyle = 'rgba(255,255,255,0.5)';
+  g.lineWidth = 0.8;
   g.stroke();
-  // Speed dot: bright if moving
-  if (speed > 1) {
-    g.beginPath(); g.arc(-3, 0, 2.5, 0, Math.PI*2);
-    g.fillStyle = 'rgba(255,255,255,0.9)'; g.fill();
-  }
   g.restore();
   return c.toDataURL();
+}
+
+function buildVesselDescription(v) {
+  const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
+  return `<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;padding:4px 0">
+    <div style="color:${col};font-size:14px;font-weight:bold;margin-bottom:8px">${v.name || 'Unknown Vessel'}</div>
+    <table style="border-collapse:collapse;width:100%">
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">MMSI</td><td>${v.mmsi}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Type</td><td style="text-transform:capitalize;color:${col}">${v.type}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Speed</td><td>${(v.speed||0).toFixed(1)} kn</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Heading</td><td>${v.heading || 0}°</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Status</td><td>${v.status || '—'}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Position</td><td>${v.lat.toFixed(4)}°, ${v.lon.toFixed(4)}°</td></tr>
+    </table>
+  </div>`;
+}
+
+// Render only vessels whose type is currently enabled
+function renderFilteredVessels() {
+  if (!viewer) return;
+  clearVesselMarkers();
+  vesselCache.forEach(v => {
+    if (!shipTypeFilters[v.type]) return;
+    const e = viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
+      billboard: {
+        image: createVesselIcon(v.type, v.heading),
+        width: 20, height: 20,
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        scaleByDistance: new Cesium.NearFarScalar(8e5, 1.4, 1.5e8, 0.3),
+      },
+      description: buildVesselDescription(v),
+      _layerType: 'ships',
+      _vesselData: v,
+    });
+    vesselMarkers.push(e);
+  });
 }
 
 async function fetchVessels() {
@@ -1341,40 +1383,27 @@ async function fetchVessels() {
   try {
     const data = await fetch('/api/vessels').then(r => r.json());
     if (!data.vessels || !data.vessels.length) return;
-    clearVesselMarkers();
-    data.vessels.forEach(v => {
-      const e = viewer.entities.add({
-        position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
-        billboard: {
-          image: createVesselIcon(v.type, v.heading, v.speed),
-          width: 32, height: 32,
-          verticalOrigin: Cesium.VerticalOrigin.CENTER,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY,
-          scaleByDistance: new Cesium.NearFarScalar(1.5e6, 1.2, 1.5e8, 0.4),
-        },
-        description: `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e2e8f0;background:#0f172a;padding:12px 14px;border-radius:6px;border:1px solid rgba(56,189,248,0.25);min-width:200px">
-          <div style="color:#38bdf8;font-weight:700;font-size:13px;margin-bottom:6px;letter-spacing:.5px">${v.name}</div>
-          <div style="color:#94a3b8;margin-bottom:8px">MMSI: ${v.mmsi}</div>
-          <table style="width:100%;border-collapse:collapse;font-size:11px">
-            <tr><td style="color:#64748b;padding:2px 0">TYPE</td><td style="text-align:right;color:#f1f5f9;text-transform:uppercase">${v.type}</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">STATUS</td><td style="text-align:right;color:#f1f5f9">${v.status || '—'}</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">SPEED</td><td style="text-align:right;color:#f1f5f9">${v.speed} kt</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">HEADING</td><td style="text-align:right;color:#f1f5f9">${v.heading}°</td></tr>
-            <tr><td style="color:#64748b;padding:2px 0">REGION</td><td style="text-align:right;color:#fbbf24">${v.chokepoint}</td></tr>
-          </table>
-        </div>`,
-        _layerType: 'ships',
-      });
-      vesselMarkers.push(e);
+    vesselCache = data.vessels.filter(v => {
+      if (!v.lat || !v.lon) return false;
+      if (Math.abs(v.lat) < 0.001 && Math.abs(v.lon) < 0.001) return false;
+      if (v.lat < -90  || v.lat > 90)  return false;
+      if (v.lon < -180 || v.lon > 180) return false;
+      return true;
     });
-    // update Ships count badge
-    const badge = [...document.querySelectorAll('.layer-pill')].find(el => el.textContent.includes('Ships'));
-    if (badge) {
-      const cnt = badge.querySelector('.layer-count');
-      if (cnt) cnt.textContent = data.count;
-    }
+    renderFilteredVessels();
+    document.getElementById('sVessels').textContent = vesselCache.length;
   } catch(e) { console.warn('Vessel fetch failed:', e.message); }
 }
+
+// Wire up AIS type filter checkboxes once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sf-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      shipTypeFilters[cb.value] = cb.checked;
+      if (activeLayers.has('ships')) renderFilteredVessels();
+    });
+  });
+});
 
 // Auto-dismiss panels on map click
 document.addEventListener('mousedown', function(e) {
@@ -1422,7 +1451,8 @@ function toggleSubPill(wrap) {
       fetchVessels();
       clearInterval(vesselRefreshInterval);
       vesselRefreshInterval = setInterval(fetchVessels, 60000);
-    } else {
+   } else {
+      vesselCache = [];
       clearVesselMarkers();
       clearInterval(vesselRefreshInterval);
     }
@@ -1517,7 +1547,7 @@ function showCountryPopup(lat, lon, sx, sy) {
       if (!bdcRes.ok) throw new Error('Geocode failed');
       const bdc = await bdcRes.json();
       const cc  = (bdc.countryCode || '').toUpperCase();
-      if (!cc) { document.getElementById('cpBody').innerHTML = '<div class="country-loading">No country at this location</div>'; return; }
+      if (!cc) { closeCountryPopup(); return; }
 
       const cRes  = await fetch(`https://restcountries.com/v3.1/alpha/${cc}?fields=name,flags,flag,capital,population,area,region,subregion,currencies,languages,timezones,borders,gini,car,idd`);
       if (!cRes.ok) throw new Error('Country data unavailable');
@@ -1597,13 +1627,7 @@ function showCountryPopup(lat, lon, sx, sy) {
         </div>`;
     } catch(err) {
       console.warn('Country popup error:', err);
-      document.getElementById('cpBody').innerHTML = `<div class="country-loading" style="color:var(--text-muted);padding:20px;text-align:center;font-size:11px">
-        <div style="font-size:22px;margin-bottom:8px">🌐</div>
-        <div style="color:var(--text-secondary);margin-bottom:4px">Data temporarily unavailable</div>
-        <div style="font-size:9px;color:var(--text-muted)">Check your internet connection or try again</div>
-      </div>`;
-      document.getElementById('cpName').textContent = 'Unknown';
-      document.getElementById('cpFlag').textContent = '🏳';
+      closeCountryPopup();
     }
   }, 400);
 }
@@ -2272,7 +2296,7 @@ async function fetchMarketData() {
 }
 
 fetchMarketData();
-setInterval(fetchMarketData, 60000); setTimeout(fetchVessels, 2000);
+setInterval(fetchMarketData, 60000);
 
 // Rainviewer — live precipitation radar (free, no key, much better than OWM)
   
@@ -3033,8 +3057,10 @@ function initCesium() {
       creditContainer: document.createElement('div'),
       terrainProvider: undefined,
       imageryProvider: esriImagery,
-    });
-
+   });
+    // Depth occlusion — vessel markers hidden behind globe
+    viewer.scene.globe.depthTestAgainstTerrain = true;
+    viewer.scene.globe.translucency.enabled = false;
     // ── Visual scene setup — Google Earth style ──
     viewer.scene.backgroundColor = Cesium.Color.BLACK;
 
@@ -3125,7 +3151,7 @@ function initCesium() {
         } catch(e) { closeCountryPopup(); }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
+    initVesselHover();
     return true;
   } catch(e) {
     console.error('Cesium failed:',e);
@@ -3404,15 +3430,7 @@ function addMarkers() {
       addBillboard(m, m.type, 0.85, 10000);
     });
   }
-  if(activeLayers.has('ships')) {
-    const ss = activeSubLayers.ships;
-    SHIP_MARKERS.forEach(m => {
-      if (m.type === 'warship' && !ss.has('ships-warship')) return;
-      if (m.type === 'cargo'   && !ss.has('ships-cargo'))   return;
-      if (m.type === 'tanker'  && !ss.has('ships-tanker'))  return;
-      addBillboard(m, m.type, 0.85);
-    });
-  }
+  if(activeLayers.has('ships')) renderFilteredVessels();
   if(activeLayers.has('resources')) {
     const sr = activeSubLayers.resources;
     RESOURCE_MARKERS.forEach(m => {
@@ -4411,6 +4429,32 @@ setInterval(refreshXFeed, 1200000); // re-fetch every 20 min (~72 req/day — wi
 // ── World Bank economic indicators (financial intel pane refresh)
 setTimeout(fetchWorldBankIndicators, 3000);
 setInterval(fetchWorldBankIndicators, 1800000); // every 30 min (data is daily)
+// ═══════════════ VESSEL HOVER TOOLTIP ═══════════════
+function initVesselHover() {
+  const _vtt = document.getElementById('vessel-tooltip');
+  if (!_vtt || !viewer) return;
+  const _hoverHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  _hoverHandler.setInputAction(function(mv) {
+    const picked = viewer.scene.pick(mv.endPosition);
+    if (Cesium.defined(picked) && picked.id && picked.id._layerType === 'ships') {
+      const v = picked.id._vesselData;
+      if (v) {
+        const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
+        _vtt.innerHTML =
+          `<div style="color:${col};font-weight:bold;margin-bottom:3px">${v.name}</div>` +
+          `<div style="color:#94a3b8">${v.type} · ${(v.speed||0).toFixed(1)} kn</div>` +
+          `<div style="color:#64748b;font-size:10px;margin-top:2px">${v.status || ''}</div>`;
+        _vtt.style.display = 'block';
+        _vtt.style.left = (mv.endPosition.x + 18) + 'px';
+        _vtt.style.top  = (mv.endPosition.y - 10) + 'px';
+        viewer.scene.canvas.style.cursor = 'pointer';
+        return;
+      }
+    }
+    _vtt.style.display = 'none';
+    viewer.scene.canvas.style.cursor = '';
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+}
 </script>
 <div id="windy-panel" style="display:none;position:fixed;top:0;right:0;width:540px;height:100vh;background:#0a0a0f;border-left:1px solid rgba(255,255,255,0.12);z-index:9999;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.1);background:#0d0d14;">
@@ -4419,5 +4463,13 @@ setInterval(fetchWorldBankIndicators, 1800000); // every 30 min (data is daily)
   </div>
   <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="flex:1;border:none;width:100%;height:calc(100% - 44px);" allowfullscreen></iframe>
 </div>
+<!-- Vessel hover tooltip -->
+<div id="vessel-tooltip" style="
+  position:fixed; display:none; pointer-events:none; z-index:9999;
+  background:rgba(10,16,30,0.94); border:1px solid rgba(6,182,212,0.35);
+  border-radius:6px; padding:7px 11px; font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:#e2e8f0; backdrop-filter:blur(8px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5); max-width:200px;
+"></div>
 </body>
 </html>
