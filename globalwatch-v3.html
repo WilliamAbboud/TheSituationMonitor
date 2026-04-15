@@ -709,8 +709,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <span class="sub-arrow" onclick="openSubMenu(event,'subShips',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subShips">
       <div class="sub-layer-head">VESSEL TYPES</div>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo"><span>📦 Cargo</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker"><span>🛢 Tanker</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo" checked><span>📦 Cargo</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker" checked><span>🛢 Tanker</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship" checked><span>⚔ Military / Warship</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="passenger"><span>🛳 Passenger</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="fishing"><span>🎣 Fishing</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown / Other</span></label>
@@ -1290,18 +1291,55 @@ setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
 
 // ═══════════════ VESSEL TRACKING ═══════════════
 let vesselCache   = [];   // raw AIS data from /api/vessels
-let vesselMarkers = [];   // Cesium entity handles
+let vesselMarkers = [];   // entity handles for cleanup
+let vesselDataSource = null; // CustomDataSource — enables Cesium clustering
 let vesselRefreshInterval = null;
 
 // Active type filters — all OFF by default
 const shipTypeFilters = {
-  cargo:false, tanker:false, passenger:false,
-  fishing:false, unknown:false,
+  cargo:true, tanker:true, warship:true,
+  passenger:false, fishing:false, unknown:false,
 };
 
 function clearVesselMarkers() {
-  vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
+  if (vesselDataSource) {
+    vesselDataSource.entities.removeAll();
+  } else {
+    vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
+  }
   vesselMarkers = [];
+}
+
+function initVesselDataSource() {
+  if (vesselDataSource || !viewer) return;
+  vesselDataSource = new Cesium.CustomDataSource('vessels');
+  viewer.dataSources.add(vesselDataSource);
+
+  // Cesium clustering — groups nearby ships into a count bubble
+  const cl = vesselDataSource.clustering;
+  cl.enabled         = true;
+  cl.pixelRange      = 40;     // px radius within which ships cluster
+  cl.minimumClusterSize = 3;   // min ships to form a cluster
+
+  cl.clusterEvent.addEventListener((entities, cluster) => {
+    cluster.label.show     = false;
+    cluster.billboard.show = true;
+    cluster.billboard.image  = createClusterIcon(entities.length);
+    const s = entities.length > 100 ? 38 : entities.length > 20 ? 32 : 26;
+    cluster.billboard.width  = s;
+    cluster.billboard.height = s;
+    cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.CENTER;
+    cluster.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+  });
+
+  // Re-render when zoom changes significantly (LOD update)
+  let lastLOD = null;
+  viewer.camera.changed.addEventListener(() => {
+    if (!activeLayers.has('ships') || !vesselCache.length) return;
+    const h = viewer.camera.positionCartographic.height;
+    const lod = h > LOD_FAR ? 'far' : h > LOD_MID ? 'mid' : 'close';
+    if (lod !== lastLOD) { lastLOD = lod; renderFilteredVessels(); }
+  });
 }
 
 const VESSEL_COLORS = {
@@ -1311,31 +1349,50 @@ const VESSEL_COLORS = {
 };
 
 const _vesselIconCache = {};
-function createVesselIcon(type) {
+function createBoatIcon(type) {
   if (_vesselIconCache[type]) return _vesselIconCache[type];
+  const W = 20, H = 9, PAD = 1;
+  const c = document.createElement('canvas');
+  c.width = W + PAD * 2; c.height = H + PAD * 2;
+  const g = c.getContext('2d');
+  g.translate(PAD, PAD);
+  // Hull: flat stern (left), pointed bow (right) — matches Flexport style
+  g.beginPath();
+  g.moveTo(0,   H * 0.25);   // stern top
+  g.lineTo(W * 0.60, 0);     // deck top
+  g.lineTo(W,   H * 0.5);    // bow tip
+  g.lineTo(W * 0.60, H);     // deck bottom
+  g.lineTo(0,   H * 0.75);   // stern bottom
+  g.closePath();
   const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
-  const S = 24;
+  g.fillStyle = col;
+  g.fill();
+  g.strokeStyle = 'rgba(255,255,255,0.55)';
+  g.lineWidth = 0.9;
+  g.stroke();
+  _vesselIconCache[type] = c.toDataURL();
+  return _vesselIconCache[type];
+}
+
+function createClusterIcon(count) {
+  const S = count > 99 ? 38 : 32;
   const c = document.createElement('canvas');
   c.width = S; c.height = S;
   const g = c.getContext('2d');
-  g.save();
-  g.translate(S / 2, S / 2);
-  g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3;
-  g.fillStyle = col;
-  g.beginPath();
-  g.moveTo(9, 0);
-  g.lineTo(-5, -5);
-  g.lineTo(-3, 0);
-  g.lineTo(-5, 5);
-  g.closePath();
-  g.fill();
-  g.shadowBlur = 0;
-  g.strokeStyle = 'rgba(255,255,255,0.5)';
-  g.lineWidth = 0.8;
-  g.stroke();
-  g.restore();
-  _vesselIconCache[type] = c.toDataURL();
-  return _vesselIconCache[type];
+  const r = S / 2;
+  // Outer ring
+  g.beginPath(); g.arc(r, r, r - 1, 0, Math.PI * 2);
+  g.fillStyle = 'rgba(74,121,210,0.25)'; g.fill();
+  // Inner fill
+  g.beginPath(); g.arc(r, r, r - 5, 0, Math.PI * 2);
+  g.fillStyle = 'rgba(74,121,210,0.92)'; g.fill();
+  g.strokeStyle = 'rgba(255,255,255,0.75)'; g.lineWidth = 1.5; g.stroke();
+  // Count label
+  g.fillStyle = '#fff';
+  g.font = `bold ${count > 99 ? 10 : 12}px Inter,sans-serif`;
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(count > 999 ? '999+' : String(count), r, r);
+  return c.toDataURL();
 }
 
 function buildVesselDescription(v) {
@@ -1353,21 +1410,38 @@ function buildVesselDescription(v) {
   </div>`;
 }
 
-// Render only vessels whose type is currently enabled
+// LOD zoom thresholds (camera height in metres)
+const LOD_FAR  = 6e6;   // > 6,000 km: strategic view — warship + tanker only
+const LOD_MID  = 2e6;   // 2,000–6,000 km: all selected types
+// < 2,000 km: full detail, all selected types
+
 function renderFilteredVessels() {
-  if (!viewer) return;
+  if (!viewer || !vesselDataSource) return;
   clearVesselMarkers();
+
+  const camH = viewer.camera.positionCartographic
+    ? viewer.camera.positionCartographic.height
+    : LOD_MID;
+  const isFar = camH > LOD_FAR;
+  const isMid = camH > LOD_MID;
+
   vesselCache.forEach(v => {
+    // User's checkbox filter
     if (!shipTypeFilters[v.type]) return;
-    const e = viewer.entities.add({
+
+    // LOD: far zoom = only show the two most strategically visible types
+    if (isFar && v.type !== 'warship' && v.type !== 'tanker') return;
+
+    const e = vesselDataSource.entities.add({
       position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
       billboard: {
-        image: createVesselIcon(v.type),
-        width: 20, height: 20,
+        image: createBoatIcon(v.type),
+        width:  isFar ? 14 : isMid ? 16 : 18,
+        height: isFar ?  7 : isMid ?  8 :  9,
         verticalOrigin: Cesium.VerticalOrigin.CENTER,
         rotation: Cesium.Math.toRadians((v.heading || 0) - 90),
         alignedAxis: Cesium.Cartesian3.UNIT_Z,
-        scaleByDistance: new Cesium.NearFarScalar(8e5, 1.4, 1.5e8, 0.3),
+        scaleByDistance: new Cesium.NearFarScalar(5e5, 1.3, 1.2e8, 0.4),
       },
       description: buildVesselDescription(v),
       _layerType: 'ships',
@@ -1376,7 +1450,6 @@ function renderFilteredVessels() {
     vesselMarkers.push(e);
   });
 }
-
 async function fetchVessels() {
   if (!viewer || !activeLayers.has('ships')) return;
   try {
@@ -3174,6 +3247,7 @@ function initCesium() {
         } catch(e) { closeCountryPopup(); }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    initVesselDataSource();
     initVesselHover();
     return true;
   } catch(e) {
@@ -4464,9 +4538,8 @@ function initVesselHover() {
       if (v) {
         const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
         _vtt.innerHTML =
-          `<div style="color:${col};font-weight:bold;margin-bottom:3px">${v.name}</div>` +
-          `<div style="color:#94a3b8">${v.type} · ${(v.speed||0).toFixed(1)} kn</div>` +
-          `<div style="color:#64748b;font-size:10px;margin-top:2px">${v.status || ''}</div>`;
+          `<div style="font-weight:700;font-size:13px;color:#0f172a;letter-spacing:.01em;margin-bottom:3px">${v.name || 'Unknown Vessel'}</div>` +
+          `<div style="font-size:11px;color:#64748b">${v.status || v.type || ''}</div>`;
         _vtt.style.display = 'block';
         _vtt.style.left = (mv.endPosition.x + 18) + 'px';
         _vtt.style.top  = (mv.endPosition.y - 10) + 'px';
@@ -4489,10 +4562,10 @@ function initVesselHover() {
 <!-- Vessel hover tooltip -->
 <div id="vessel-tooltip" style="
   position:fixed; display:none; pointer-events:none; z-index:9999;
-  background:rgba(10,16,30,0.94); border:1px solid rgba(6,182,212,0.35);
-  border-radius:6px; padding:7px 11px; font-family:'JetBrains Mono',monospace;
-  font-size:11px; color:#e2e8f0; backdrop-filter:blur(8px);
-  box-shadow:0 4px 20px rgba(0,0,0,0.5); max-width:200px;
+  background:#ffffff; border-radius:8px; padding:9px 13px;
+  font-family:'Inter',sans-serif; color:#0f172a;
+  box-shadow:0 4px 18px rgba(0,0,0,0.18); max-width:220px;
+  border:1px solid rgba(0,0,0,0.06);
 "></div>
 </body>
 </html>
