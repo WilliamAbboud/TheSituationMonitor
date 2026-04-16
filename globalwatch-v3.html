@@ -3203,8 +3203,6 @@ function initCesium() {
    });
     viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-viewer.infoBox.enabled = false;
-viewer.selectionIndicator.enabled = false;
     // Depth occlusion — vessel markers hidden behind globe
     viewer.scene.globe.depthTestAgainstTerrain = true;
     // Globe occlusion: mathematically hide surface markers on far side of Earth
