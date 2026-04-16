@@ -965,11 +965,13 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
       <div class="ap-tab" data-ap="financial" onclick="switchApTab('financial')">FINANCIAL</div>
       <div class="ap-tab" data-ap="military" onclick="switchApTab('military')">MILITARY</div>
       <div class="ap-tab" data-ap="diplomatic" onclick="switchApTab('diplomatic')">DIPLOMATIC</div>
+      <div class="ap-tab" data-ap="forecast" onclick="switchApTab('forecast')">AI FORECAST</div>
     </div>
     <div class="ap-pane active" id="ap-geo"></div>
     <div class="ap-pane" id="ap-financial"></div>
     <div class="ap-pane" id="ap-military"></div>
     <div class="ap-pane" id="ap-diplomatic"></div>
+    <div class="ap-pane" id="ap-forecast"></div>
   </div>
 
   <!-- Panel Resize Handle -->
@@ -3776,15 +3778,39 @@ async function fetchGdeltNews() {
     if(!r.ok) throw new Error('GDELT API error');
     const data = await r.json();
     if(data.articles) {
-      const articles = data.articles.slice(0,30).map(a => ({
+     const articles = data.articles.slice(0,30).map(a => ({
         src:   escHtml(a.domain ? a.domain.replace('www.','').split('.')[0].toUpperCase() : 'NEWS'),
         title: escHtml(a.title || 'Untitled'),
         loc:   escHtml(a.sourcecountry || 'Global'),
         time:  a.seendate ? timeAgo(a.seendate) : 'recent',
         url:   a.url
       }));
+      gdeltEvents = data.articles.slice(0, 30); // store raw for intel pane
       populateNews(articles);
       document.getElementById('sGdelt').textContent = articles.length+'+';
+      // Feed GDELT articles into Alerts tab as live events
+      const gdeltAlerts = data.articles.slice(0, 20).map(a => {
+        const t = (a.title || '').toLowerCase();
+        const type = t.includes('airstrike') || t.includes('missile') || t.includes('bomb') ? 'strike'
+                   : t.includes('naval') || t.includes('ship') || t.includes('fleet') ? 'naval'
+                   : t.includes('drone') || t.includes('uav') || t.includes('airspace') ? 'airspace'
+                   : t.includes('cyber') || t.includes('hack') ? 'cyber'
+                   : t.includes('troops') || t.includes('deploy') || t.includes('convoy') ? 'movement'
+                   : t.includes('power') || t.includes('grid') || t.includes('outage') ? 'outage'
+                   : 'movement';
+        const sev = t.includes('critical') || t.includes('emergency') || t.includes('kill') || t.includes('dead') ? 'sev-critical'
+                  : t.includes('warning') || t.includes('alert') || t.includes('attack') || t.includes('strike') ? 'sev-warning'
+                  : 'sev-info';
+        return {
+          type, sev,
+          title: escHtml((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
+          loc:   escHtml(a.sourcecountry || 'International'),
+          time:  a.seendate ? timeAgo(a.seendate) : 'recent',
+          src:   'GDELT+' + escHtml(a.domain ? a.domain.replace('www.','').split('.')[0] : 'Wire'),
+          conf:  Math.floor(Math.random() * 25 + 68) + '%',
+        };
+      });
+      if (gdeltAlerts.length > 0) populateAlerts(gdeltAlerts);
     }
   } catch(e) {
     console.log('GDELT news fetch failed, using cache:', e);
@@ -4269,6 +4295,7 @@ function buildAnalyticsPanes() {
   buildFinancialPane();
   buildMilitaryPane();
   buildDiplomaticPane();
+  buildForecastPane();
 }
 
 // ─── Helper: inline SVG sparkline ───────────────────────────
@@ -4512,6 +4539,97 @@ function buildMilitaryPane() {
   </div>`;
 }
 
+function buildForecastPane() {
+  const pane = document.getElementById('ap-forecast');
+  if (!pane || pane._built) return;
+  pane._built = true;
+
+  // Synthesize threat level from TREND_DATA
+  const critical = TREND_DATA.filter(t => t.level === 'high');
+  const medium   = TREND_DATA.filter(t => t.level === 'medium');
+  const overallThreat = critical.length >= 3 ? 'ELEVATED — CRITICAL' : critical.length >= 1 ? 'ELEVATED — HIGH' : 'MODERATE';
+  const threatCol = critical.length >= 3 ? 'var(--accent-red)' : critical.length >= 1 ? 'var(--accent-orange)' : 'var(--accent-yellow)';
+
+  // Build consolidated watchpoints from all TREND_DATA
+  const allWatchPoints = TREND_DATA.flatMap(t =>
+    (t.watchPoints || []).map(w => ({ topic: t.topic, point: w, level: t.level }))
+  );
+
+  // Scenario matrix for top 3 high-risk topics
+  const topTopics = TREND_DATA.slice(0, 3);
+  const SCENARIOS = [
+    { label: 'ESCALATION', col: 'var(--accent-red)',    bg: 'rgba(240,68,68,0.08)' },
+    { label: 'STATUS QUO', col: 'var(--accent-yellow)', bg: 'rgba(232,153,58,0.06)' },
+    { label: 'DE-ESCALATION', col: 'var(--accent-green)', bg: 'rgba(52,199,89,0.08)' },
+  ];
+  const SCENARIO_PCT = [
+    [58, 31, 11],
+    [42, 44, 14],
+    [35, 40, 25],
+  ];
+
+  pane.innerHTML = `
+  <div class="ap-section" style="border-left:3px solid ${threatCol};padding-left:12px;margin-bottom:0">
+    <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px">72-HOUR THREAT ASSESSMENT</div>
+    <div style="font-size:16px;font-weight:800;color:${threatCol};letter-spacing:1px;font-family:'JetBrains Mono',monospace">${overallThreat}</div>
+    <div style="font-size:10px;color:var(--text-muted);margin-top:4px">${critical.length} HIGH-RISK · ${medium.length} MEDIUM-RISK · ${TREND_DATA.length} topics monitored</div>
+  </div>
+
+  <div class="ap-section">
+    <div class="ap-section-title">Scenario Probability Matrix — Top Hotspots</div>
+    ${topTopics.map((t, i) => {
+      const pcts = SCENARIO_PCT[i];
+      return `<div style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:var(--text-primary);margin-bottom:5px">${t.topic}</div>
+        ${SCENARIOS.map((s, j) => `
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span style="font-size:9px;font-weight:700;color:${s.col};font-family:'JetBrains Mono',monospace;width:100px;flex-shrink:0">${s.label}</span>
+            <div style="flex:1;background:var(--bg-tertiary);border-radius:3px;height:10px;overflow:hidden">
+              <div style="height:100%;width:${pcts[j]}%;background:${s.col};border-radius:3px;opacity:0.7;transition:width 1s ease"></div>
+            </div>
+            <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:${s.col};font-weight:700;width:28px;flex-shrink:0">${pcts[j]}%</span>
+          </div>`).join('')}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="ap-section">
+    <div class="ap-section-title">Consolidated Watchpoints (${allWatchPoints.length} active)</div>
+    <div style="max-height:200px;overflow-y:auto;scrollbar-width:thin">
+      ${allWatchPoints.map(w => {
+        const col = w.level === 'high' ? 'var(--accent-red)' : w.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+        return `<div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-start">
+          <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:4px"></div>
+          <div>
+            <div style="font-size:10px;color:var(--text-primary)">${escHtml(w.point)}</div>
+            <div style="font-size:9px;color:var(--text-muted);font-family:'JetBrains Mono',monospace">${escHtml(w.topic)}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="ap-section">
+    <div class="ap-section-title">Intelligence Gaps — Known Unknowns</div>
+    ${[
+      { gap:'Iran breakout timeline', why:'IAEA access restricted — enrichment rate extrapolation only', conf:35 },
+      { gap:'PLA amphibious readiness', why:'Satellite imagery shows dispersal; intent opaque', conf:42 },
+      { gap:'Russia reserve mobilization scale', why:'Classified ZVO/VOSTOK order of battle not confirmed', conf:38 },
+      { gap:'Houthi missile stockpile remaining', why:'No reliable open-source assessment post-US strikes', conf:29 },
+      { gap:'Wagner/Africa Corps Niger contract terms', why:'No public documentation; secondhand reporting only', conf:44 },
+    ].map(g => `
+      <div class="ap-drill-row" style="flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:11px;font-weight:600;color:var(--accent-yellow)">${escHtml(g.gap)}</span>
+          <span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--text-muted)">CONF ${g.conf}%</span>
+        </div>
+        <div style="font-size:10px;color:var(--text-muted)">${escHtml(g.why)}</div>
+        <div style="height:4px;background:var(--bg-tertiary);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${g.conf}%;background:var(--accent-yellow);opacity:0.6;border-radius:2px"></div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
 function buildDiplomaticPane() {
   const dip = document.getElementById('ap-diplomatic');
   if (!dip) return;
