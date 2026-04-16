@@ -3155,6 +3155,21 @@ function initCesium() {
    });
     // Depth occlusion — vessel markers hidden behind globe
     viewer.scene.globe.depthTestAgainstTerrain = true;
+    // Globe occlusion: mathematically hide surface markers on far side of Earth
+const _occluder = new Cesium.EllipsoidalOccluder(Cesium.Ellipsoid.WGS84, viewer.camera.positionWC);
+viewer.scene.postRender.addEventListener(() => {
+  _occluder.cameraPosition = viewer.camera.positionWC;
+  const t = viewer.clock.currentTime;
+  viewer.entities.values.forEach(e => {
+    if (!e._customData) return;
+    const pos = e.position?.getValue(t);
+    if (!pos) return;
+    const v = _occluder.isPointVisible(pos);
+    if (e.billboard) e.billboard.show = v;
+    if (e.point) e.point.show = v;
+    if (e.label) e.label.show = v;
+  });
+});
     viewer.scene.globe.translucency.enabled = false;
     // ── Visual scene setup — Google Earth style ──
     viewer.scene.backgroundColor = Cesium.Color.BLACK;
