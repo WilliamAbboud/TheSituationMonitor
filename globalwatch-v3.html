@@ -3111,7 +3111,6 @@ function renderWeatherMarkers(spots) {
         showBackground: true,
         backgroundColor: new Cesium.Color(0.05, 0.05, 0.05, 0.82),
         backgroundPadding: new Cesium.Cartesian2(6, 4),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
       point: {
         pixelSize: 9,
@@ -3507,7 +3506,7 @@ function addMarkers() {
     const e = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(m.lon, m.lat, alt||0),
       point:{pixelSize:size,color:c,outlineColor:c.withAlpha(0.3),outlineWidth:Math.max(3,size-2),
-             scaleByDistance:DOT_SCALE,disableDepthTestDistance:Number.POSITIVE_INFINITY}
+             scaleByDistance:DOT_SCALE}
     });
     e._customData = m;
   };
