@@ -34,6 +34,7 @@ module.exports = async function handler(req, res) {
     sortBy = 'publishedAt',
     language = 'en',
     sources,
+    domains,
     from,
   } = req.query;
 
@@ -84,6 +85,8 @@ module.exports = async function handler(req, res) {
         apiKey,
       });
       if (from) params.set('from', from);
+      // domains filters to specific outlets — cannot be combined with sources
+      if (domains && !sources) params.set('domains', domains);
       url = `https://newsapi.org/v2/everything?${params}`;
     }
 
