@@ -2689,6 +2689,28 @@ function timeAgo(dateStr) {
 let newsRegionFilter = 'all';
 const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com';
 
+// Split into array for client-side hard-filter (backup in case API leaks stray sources)
+const CURATED_DOMAIN_LIST = CURATED_DOMAINS.split(',');
+function isFromCuratedSource(article) {
+  if (!article.url) return false;
+  try {
+    const host = new URL(article.url).hostname.replace(/^www\./, '');
+    return CURATED_DOMAIN_LIST.some(d => host === d || host.endsWith('.' + d));
+  } catch { return false; }
+}
+
+// Decode HTML entities that NewsAPI sometimes includes in titles (prevent double-encoding)
+function decodeEntities(str) {
+  if (!str) return '';
+  return str
+    .replace(/&amp;/g,  '&')
+    .replace(/&lt;/g,   '<')
+    .replace(/&gt;/g,   '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g,  "'")
+    .replace(/&apos;/g, "'");
+}
+
 // Bias ratings modelled on AllSides / Ad Fontes Media scale
 // Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
 const SOURCE_BIAS = {
@@ -2781,11 +2803,13 @@ async function refreshNews() {
   if (btn) { btn.textContent = '↻ …'; btn.disabled = true; }
   const articles = await fetchNewsAPI(buildNewsQuery(), 30);
   if (articles && articles.length > 0) {
-    const formatted = articles.map(a => ({
+    // Hard client-side filter — drops any source not in the curated domain list
+    const curated = articles.filter(isFromCuratedSource);
+    const formatted = curated.map(a => ({
       src:     escHtml(a.source?.name || 'Wire'),
       srcRaw:  a.source?.name || 'Wire',          // raw name for bias lookup
-      title:   escHtml((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
-      loc:     escHtml(a.author || a.source?.name || 'International'),
+      title:   escHtml(decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim())),
+      loc:     escHtml(decodeEntities(a.author || a.source?.name || 'International')),
       time:    timeAgo(a.publishedAt),
       url:     a.url // URL used in window.open, not innerHTML
     }));
