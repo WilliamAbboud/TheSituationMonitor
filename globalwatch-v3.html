@@ -1008,7 +1008,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <div class="panel-tabs">
       <div class="panel-tab active" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
       <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X FEED</span></div>
-      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge">32</span></div>
+      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge" id="newsCount">0</span></div>
       <div class="panel-tab" data-tab="live" onclick="switchTab('live')"><span data-i18n="live">LIVE</span></div>
     </div>
     <div class="panel-content">
@@ -2877,10 +2877,10 @@ async function refreshNews() {
     // Hard client-side filter — drops any source not in the curated domain list
     const curated = articles.filter(isFromCuratedSource);
     const formatted = curated.map(a => ({
-      src:     escHtml(a.source?.name || 'Wire'),
+      src:     a.source?.name || 'Wire',
       srcRaw:  a.source?.name || 'Wire',          // raw name for bias lookup
-      title:   escHtml(decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim())),
-      loc:     escHtml(decodeEntities(a.author || a.source?.name || 'International')),
+      title:   decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
+      loc:     decodeEntities(a.author || a.source?.name || 'International'),
       time:    timeAgo(a.publishedAt),
       url:     a.url // URL used in window.open, not innerHTML
     }));
@@ -2903,10 +2903,9 @@ async function refreshXFeed() {
 function renderXFeedLive(articles) {
   const posts = articles.slice(0, 12).map((a, i) => {
     const p = OSINT_PERSONAS[i % OSINT_PERSONAS.length];
-    const rawText = (a.title || a.description || '')
-      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim();
-    const text = escHtml(rawText);
-    return { ...p, text: text.length > 200 ? text.slice(0, 197) + '…' : text, time: timeAgo(a.publishedAt), url: a.url };
+    const rawText = decodeEntities((a.title || a.description || '')
+      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim());
+    return { ...p, text: rawText.length > 200 ? rawText.slice(0, 197) + '…' : rawText, time: timeAgo(a.publishedAt), url: a.url };
   });
   document.getElementById('tab-xfeed').innerHTML = `
     <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="alert('Add X OAuth credentials to enable personal feed overlay')">Sign in with X</button></div>
@@ -2948,11 +2947,17 @@ function populateNews(articles, isLive = false) {
   if (!container) return;
   const data = (articles && articles.length > 0) ? articles : NEWS_FALLBACK;
   const live = isLive && articles && articles.length > 0;
+  // Keep the NEWS tab badge in sync with the actual article count
+  const badgeEl = document.getElementById('newsCount');
+  if (badgeEl) badgeEl.textContent = data.length;
   container.innerHTML = `
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);background:var(--bg-tertiary);display:flex;align-items:center;gap:8px">
       <span style="font-size:10px;font-weight:700;color:${live ? 'var(--accent-green)' : 'var(--accent-orange)'};letter-spacing:.5px">${live ? '● LIVE' : '○ CACHED'}</span>
       <span style="font-size:10px;color:var(--text-muted)">${live ? 'NewsAPI · ' + data.length + ' articles' : 'Connecting to NewsAPI…'}</span>
       <button id="newsRefreshBtn" onclick="refreshNews()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--text-muted);padding:2px 8px;border-radius:3px;font-size:9px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border)'">↻ REFRESH</button>
+    </div>
+    <div style="padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(6,182,212,0.04);font-size:9px;color:var(--text-muted);line-height:1.4">
+      ⓘ Bias &amp; factuality ratings reflect the <strong style="color:var(--text-secondary);font-weight:600">publication overall</strong>, not this individual article. Based on Ground News / Ad Fontes consensus.
     </div>
     ${data.map(n => {
       const bias = getSourceBias(n.srcRaw || n.src);
