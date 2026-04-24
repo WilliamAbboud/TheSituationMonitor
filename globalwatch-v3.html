@@ -223,6 +223,13 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .news-source { font-size:9px; font-weight:700; color:var(--accent-cyan); letter-spacing:.5px; text-transform:uppercase; margin-bottom:3px; }
 .news-title { font-size:12px; font-weight:500; line-height:1.4; margin-bottom:3px; }
 .news-meta { display:flex; gap:8px; font-size:10px; color:var(--text-muted); }
+.news-source-row { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
+.bias-pill { font-size:8px; font-weight:700; letter-spacing:.4px; padding:1px 5px; border-radius:3px; white-space:nowrap; flex-shrink:0; }
+.bias-left        { background:rgba(59,130,246,0.15);  color:#60a5fa; border:1px solid rgba(59,130,246,0.3);  }
+.bias-center-left { background:rgba(99,179,237,0.12);  color:#7dd3fc; border:1px solid rgba(99,179,237,0.25); }
+.bias-center      { background:rgba(34,197,94,0.12);   color:#4ade80; border:1px solid rgba(34,197,94,0.25);  }
+.bias-center-right{ background:rgba(249,115,22,0.12);  color:#fb923c; border:1px solid rgba(249,115,22,0.25); }
+.bias-state-media { background:rgba(168,85,247,0.12);  color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
 .news-filter-bar { padding:8px 10px 6px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
 .nf-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:4px; }
 .nf-row:last-child { margin-bottom:0; }
@@ -2680,7 +2687,46 @@ function timeAgo(dateStr) {
 }
 
 let newsRegionFilter = 'all';
-const CURATED_DOMAINS = 'reuters.com,apnews.com,bbc.co.uk,theguardian.com,ft.com,nytimes.com,washingtonpost.com,wsj.com,dw.com,france24.com,euronews.com,aljazeera.com,haaretz.com,timesofisrael.com,arabnews.com,scmp.com,straitstimes.com,japantimes.co.jp,thehindu.com,kyivindependent.com,politico.com,foreignpolicy.com,abc.net.au,globaltimes.cn,thetimes.co.uk';
+const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com';
+
+// Bias ratings modelled on AllSides / Ad Fontes Media scale
+// Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
+const SOURCE_BIAS = {
+  'bbc':            { label:'Center',        cls:'bias-center'       },
+  'bbc news':       { label:'Center',        cls:'bias-center'       },
+  'pbs':            { label:'Center-Left',   cls:'bias-center-left'  },
+  'pbs newshour':   { label:'Center-Left',   cls:'bias-center-left'  },
+  'npr':            { label:'Center-Left',   cls:'bias-center-left'  },
+  'reuters':        { label:'Center',        cls:'bias-center'       },
+  'associated press':{ label:'Center',       cls:'bias-center'       },
+  'ap':             { label:'Center',        cls:'bias-center'       },
+  'the guardian':   { label:'Left-Center',   cls:'bias-center-left'  },
+  'guardian':       { label:'Left-Center',   cls:'bias-center-left'  },
+  'the new york times':{ label:'Left-Center',cls:'bias-center-left'  },
+  'new york times': { label:'Left-Center',   cls:'bias-center-left'  },
+  'nytimes':        { label:'Left-Center',   cls:'bias-center-left'  },
+  'foreign affairs':{ label:'Center',        cls:'bias-center'       },
+  'rt':             { label:'State Media 🇷🇺', cls:'bias-state-media'  },
+  'rt news':        { label:'State Media 🇷🇺', cls:'bias-state-media'  },
+  'the atlantic':   { label:'Left-Center',   cls:'bias-center-left'  },
+  'atlantic':       { label:'Left-Center',   cls:'bias-center-left'  },
+  'politico':       { label:'Center',        cls:'bias-center'       },
+  'bloomberg':      { label:'Center',        cls:'bias-center'       },
+  'bloomberg news': { label:'Center',        cls:'bias-center'       },
+  'al jazeera':     { label:'Center',        cls:'bias-center'       },
+  'al jazeera english':{ label:'Center',     cls:'bias-center'       },
+  'financial times':{ label:'Center',        cls:'bias-center'       },
+  'ft':             { label:'Center',        cls:'bias-center'       },
+  'axios':          { label:'Center',        cls:'bias-center'       },
+  'the wall street journal':{ label:'Center-Right', cls:'bias-center-right' },
+  'wall street journal':    { label:'Center-Right', cls:'bias-center-right' },
+  'wsj':            { label:'Center-Right',  cls:'bias-center-right' },
+};
+
+function getSourceBias(srcName) {
+  const key = (srcName || '').toLowerCase().trim();
+  return SOURCE_BIAS[key] || null;
+}
 
 function setNewsRegion(v) {
   newsRegionFilter = v;
@@ -2736,11 +2782,12 @@ async function refreshNews() {
   const articles = await fetchNewsAPI(buildNewsQuery(), 30);
   if (articles && articles.length > 0) {
     const formatted = articles.map(a => ({
-      src:   escHtml(a.source?.name || 'Wire'),
-      title: escHtml((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
-      loc:   escHtml(a.author || a.source?.name || 'International'),
-      time:  timeAgo(a.publishedAt),
-      url:   a.url // URL used in window.open, not innerHTML
+      src:     escHtml(a.source?.name || 'Wire'),
+      srcRaw:  a.source?.name || 'Wire',          // raw name for bias lookup
+      title:   escHtml((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
+      loc:     escHtml(a.author || a.source?.name || 'International'),
+      time:    timeAgo(a.publishedAt),
+      url:     a.url // URL used in window.open, not innerHTML
     }));
     populateNews(formatted, true);
   }
@@ -2812,11 +2859,15 @@ function populateNews(articles, isLive = false) {
       <span style="font-size:10px;color:var(--text-muted)">${live ? 'NewsAPI · ' + data.length + ' articles' : 'Connecting to NewsAPI…'}</span>
       <button id="newsRefreshBtn" onclick="refreshNews()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--text-muted);padding:2px 8px;border-radius:3px;font-size:9px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border)'">↻ REFRESH</button>
     </div>
-    ${data.map(n => `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
-      <div class="news-source">${escHtml(n.src)}</div>
+    ${data.map(n => {
+      const bias = getSourceBias(n.srcRaw || n.src);
+      const biasPill = bias ? `<span class="bias-pill ${bias.cls}">${bias.label}</span>` : '';
+      return `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
+      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}</div>
       <div class="news-title">${escHtml(n.title)}</div>
       <div class="news-meta"><span>📍 ${escHtml(n.loc || 'International')}</span><span>${escHtml(n.time)}</span></div>
-    </div>`).join('')}`;
+    </div>`;
+    }).join('')}`;
 }
 
 // ═══════════════ POPULATE LIVE TAB ═══════════════
