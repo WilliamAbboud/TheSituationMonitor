@@ -230,6 +230,10 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .bias-center      { background:rgba(34,197,94,0.12);   color:#4ade80; border:1px solid rgba(34,197,94,0.25);  }
 .bias-center-right{ background:rgba(249,115,22,0.12);  color:#fb923c; border:1px solid rgba(249,115,22,0.25); }
 .bias-state-media { background:rgba(168,85,247,0.12);  color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
+.accuracy-pill { font-size:8px; font-weight:700; letter-spacing:.4px; padding:1px 5px; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
+.acc-high   { background:rgba(52,199,89,0.15);  color:#4ade80; border:1px solid rgba(52,199,89,0.3);  }
+.acc-mixed  { background:rgba(232,153,58,0.15); color:#fbbf24; border:1px solid rgba(232,153,58,0.3); }
+.acc-low    { background:rgba(240,68,68,0.15);  color:#f87171; border:1px solid rgba(240,68,68,0.3);  }
 .news-filter-bar { padding:8px 10px 6px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
 .nf-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:4px; }
 .nf-row:last-child { margin-bottom:0; }
@@ -2687,8 +2691,7 @@ function timeAgo(dateStr) {
 }
 
 let newsRegionFilter = 'all';
-const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com';
-
+const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com,afp.com,csis.org,cbsnews.com,cnbc.com,foxnews.com,dw.com,news.sky.com,sky.com,france24.com,euronews.com,scmp.com,channelnewsasia.com,thediplomat.com,wionews.com,timesofindia.indiatimes.com,yna.co.kr,nhk.or.jp,www3.nhk.or.jp,japantimes.co.jp,trtworld.com,aa.com.tr,alarabiya.net,thenationalnews.com,jpost.com,haaretz.com,enca.com,africanews.com,cbc.ca,nationalpost.com';
 // Split into array for client-side hard-filter (backup in case API leaks stray sources)
 const CURATED_DOMAIN_LIST = CURATED_DOMAINS.split(',');
 function isFromCuratedSource(article) {
@@ -2713,41 +2716,109 @@ function decodeEntities(str) {
 
 // Bias ratings modelled on AllSides / Ad Fontes Media scale
 // Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
+// Bias + accuracy ratings. Bias based on AllSides / Ad Fontes consensus.
+// Accuracy (factuality) score based on Ground News, NewsGuard, Ad Fontes — 0-100.
+// Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
 const SOURCE_BIAS = {
-  'bbc':            { label:'Center',        cls:'bias-center'       },
-  'bbc news':       { label:'Center',        cls:'bias-center'       },
-  'pbs':            { label:'Center-Left',   cls:'bias-center-left'  },
-  'pbs newshour':   { label:'Center-Left',   cls:'bias-center-left'  },
-  'npr':            { label:'Center-Left',   cls:'bias-center-left'  },
-  'reuters':        { label:'Center',        cls:'bias-center'       },
-  'associated press':{ label:'Center',       cls:'bias-center'       },
-  'ap':             { label:'Center',        cls:'bias-center'       },
-  'the guardian':   { label:'Left-Center',   cls:'bias-center-left'  },
-  'guardian':       { label:'Left-Center',   cls:'bias-center-left'  },
-  'the new york times':{ label:'Left-Center',cls:'bias-center-left'  },
-  'new york times': { label:'Left-Center',   cls:'bias-center-left'  },
-  'nytimes':        { label:'Left-Center',   cls:'bias-center-left'  },
-  'foreign affairs':{ label:'Center',        cls:'bias-center'       },
-  'rt':             { label:'State Media 🇷🇺', cls:'bias-state-media'  },
-  'rt news':        { label:'State Media 🇷🇺', cls:'bias-state-media'  },
-  'the atlantic':   { label:'Left-Center',   cls:'bias-center-left'  },
-  'atlantic':       { label:'Left-Center',   cls:'bias-center-left'  },
-  'politico':       { label:'Center',        cls:'bias-center'       },
-  'bloomberg':      { label:'Center',        cls:'bias-center'       },
-  'bloomberg news': { label:'Center',        cls:'bias-center'       },
-  'al jazeera':     { label:'Center',        cls:'bias-center'       },
-  'al jazeera english':{ label:'Center',     cls:'bias-center'       },
-  'financial times':{ label:'Center',        cls:'bias-center'       },
-  'ft':             { label:'Center',        cls:'bias-center'       },
-  'axios':          { label:'Center',        cls:'bias-center'       },
-  'the wall street journal':{ label:'Center-Right', cls:'bias-center-right' },
-  'wall street journal':    { label:'Center-Right', cls:'bias-center-right' },
-  'wsj':            { label:'Center-Right',  cls:'bias-center-right' },
+  // — Global / International —
+  'bbc':              { label:'Center',        cls:'bias-center',        acc:92 },
+  'bbc news':         { label:'Center',        cls:'bias-center',        acc:92 },
+  'reuters':          { label:'Center',        cls:'bias-center',        acc:97 },
+  'associated press': { label:'Center',        cls:'bias-center',        acc:97 },
+  'ap':               { label:'Center',        cls:'bias-center',        acc:97 },
+  'afp':              { label:'Center',        cls:'bias-center',        acc:95 },
+  'agence france-presse': { label:'Center',    cls:'bias-center',        acc:95 },
+  'csis':             { label:'Center',        cls:'bias-center',        acc:90 },
+  'foreign affairs':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'bloomberg':        { label:'Center',        cls:'bias-center',        acc:90 },
+  'bloomberg news':   { label:'Center',        cls:'bias-center',        acc:90 },
+  'financial times':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'ft':               { label:'Center',        cls:'bias-center',        acc:92 },
+  'axios':            { label:'Center',        cls:'bias-center',        acc:88 },
+  'politico':         { label:'Center',        cls:'bias-center',        acc:86 },
+
+  // — United States —
+  'pbs':              { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
+  'pbs newshour':     { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
+  'npr':              { label:'Center-Left',   cls:'bias-center-left',   acc:90 },
+  'the new york times':{label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'new york times':   { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'nytimes':          { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'the atlantic':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'atlantic':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'cbs':              { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'cbs news':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'cnbc':             { label:'Center',        cls:'bias-center',        acc:85 },
+  'fox news':         { label:'Right',         cls:'bias-center-right',  acc:65 },
+  'fox':              { label:'Right',         cls:'bias-center-right',  acc:65 },
+  'the wall street journal':{label:'Center-Right',cls:'bias-center-right',acc:90 },
+  'wall street journal':{label:'Center-Right', cls:'bias-center-right',  acc:90 },
+  'wsj':              { label:'Center-Right',  cls:'bias-center-right',  acc:90 },
+
+  // — Europe —
+  'the guardian':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'guardian':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'dw':               { label:'Center',        cls:'bias-center',        acc:92 },
+  'dw news':          { label:'Center',        cls:'bias-center',        acc:92 },
+  'deutsche welle':   { label:'Center',        cls:'bias-center',        acc:92 },
+  'sky news':         { label:'Center',        cls:'bias-center',        acc:88 },
+  'france 24':        { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'france24':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'euronews':         { label:'Center',        cls:'bias-center',        acc:87 },
+
+  // — Asia —
+  'scmp':             { label:'Center',        cls:'bias-center',        acc:80 },
+  'south china morning post':{label:'Center',  cls:'bias-center',        acc:80 },
+  'cna':              { label:'Center',        cls:'bias-center',        acc:88 },
+  'channel news asia':{ label:'Center',        cls:'bias-center',        acc:88 },
+  'the diplomat':     { label:'Center',        cls:'bias-center',        acc:90 },
+  'wion':             { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'times of india':   { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'yonhap':           { label:'Center',        cls:'bias-center',        acc:88 },
+  'yonhap news agency':{label:'Center',        cls:'bias-center',        acc:88 },
+  'nhk':              { label:'Center',        cls:'bias-center',        acc:92 },
+  'nhk world':        { label:'Center',        cls:'bias-center',        acc:92 },
+  'nhk world-japan':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'japan times':      { label:'Center',        cls:'bias-center',        acc:88 },
+  'the japan times':  { label:'Center',        cls:'bias-center',        acc:88 },
+
+  // — Middle East —
+  'al jazeera':       { label:'Center',        cls:'bias-center',        acc:82 },
+  'al jazeera english':{label:'Center',        cls:'bias-center',        acc:82 },
+  'trt':              { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'trt world':        { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'anadolu agency':   { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'al arabiya':       { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'the national':     { label:'Center',        cls:'bias-center',        acc:82 },
+  'jerusalem post':   { label:'Center-Right',  cls:'bias-center-right',  acc:82 },
+  'the jerusalem post':{label:'Center-Right',  cls:'bias-center-right',  acc:82 },
+  'haaretz':          { label:'Left',          cls:'bias-left',          acc:88 },
+
+  // — Africa —
+  'enca':             { label:'Center',        cls:'bias-center',        acc:85 },
+  'africa news':      { label:'Center',        cls:'bias-center',        acc:85 },
+  'africanews':       { label:'Center',        cls:'bias-center',        acc:85 },
+
+  // — Canada —
+  'cbc':              { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
+  'cbc news':         { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
+  'national post':    { label:'Right',         cls:'bias-center-right',  acc:80 },
+  'the national post':{ label:'Right',         cls:'bias-center-right',  acc:80 },
+
+  // — State media (global) —
+  'rt':               { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
+  'rt news':          { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
 };
 
 function getSourceBias(srcName) {
   const key = (srcName || '').toLowerCase().trim();
   return SOURCE_BIAS[key] || null;
+}
+function getAccuracyClass(acc) {
+  if (acc == null) return null;
+  if (acc >= 85) return 'acc-high';
+  if (acc >= 70) return 'acc-mixed';
+  return 'acc-low';
 }
 
 function setNewsRegion(v) {
@@ -2886,8 +2957,10 @@ function populateNews(articles, isLive = false) {
     ${data.map(n => {
       const bias = getSourceBias(n.srcRaw || n.src);
       const biasPill = bias ? `<span class="bias-pill ${bias.cls}">${bias.label}</span>` : '';
+      const accClass = bias ? getAccuracyClass(bias.acc) : null;
+      const accPill  = accClass ? `<span class="accuracy-pill ${accClass}" title="Factuality score (Ground News / Ad Fontes consensus)">${bias.acc}%</span>` : '';
       return `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
-      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}</div>
+      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}${accPill}</div>
       <div class="news-title">${escHtml(n.title)}</div>
       <div class="news-meta"><span>📍 ${escHtml(n.loc || 'International')}</span><span>${escHtml(n.time)}</span></div>
     </div>`;
