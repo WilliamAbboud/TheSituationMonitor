@@ -234,10 +234,10 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .acc-high   { background:rgba(52,199,89,0.15);  color:#4ade80; border:1px solid rgba(52,199,89,0.3);  }
 .acc-mixed  { background:rgba(232,153,58,0.15); color:#fbbf24; border:1px solid rgba(232,153,58,0.3); }
 .acc-low    { background:rgba(240,68,68,0.15);  color:#f87171; border:1px solid rgba(240,68,68,0.3);  }
-.news-filter-bar { padding:8px 10px 6px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
-.nf-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:4px; }
-.nf-row:last-child { margin-bottom:0; }
-.nf-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 8px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:.5px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all .15s; }
+.news-filter-bar { padding:6px 10px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
+.nf-row { display:flex; gap:3px; align-items:center; overflow-x:auto; scrollbar-width:none; padding-bottom:1px; }
+.nf-row::-webkit-scrollbar { display:none; }
+.nf-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:.3px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all .15s; flex-shrink:0; white-space:nowrap; }
 .nf-btn:hover { border-color:var(--border-glow); color:var(--text-secondary); }
 .nf-btn.active { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
@@ -449,6 +449,35 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theme-opt:hover { background:var(--bg-tertiary); color:var(--text-primary); }
 .theme-opt.active-theme { background:rgba(6,182,212,0.1); color:var(--accent-cyan); }
 .theme-swatch { width:10px; height:10px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.12); }
+
+/* ── BRIEFING ZONE (synthesized top-signal stories) ── */
+.briefing-zone { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; display:flex; flex-direction:column; }
+.briefing-header { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; background:rgba(6,182,212,0.05); transition:background .15s; }
+.briefing-header:hover { background:rgba(6,182,212,0.08); }
+.briefing-title { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; }
+.briefing-count { font-size:9px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-weight:500; letter-spacing:.5px; margin-left:4px; }
+.briefing-toggle { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:11px; padding:0; line-height:1; }
+.briefing-content { overflow-y:auto; max-height:320px; transition:max-height .3s ease; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.briefing-content::-webkit-scrollbar { width:3px; }
+.briefing-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.briefing-content.collapsed { max-height:0; }
+.brief-card { margin:6px 10px; padding:9px 11px; background:var(--bg-card); border-left:3px solid var(--bc-color,var(--accent-red)); border-radius:0 5px 5px 0; cursor:pointer; transition:background .15s; }
+.brief-card:hover { background:var(--bg-tertiary); }
+.brief-card.active { background:rgba(6,182,212,0.08); box-shadow:inset 0 0 0 1px rgba(6,182,212,0.3); }
+.brief-card.high { --bc-color:var(--accent-red); }
+.brief-card.medium { --bc-color:var(--accent-orange); }
+.brief-card.low { --bc-color:var(--accent-blue); }
+.brief-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.brief-tag { font-size:8px; font-weight:700; padding:1px 6px; border-radius:2px; letter-spacing:.5px; font-family:'JetBrains Mono',monospace; }
+.brief-tag.high { background:rgba(240,68,68,0.15); color:var(--accent-red); border:0.5px solid rgba(240,68,68,0.3); }
+.brief-tag.medium { background:rgba(232,153,58,0.15); color:var(--accent-orange); border:0.5px solid rgba(232,153,58,0.3); }
+.brief-tag.low { background:rgba(74,143,239,0.15); color:var(--accent-blue); border:0.5px solid rgba(74,143,239,0.3); }
+.brief-topic { font-size:11px; font-weight:600; color:var(--text-primary); flex:1; }
+.brief-velo { font-size:9px; color:var(--accent-green); font-family:'JetBrains Mono',monospace; font-weight:600; flex-shrink:0; }
+.brief-desc { font-size:10px; color:var(--text-secondary); line-height:1.45; margin-bottom:5px; }
+.brief-src { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+.brief-src-badge { font-size:8px; font-family:'JetBrains Mono',monospace; padding:1px 5px; border-radius:2px; background:var(--bg-tertiary); color:var(--text-secondary); border:0.5px solid var(--border); }
+.brief-conf { font-size:8px; font-family:'JetBrains Mono',monospace; font-weight:700; padding:1px 5px; border-radius:2px; margin-left:auto; }  
 
 /* ── TRENDS STANDALONE BOX ── */
 .trends-box { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; }
@@ -990,39 +1019,34 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 
   <!-- Right Panel -->
   <div class="right-panel" id="rightPanel">
-    <!-- Trends Standalone Box -->
-    <div class="trends-box" id="trendsBox">
-      <div class="trends-box-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="trends-box-title">⚡ TREND INTEL</div>
-          <div class="trends-view-btns">
-            <button class="trends-view-btn active" id="trendViewCompact" onclick="setTrendsView('compact')">COMPACT</button>
-            <button class="trends-view-btn" id="trendViewFull" onclick="setTrendsView('full')">FULL</button>
-            <button class="trends-view-btn" id="trendViewInsights" onclick="setTrendsView('insights')">INSIGHTS</button>
-          </div>
-        </div>
-        <button class="trends-box-toggle" id="trendToggleBtn" onclick="toggleTrendsBox()">▲</button>
+    <!-- BRIEFING zone: synthesized top-signal stories (replaces old Trend Intel box) -->
+    <div class="briefing-zone" id="briefingZone">
+      <div class="briefing-header" onclick="toggleBriefing()">
+        <div><span class="briefing-title">⚡ BRIEFING · TOP SIGNAL</span><span class="briefing-count" id="briefingCount">· 0 active</span></div>
+        <button class="briefing-toggle" id="briefingToggleBtn">▲</button>
       </div>
-      <div class="trends-box-content" id="trendsBoxContent"></div>
+      <div class="briefing-content" id="briefingContent"></div>
     </div>
     <div class="panel-tabs">
-      <div class="panel-tab active" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
-      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X FEED</span></div>
+      <div class="panel-tab active" data-tab="all" onclick="switchTab('all')"><span>ALL</span><span class="tab-badge" id="allCount">0</span></div>
       <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge" id="newsCount">0</span></div>
+      <div class="panel-tab" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
+      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X</span></div>
       <div class="panel-tab" data-tab="live" onclick="switchTab('live')"><span data-i18n="live">LIVE</span></div>
     </div>
     <div class="panel-content">
-      <div class="tab-pane active" id="tab-alerts"></div>
+      <div class="tab-pane active" id="tab-all"></div>
+      <div class="tab-pane" id="tab-alerts"></div>
       <div class="tab-pane" id="tab-xfeed"></div>
       <div class="tab-pane" id="tab-news">
         <div class="news-filter-bar" id="newsFilterBar">
           <div class="nf-row">
             <button class="nf-btn active" id="nfrAll"     onclick="setNewsRegion('all')">🌐 ALL</button>
-            <button class="nf-btn" id="nfrUS"             onclick="setNewsRegion('us')">🇺🇸 US / N.AMERICA</button>
-            <button class="nf-btn" id="nfrEurope"         onclick="setNewsRegion('europe')">🇪🇺 EUROPE</button>
-            <button class="nf-btn" id="nfrME"             onclick="setNewsRegion('middle-east')">🕌 M.EAST</button>
-            <button class="nf-btn" id="nfrAsia"           onclick="setNewsRegion('asia')">🌏 ASIA/PAC</button>
-            <button class="nf-btn" id="nfrAfrica"         onclick="setNewsRegion('africa')">🌍 AFRICA</button>
+            <button class="nf-btn" id="nfrUS"             onclick="setNewsRegion('us')">🇺🇸 US</button>
+            <button class="nf-btn" id="nfrEurope"         onclick="setNewsRegion('europe')">🇪🇺 EU</button>
+            <button class="nf-btn" id="nfrME"             onclick="setNewsRegion('middle-east')">🕌 ME</button>
+            <button class="nf-btn" id="nfrAsia"           onclick="setNewsRegion('asia')">🌏 ASIA</button>
+            <button class="nf-btn" id="nfrAfrica"         onclick="setNewsRegion('africa')">🌍 AFR</button>
             <button class="nf-btn" id="nfrLatam"          onclick="setNewsRegion('latam')">🌎 LATAM</button>
           </div>
         </div>
@@ -3793,77 +3817,86 @@ document.addEventListener('click', e => {
   }
 });
 
-// ═══════════════ TRENDS STANDALONE BOX ═══════════════
-let trendsBoxOpen = true;
-let trendsView = 'compact'; // 'compact' | 'full'
+// ═══════════════ BRIEFING ZONE (replaces Trend Intel box) ═══════════════
+// Each briefing card is a synthesized top-signal story — pulled from TREND_DATA.
+// Clicking a card will filter the stream below by its keywords (wired in Commit 3).
+let briefingOpen = true;
+let selectedBriefingId = null;
 
-function toggleTrendsBox() {
-  trendsBoxOpen = !trendsBoxOpen;
-  const content = document.getElementById('trendsBoxContent');
-  const btn = document.getElementById('trendToggleBtn');
-  if (content) content.classList.toggle('collapsed', !trendsBoxOpen);
-  if (btn) btn.textContent = trendsBoxOpen ? '▲' : '▼';
+// Parse "14.2K" → 14200 so we can derive rough source counts per story
+function parsePostsCount(str) {
+  const m = String(str || '').match(/([\d.]+)\s*([KM])?/i);
+  if (!m) return 0;
+  const n = parseFloat(m[1]);
+  const mult = m[2] === 'K' ? 1000 : m[2] === 'M' ? 1000000 : 1;
+  return Math.round(n * mult);
 }
 
-function setTrendsView(view) {
-  trendsView = view;
-  document.getElementById('trendViewCompact')?.classList.toggle('active', view === 'compact');
-  document.getElementById('trendViewFull')?.classList.toggle('active', view === 'full');
-  document.getElementById('trendViewInsights')?.classList.toggle('active', view === 'insights');
-  populateTrendsBox();
+function toggleBriefing() {
+  briefingOpen = !briefingOpen;
+  const content = document.getElementById('briefingContent');
+  const btn = document.getElementById('briefingToggleBtn');
+  if (content) content.classList.toggle('collapsed', !briefingOpen);
+  if (btn) btn.textContent = briefingOpen ? '▲' : '▼';
 }
 
-function populateTrendsBox() {
-  const el = document.getElementById('trendsBoxContent');
+function populateBriefing() {
+  const el = document.getElementById('briefingContent');
+  const cntEl = document.getElementById('briefingCount');
   if (!el) return;
-  if (trendsView === 'compact') {
-    el.innerHTML = TREND_DATA.map(t => {
-      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
-      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      return `<div class="trends-mini-item">
-        <span class="trends-mini-topic">${t.topic}</span>
-        <span class="trends-mini-conf" style="background:${bg};color:${col}">${t.conf}%</span>
-        <span class="trends-mini-vel">${t.velocity}</span>
-      </div>`;
-    }).join('');
-  } else if (trendsView === 'insights') {
-    // Analyst-grade insights view
-    el.innerHTML = TREND_DATA.map(t => {
-      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      const labelMap = { high:'HIGH RISK', medium:'MEDIUM RISK', low:'ELEVATED' };
-      const watchHtml = (t.watchPoints || []).map(w => `<li>${w}</li>`).join('');
-      return `<div class="insight-card">
-        <div class="insight-header">
-          <span class="insight-topic">${t.topic}</span>
-          <span class="insight-badge ${t.level}">${labelMap[t.level]}</span>
-        </div>
-        <div class="insight-analysis">${t.analysis || t.desc}</div>
-        ${watchHtml ? `<div class="insight-section-label">WATCH POINTS</div><ul class="insight-watch-list">${watchHtml}</ul>` : ''}
-        <div class="insight-divider"></div>
-        <div class="insight-conf-row">
-          <span class="insight-conf-label">CONFIDENCE</span>
-          <div class="insight-conf-bar"><div class="insight-conf-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
-          <span class="insight-conf-pct" style="color:${barColor}">${t.conf}%</span>
-        </div>
-      </div>`;
-    }).join('');
-  } else {
-    // Full card view
-    el.innerHTML = TREND_DATA.map(t => {
-      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
-      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      return `<div class="trend-card">
-        <div class="trend-header">
-          <span class="trend-topic">${t.topic}</span>
-          <span class="trend-conf ${t.level}" style="background:${bg};color:${col}">${t.conf}%</span>
-        </div>
-        <div class="trend-desc">${t.desc}</div>
-        <div class="trend-meta"><span>${t.posts} posts</span><span>${t.velocity}</span><span>${t.region}</span></div>
-        <div class="trend-bar"><div class="trend-bar-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
-      </div>`;
-    }).join('');
-  }
+  const stories = TREND_DATA.slice(0, 5); // top 5 by relevance — rest still live in INTEL panel
+  if (cntEl) cntEl.textContent = '· ' + stories.length + ' active';
+  el.innerHTML = stories.map((t, i) => {
+    const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+    const confBg = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
+    const labelMap = { high:'HIGH', medium:'MED', low:'ELEV' };
+    // Truncate analysis for the card teaser
+    const teaser = t.analysis || t.desc || '';
+    const teaserShort = teaser.length > 180 ? teaser.slice(0, 177).replace(/\s+\S*$/, '') + '…' : teaser;
+    // Rough source counts derived from posts volume — in Commit 3 these become real matched-item counts
+    const posts = parsePostsCount(t.posts);
+    const newsN  = Math.max(2, Math.floor(posts / 1800));
+    const alertN = Math.max(1, Math.floor(posts / 4200));
+    const xN     = Math.max(1, Math.floor(posts / 5500));
+    return `<div class="brief-card ${t.level}" data-brief-id="${i}" onclick="selectBriefingCard(${i})">
+      <div class="brief-row">
+        <span class="brief-tag ${t.level}">${labelMap[t.level]}</span>
+        <span class="brief-topic">${escHtml(t.topic)}</span>
+        <span class="brief-velo">${escHtml(t.velocity)}</span>
+      </div>
+      <div class="brief-desc">${escHtml(teaserShort)}</div>
+      <div class="brief-src">
+        <span class="brief-src-badge">📰 ${newsN}</span>
+        <span class="brief-src-badge">⚠ ${alertN}</span>
+        <span class="brief-src-badge">𝕏 ${xN}</span>
+        <span class="brief-conf" style="background:${confBg};color:${barColor}">${t.conf}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectBriefingCard(idx) {
+  const wasSelected = selectedBriefingId === idx;
+  selectedBriefingId = wasSelected ? null : idx;
+  document.querySelectorAll('.brief-card').forEach(c => {
+    c.classList.toggle('active', !wasSelected && c.dataset.briefId === String(idx));
+  });
+  // Jump to the unified stream when a card is clicked
+  // Commit 3 will add keyword-based filtering of the stream to match the selected story
+  if (!wasSelected) switchTab('all');
+}
+
+// ═══════════════ ALL / UNIFIED STREAM (placeholder — Commit 2 wires real data) ═══════════════
+function populateAll() {
+  const el = document.getElementById('tab-all');
+  if (!el) return;
+  el.innerHTML = `<div style="padding:36px 20px;text-align:center;color:var(--text-muted);font-size:11px;line-height:1.7">
+    <div style="font-size:22px;margin-bottom:10px;opacity:0.5">⚡</div>
+    <div style="color:var(--text-secondary);font-weight:600;margin-bottom:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px">UNIFIED STREAM</div>
+    <div style="font-size:10px;max-width:240px;margin:0 auto">Merges News · Alerts · X · Live into a single chronological feed with source-type badges.</div>
+    <div style="font-size:10px;margin-top:10px;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace">— arriving in Commit 2 —</div>
+    <div style="font-size:9px;margin-top:4px;color:var(--text-muted)">Use the tabs above to see each source directly</div>
+  </div>`;
 }
 
 // ═══════════════ ISS LIVE TRACKER ═══════════════
@@ -4482,8 +4515,8 @@ populateAlerts([]);
 populateXFeed();     // starts live fetch internally
 populateNews([]);    // shows skeleton while loading
 populateLive();
-populateTrends();
-populateTrendsBox();
+populateBriefing();
+populateAll();
 updateStats();
 
 // Init Cesium
