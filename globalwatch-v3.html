@@ -1449,7 +1449,7 @@ function showCountryPopup(lat, lon, sx, sy) {
       if (!bdcRes.ok) throw new Error('Geocode failed');
       const bdc = await bdcRes.json();
       const cc  = (bdc.countryCode || '').toUpperCase();
-      if (!cc) { closeCountryPopup(); return; } // ocean / no country — close silently
+      if (!cc || !/^[A-Z]{2,3}$/.test(cc)) { closeCountryPopup(); return; } // ocean / no country / malformed code — close silently
 
       const cRes  = await fetch(`https://restcountries.com/v3.1/alpha/${cc}?fields=name,flags,flag,capital,population,area,region,subregion,currencies,languages,timezones,borders,gini,car,idd`);
       if (!cRes.ok) throw new Error('Country data unavailable');
@@ -2937,7 +2937,7 @@ function renderXFeedLive(articles) {
       <span style="font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:1px;font-family:'JetBrains Mono',monospace">INTEL / OSINT FEED</span>
       <span style="font-size:9px;color:var(--accent-green);font-family:'JetBrains Mono',monospace;font-weight:600">● LIVE — NewsAPI</span>
     </div>
-    ${posts.map(p => `<div class="xfeed-post" ${safeOpenAttr(p.url)} style="${isSafeUrl(p.url) ? 'cursor:pointer' : ''}">
+    ${posts.map(p => `<div class="xfeed-post" ${safeOpenAttr(p.url)}>
       <div class="xfeed-post-header"><div class="xfeed-avatar">${escHtml(p.av)}</div><div><div class="xfeed-name">${escHtml(p.name)}</div><div class="xfeed-handle">${escHtml(p.handle)}</div></div><span class="xfeed-time">${escHtml(p.time)}</span></div>
       <div class="xfeed-text">${escHtml(p.text)}</div>
     </div>`).join('')}`;
@@ -2988,7 +2988,7 @@ function populateNews(articles, isLive = false) {
       const biasPill = bias ? `<span class="bias-pill ${bias.cls}">${bias.label}</span>` : '';
       const accClass = bias ? getAccuracyClass(bias.acc) : null;
       const accPill  = accClass ? `<span class="accuracy-pill ${accClass}" title="Factuality score (Ground News / Ad Fontes consensus)">${bias.acc}%</span>` : '';
-      return `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
+      return `<div class="news-item" ${safeOpenAttr(n.url)}>
       <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}${accPill}</div>
       <div class="news-title">${escHtml(n.title)}</div>
       <div class="news-meta"><span>📍 ${escHtml(n.loc || 'International')}</span><span>${escHtml(n.time)}</span></div>
@@ -3050,11 +3050,23 @@ function isSafeUrl(url) {
   try { const u = new URL(url); return u.protocol === 'https:' || u.protocol === 'http:'; }
   catch { return false; }
 }
-// Build a safe onclick for window.open — returns empty string if URL is invalid
+// Build a safe data-attribute pair for opening a URL on click.
+// We bind the click via DOM after render (see delegated handler below), so the URL
+// never enters a JS string context — defeats the &#39; HTML-decode XSS attack path
+// where escHtml-escaped quotes get decoded back to ' inside an inline onclick attribute.
 function safeOpenAttr(url) {
   if (!isSafeUrl(url)) return '';
-  return `onclick="window.open('${escHtml(url)}','_blank')"`;
+  return `data-open-url="${escHtml(url)}" style="cursor:pointer"`;
 }
+// Delegated click handler — bind once, applies to any current or future element
+// with a data-open-url attribute. Uses noopener,noreferrer to also close the
+// window.opener tabnabbing risk on outbound links.
+document.addEventListener('click', e => {
+  const target = e.target.closest('[data-open-url]');
+  if (!target) return;
+  const url = target.getAttribute('data-open-url');
+  if (isSafeUrl(url)) window.open(url, '_blank', 'noopener,noreferrer');
+});
 // Validate a YouTube video ID — must be 6-16 alphanumeric/-/_ chars
 // Rejects javascript: URIs and any other injection attempts
 function sanitizeYtId(raw) {
