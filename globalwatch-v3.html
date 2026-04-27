@@ -217,6 +217,14 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .xfeed-time { font-size:10px; color:var(--text-muted); margin-left:auto; font-family:'JetBrains Mono',monospace; }
 .xfeed-text { font-size:12px; line-height:1.5; color:var(--text-secondary); }
 
+/* ── TOAST NOTIFICATIONS (replaces browser alert()) ── */
+#toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.toast { background:var(--bg-card); border:1px solid var(--border-glow); border-radius:6px; padding:10px 14px; font-size:11px; color:var(--text-primary); font-family:'JetBrains Mono',monospace; letter-spacing:.3px; box-shadow:0 4px 16px rgba(0,0,0,0.5); opacity:0; transform:translateY(8px); transition:opacity .2s, transform .2s; max-width:300px; pointer-events:auto; }
+.toast.toast-show { opacity:1; transform:translateY(0); }
+.toast.toast-warn { border-color:var(--accent-orange); color:var(--accent-orange); }
+.toast.toast-error { border-color:var(--accent-red); color:var(--accent-red); }
+.toast.toast-info { border-color:var(--accent-cyan); color:var(--accent-cyan); }
+
 /* ── NEWS ── */
 .news-item { padding:11px 14px; border-bottom:1px solid var(--border); cursor:pointer; }
 .news-item:hover { background:var(--bg-tertiary); }
@@ -230,14 +238,10 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .bias-center      { background:rgba(34,197,94,0.12);   color:#4ade80; border:1px solid rgba(34,197,94,0.25);  }
 .bias-center-right{ background:rgba(249,115,22,0.12);  color:#fb923c; border:1px solid rgba(249,115,22,0.25); }
 .bias-state-media { background:rgba(168,85,247,0.12);  color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
-.accuracy-pill { font-size:8px; font-weight:700; letter-spacing:.4px; padding:1px 5px; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
-.acc-high   { background:rgba(52,199,89,0.15);  color:#4ade80; border:1px solid rgba(52,199,89,0.3);  }
-.acc-mixed  { background:rgba(232,153,58,0.15); color:#fbbf24; border:1px solid rgba(232,153,58,0.3); }
-.acc-low    { background:rgba(240,68,68,0.15);  color:#f87171; border:1px solid rgba(240,68,68,0.3);  }
-.news-filter-bar { padding:6px 10px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
-.nf-row { display:flex; gap:3px; align-items:center; overflow-x:auto; scrollbar-width:none; padding-bottom:1px; }
-.nf-row::-webkit-scrollbar { display:none; }
-.nf-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:.3px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all .15s; flex-shrink:0; white-space:nowrap; }
+.news-filter-bar { padding:8px 10px 6px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
+.nf-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:4px; }
+.nf-row:last-child { margin-bottom:0; }
+.nf-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 8px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:.5px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all .15s; }
 .nf-btn:hover { border-color:var(--border-glow); color:var(--text-secondary); }
 .nf-btn.active { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
@@ -450,35 +454,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theme-opt.active-theme { background:rgba(6,182,212,0.1); color:var(--accent-cyan); }
 .theme-swatch { width:10px; height:10px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.12); }
 
-/* ── BRIEFING ZONE (synthesized top-signal stories) ── */
-.briefing-zone { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; display:flex; flex-direction:column; }
-.briefing-header { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; background:rgba(6,182,212,0.05); transition:background .15s; }
-.briefing-header:hover { background:rgba(6,182,212,0.08); }
-.briefing-title { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; }
-.briefing-count { font-size:9px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-weight:500; letter-spacing:.5px; margin-left:4px; }
-.briefing-toggle { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:11px; padding:0; line-height:1; }
-.briefing-content { overflow-y:auto; max-height:320px; transition:max-height .3s ease; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
-.briefing-content::-webkit-scrollbar { width:3px; }
-.briefing-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-.briefing-content.collapsed { max-height:0; }
-.brief-card { margin:6px 10px; padding:9px 11px; background:var(--bg-card); border-left:3px solid var(--bc-color,var(--accent-red)); border-radius:0 5px 5px 0; cursor:pointer; transition:background .15s; }
-.brief-card:hover { background:var(--bg-tertiary); }
-.brief-card.active { background:rgba(6,182,212,0.08); box-shadow:inset 0 0 0 1px rgba(6,182,212,0.3); }
-.brief-card.high { --bc-color:var(--accent-red); }
-.brief-card.medium { --bc-color:var(--accent-orange); }
-.brief-card.low { --bc-color:var(--accent-blue); }
-.brief-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.brief-tag { font-size:8px; font-weight:700; padding:1px 6px; border-radius:2px; letter-spacing:.5px; font-family:'JetBrains Mono',monospace; }
-.brief-tag.high { background:rgba(240,68,68,0.15); color:var(--accent-red); border:0.5px solid rgba(240,68,68,0.3); }
-.brief-tag.medium { background:rgba(232,153,58,0.15); color:var(--accent-orange); border:0.5px solid rgba(232,153,58,0.3); }
-.brief-tag.low { background:rgba(74,143,239,0.15); color:var(--accent-blue); border:0.5px solid rgba(74,143,239,0.3); }
-.brief-topic { font-size:11px; font-weight:600; color:var(--text-primary); flex:1; }
-.brief-velo { font-size:9px; color:var(--accent-green); font-family:'JetBrains Mono',monospace; font-weight:600; flex-shrink:0; }
-.brief-desc { font-size:10px; color:var(--text-secondary); line-height:1.45; margin-bottom:5px; }
-.brief-src { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
-.brief-src-badge { font-size:8px; font-family:'JetBrains Mono',monospace; padding:1px 5px; border-radius:2px; background:var(--bg-tertiary); color:var(--text-secondary); border:0.5px solid var(--border); }
-.brief-conf { font-size:8px; font-family:'JetBrains Mono',monospace; font-weight:700; padding:1px 5px; border-radius:2px; margin-left:auto; }  
-
 /* ── TRENDS STANDALONE BOX ── */
 .trends-box { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; }
 .trends-box-header { display:flex; align-items:center; justify-content:space-between; padding:7px 14px; cursor:pointer; user-select:none; }
@@ -608,6 +583,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 </style>
 </head>
 <body>
+<div id="toast-container"></div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -1019,35 +995,40 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 
   <!-- Right Panel -->
   <div class="right-panel" id="rightPanel">
-    <!-- BRIEFING zone: synthesized top-signal stories (replaces old Trend Intel box) -->
-    <div class="briefing-zone" id="briefingZone">
-      <div class="briefing-header" onclick="toggleBriefing()">
-        <div><span class="briefing-title">⚡ BRIEFING · TOP SIGNAL</span><span class="briefing-count" id="briefingCount">· 0 active</span></div>
-        <button class="briefing-toggle" id="briefingToggleBtn">▲</button>
+    <!-- Trends Standalone Box -->
+    <div class="trends-box" id="trendsBox">
+      <div class="trends-box-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="trends-box-title">⚡ TREND INTEL</div>
+          <div class="trends-view-btns">
+            <button class="trends-view-btn active" id="trendViewCompact" onclick="setTrendsView('compact')">COMPACT</button>
+            <button class="trends-view-btn" id="trendViewFull" onclick="setTrendsView('full')">FULL</button>
+            <button class="trends-view-btn" id="trendViewInsights" onclick="setTrendsView('insights')">INSIGHTS</button>
+          </div>
+        </div>
+        <button class="trends-box-toggle" id="trendToggleBtn" onclick="toggleTrendsBox()">▲</button>
       </div>
-      <div class="briefing-content" id="briefingContent"></div>
+      <div class="trends-box-content" id="trendsBoxContent"></div>
     </div>
     <div class="panel-tabs">
-      <div class="panel-tab active" data-tab="all" onclick="switchTab('all')"><span>ALL</span><span class="tab-badge" id="allCount">0</span></div>
-      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge" id="newsCount">0</span></div>
-      <div class="panel-tab" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
-      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X</span></div>
+      <div class="panel-tab active" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
+      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X FEED</span></div>
+      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge">32</span></div>
       <div class="panel-tab" data-tab="live" onclick="switchTab('live')"><span data-i18n="live">LIVE</span></div>
     </div>
     <div class="panel-content">
-      <div class="tab-pane active" id="tab-all"></div>
-      <div class="tab-pane" id="tab-alerts"></div>
+      <div class="tab-pane active" id="tab-alerts"></div>
       <div class="tab-pane" id="tab-xfeed"></div>
       <div class="tab-pane" id="tab-news">
         <div class="news-filter-bar" id="newsFilterBar">
           <div class="nf-row">
-            <button class="nf-btn active" id="nfrAll"     onclick="setNewsRegion('all')">ALL</button>
-            <button class="nf-btn" id="nfrUS"             onclick="setNewsRegion('us')">US</button>
-            <button class="nf-btn" id="nfrEurope"         onclick="setNewsRegion('europe')">EU</button>
-            <button class="nf-btn" id="nfrME"             onclick="setNewsRegion('middle-east')">ME</button>
-            <button class="nf-btn" id="nfrAsia"           onclick="setNewsRegion('asia')">ASIA</button>
-            <button class="nf-btn" id="nfrAfrica"         onclick="setNewsRegion('africa')">AFR</button>
-            <button class="nf-btn" id="nfrLatam"          onclick="setNewsRegion('latam')">LATAM</button>
+            <button class="nf-btn active" id="nfrAll"     onclick="setNewsRegion('all')">🌐 ALL</button>
+            <button class="nf-btn" id="nfrUS"             onclick="setNewsRegion('us')">🇺🇸 US / N.AMERICA</button>
+            <button class="nf-btn" id="nfrEurope"         onclick="setNewsRegion('europe')">🇪🇺 EUROPE</button>
+            <button class="nf-btn" id="nfrME"             onclick="setNewsRegion('middle-east')">🕌 M.EAST</button>
+            <button class="nf-btn" id="nfrAsia"           onclick="setNewsRegion('asia')">🌏 ASIA/PAC</button>
+            <button class="nf-btn" id="nfrAfrica"         onclick="setNewsRegion('africa')">🌍 AFRICA</button>
+            <button class="nf-btn" id="nfrLatam"          onclick="setNewsRegion('latam')">🌎 LATAM</button>
           </div>
         </div>
         <div id="news-articles-list"></div>
@@ -1106,6 +1087,21 @@ let gdeltEvents = [];
 let gdeltGeo = [];
 
 // ═══════════════ TIMEZONE DATABASE ═══════════════
+// ── Toast notifications (replaces browser alert) ──────────────
+function showToast(msg, type = 'warn', duration = 4000) {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;  // textContent — never innerHTML, never accepts HTML injection
+  c.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('toast-show'));
+  setTimeout(() => {
+    t.classList.remove('toast-show');
+    setTimeout(() => t.remove(), 220);
+  }, duration);
+}
+
 const TIMEZONE_DB = [
   {label:'UTC',tz:'UTC',offset:'+0:00'},
   {label:'London',tz:'Europe/London',offset:'+0:00'},
@@ -1251,8 +1247,18 @@ document.getElementById('addClockBtn').onclick = () => {
 function renderTimezones(filter) {
   const list = document.getElementById('tzList');
   const f = filter.toLowerCase();
-  list.innerHTML = TIMEZONE_DB.filter(tz => !f || tz.label.toLowerCase().includes(f) || tz.tz.toLowerCase().includes(f) || tz.offset.includes(f))
-    .map(tz => `<div class="tz-option ${selectedTz===tz.tz?'selected':''}" onclick="selectTz('${tz.tz}','${tz.label}','${tz.offset}')"><span>${tz.label}</span><span class="tz-offset">UTC${tz.offset}</span></div>`).join('');
+  const filtered = TIMEZONE_DB.filter(tz => !f || tz.label.toLowerCase().includes(f) || tz.tz.toLowerCase().includes(f) || tz.offset.includes(f));
+  // Build via DOM — no inline onclick string injection, no quote-escaping risk
+  list.innerHTML = '';
+  filtered.forEach((tz, i) => {
+    const d = document.createElement('div');
+    d.className = 'tz-option' + (selectedTz === tz.tz ? ' selected' : '');
+    const lbl = document.createElement('span'); lbl.textContent = tz.label;
+    const off = document.createElement('span'); off.className = 'tz-offset'; off.textContent = 'UTC' + tz.offset;
+    d.appendChild(lbl); d.appendChild(off);
+    d.addEventListener('click', () => selectTz(tz.tz, tz.label, tz.offset));
+    list.appendChild(d);
+  });
 }
 
 function filterTimezones() { renderTimezones(document.getElementById('tzSearch').value); }
@@ -2641,7 +2647,7 @@ async function fetchRSSAlerts() {
         const sev = t.includes('kill')||t.includes('dead')||t.includes('casualt')||t.includes('emergency')||t.includes('catastroph') ? 'sev-critical'
                   : t.includes('attack')||t.includes('strike')||t.includes('war')||t.includes('crisis')||t.includes('threat') ? 'sev-warning'
                   : 'sev-info';
-        return { type, sev, title: item.title, loc: item.source, time: item.pubDate ? timeAgo(item.pubDate) : 'recent', src: item.source, conf: Math.floor(Math.random()*20+75)+'%', url: item.link };
+        return { type, sev, title: item.title, loc: item.source, time: item.pubDate ? timeAgo(item.pubDate) : 'recent', src: item.source, conf: 'RSS', url: item.link };
       });
       populateAlerts(alerts);
       document.getElementById('alertCount').textContent = alerts.length;
@@ -2715,7 +2721,8 @@ function timeAgo(dateStr) {
 }
 
 let newsRegionFilter = 'all';
-const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com,afp.com,csis.org,cbsnews.com,cnbc.com,foxnews.com,dw.com,news.sky.com,sky.com,france24.com,euronews.com,scmp.com,channelnewsasia.com,thediplomat.com,wionews.com,timesofindia.indiatimes.com,yna.co.kr,nhk.or.jp,www3.nhk.or.jp,japantimes.co.jp,trtworld.com,aa.com.tr,alarabiya.net,thenationalnews.com,jpost.com,haaretz.com,enca.com,africanews.com,cbc.ca,nationalpost.com';
+const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com';
+
 // Split into array for client-side hard-filter (backup in case API leaks stray sources)
 const CURATED_DOMAIN_LIST = CURATED_DOMAINS.split(',');
 function isFromCuratedSource(article) {
@@ -2740,109 +2747,41 @@ function decodeEntities(str) {
 
 // Bias ratings modelled on AllSides / Ad Fontes Media scale
 // Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
-// Bias + accuracy ratings. Bias based on AllSides / Ad Fontes consensus.
-// Accuracy (factuality) score based on Ground News, NewsGuard, Ad Fontes — 0-100.
-// Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
 const SOURCE_BIAS = {
-  // — Global / International —
-  'bbc':              { label:'Center',        cls:'bias-center',        acc:92 },
-  'bbc news':         { label:'Center',        cls:'bias-center',        acc:92 },
-  'reuters':          { label:'Center',        cls:'bias-center',        acc:97 },
-  'associated press': { label:'Center',        cls:'bias-center',        acc:97 },
-  'ap':               { label:'Center',        cls:'bias-center',        acc:97 },
-  'afp':              { label:'Center',        cls:'bias-center',        acc:95 },
-  'agence france-presse': { label:'Center',    cls:'bias-center',        acc:95 },
-  'csis':             { label:'Center',        cls:'bias-center',        acc:90 },
-  'foreign affairs':  { label:'Center',        cls:'bias-center',        acc:92 },
-  'bloomberg':        { label:'Center',        cls:'bias-center',        acc:90 },
-  'bloomberg news':   { label:'Center',        cls:'bias-center',        acc:90 },
-  'financial times':  { label:'Center',        cls:'bias-center',        acc:92 },
-  'ft':               { label:'Center',        cls:'bias-center',        acc:92 },
-  'axios':            { label:'Center',        cls:'bias-center',        acc:88 },
-  'politico':         { label:'Center',        cls:'bias-center',        acc:86 },
-
-  // — United States —
-  'pbs':              { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
-  'pbs newshour':     { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
-  'npr':              { label:'Center-Left',   cls:'bias-center-left',   acc:90 },
-  'the new york times':{label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'new york times':   { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'nytimes':          { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'the atlantic':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
-  'atlantic':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
-  'cbs':              { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'cbs news':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'cnbc':             { label:'Center',        cls:'bias-center',        acc:85 },
-  'fox news':         { label:'Right',         cls:'bias-center-right',  acc:65 },
-  'fox':              { label:'Right',         cls:'bias-center-right',  acc:65 },
-  'the wall street journal':{label:'Center-Right',cls:'bias-center-right',acc:90 },
-  'wall street journal':{label:'Center-Right', cls:'bias-center-right',  acc:90 },
-  'wsj':              { label:'Center-Right',  cls:'bias-center-right',  acc:90 },
-
-  // — Europe —
-  'the guardian':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
-  'guardian':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
-  'dw':               { label:'Center',        cls:'bias-center',        acc:92 },
-  'dw news':          { label:'Center',        cls:'bias-center',        acc:92 },
-  'deutsche welle':   { label:'Center',        cls:'bias-center',        acc:92 },
-  'sky news':         { label:'Center',        cls:'bias-center',        acc:88 },
-  'france 24':        { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'france24':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
-  'euronews':         { label:'Center',        cls:'bias-center',        acc:87 },
-
-  // — Asia —
-  'scmp':             { label:'Center',        cls:'bias-center',        acc:80 },
-  'south china morning post':{label:'Center',  cls:'bias-center',        acc:80 },
-  'cna':              { label:'Center',        cls:'bias-center',        acc:88 },
-  'channel news asia':{ label:'Center',        cls:'bias-center',        acc:88 },
-  'the diplomat':     { label:'Center',        cls:'bias-center',        acc:90 },
-  'wion':             { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
-  'times of india':   { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
-  'yonhap':           { label:'Center',        cls:'bias-center',        acc:88 },
-  'yonhap news agency':{label:'Center',        cls:'bias-center',        acc:88 },
-  'nhk':              { label:'Center',        cls:'bias-center',        acc:92 },
-  'nhk world':        { label:'Center',        cls:'bias-center',        acc:92 },
-  'nhk world-japan':  { label:'Center',        cls:'bias-center',        acc:92 },
-  'japan times':      { label:'Center',        cls:'bias-center',        acc:88 },
-  'the japan times':  { label:'Center',        cls:'bias-center',        acc:88 },
-
-  // — Middle East —
-  'al jazeera':       { label:'Center',        cls:'bias-center',        acc:82 },
-  'al jazeera english':{label:'Center',        cls:'bias-center',        acc:82 },
-  'trt':              { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
-  'trt world':        { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
-  'anadolu agency':   { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
-  'al arabiya':       { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
-  'the national':     { label:'Center',        cls:'bias-center',        acc:82 },
-  'jerusalem post':   { label:'Center-Right',  cls:'bias-center-right',  acc:82 },
-  'the jerusalem post':{label:'Center-Right',  cls:'bias-center-right',  acc:82 },
-  'haaretz':          { label:'Left',          cls:'bias-left',          acc:88 },
-
-  // — Africa —
-  'enca':             { label:'Center',        cls:'bias-center',        acc:85 },
-  'africa news':      { label:'Center',        cls:'bias-center',        acc:85 },
-  'africanews':       { label:'Center',        cls:'bias-center',        acc:85 },
-
-  // — Canada —
-  'cbc':              { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
-  'cbc news':         { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
-  'national post':    { label:'Right',         cls:'bias-center-right',  acc:80 },
-  'the national post':{ label:'Right',         cls:'bias-center-right',  acc:80 },
-
-  // — State media (global) —
-  'rt':               { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
-  'rt news':          { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
+  'bbc':            { label:'Center',        cls:'bias-center'       },
+  'bbc news':       { label:'Center',        cls:'bias-center'       },
+  'pbs':            { label:'Center-Left',   cls:'bias-center-left'  },
+  'pbs newshour':   { label:'Center-Left',   cls:'bias-center-left'  },
+  'npr':            { label:'Center-Left',   cls:'bias-center-left'  },
+  'reuters':        { label:'Center',        cls:'bias-center'       },
+  'associated press':{ label:'Center',       cls:'bias-center'       },
+  'ap':             { label:'Center',        cls:'bias-center'       },
+  'the guardian':   { label:'Left-Center',   cls:'bias-center-left'  },
+  'guardian':       { label:'Left-Center',   cls:'bias-center-left'  },
+  'the new york times':{ label:'Left-Center',cls:'bias-center-left'  },
+  'new york times': { label:'Left-Center',   cls:'bias-center-left'  },
+  'nytimes':        { label:'Left-Center',   cls:'bias-center-left'  },
+  'foreign affairs':{ label:'Center',        cls:'bias-center'       },
+  'rt':             { label:'State Media 🇷🇺', cls:'bias-state-media'  },
+  'rt news':        { label:'State Media 🇷🇺', cls:'bias-state-media'  },
+  'the atlantic':   { label:'Left-Center',   cls:'bias-center-left'  },
+  'atlantic':       { label:'Left-Center',   cls:'bias-center-left'  },
+  'politico':       { label:'Center',        cls:'bias-center'       },
+  'bloomberg':      { label:'Center',        cls:'bias-center'       },
+  'bloomberg news': { label:'Center',        cls:'bias-center'       },
+  'al jazeera':     { label:'Center',        cls:'bias-center'       },
+  'al jazeera english':{ label:'Center',     cls:'bias-center'       },
+  'financial times':{ label:'Center',        cls:'bias-center'       },
+  'ft':             { label:'Center',        cls:'bias-center'       },
+  'axios':          { label:'Center',        cls:'bias-center'       },
+  'the wall street journal':{ label:'Center-Right', cls:'bias-center-right' },
+  'wall street journal':    { label:'Center-Right', cls:'bias-center-right' },
+  'wsj':            { label:'Center-Right',  cls:'bias-center-right' },
 };
 
 function getSourceBias(srcName) {
   const key = (srcName || '').toLowerCase().trim();
   return SOURCE_BIAS[key] || null;
-}
-function getAccuracyClass(acc) {
-  if (acc == null) return null;
-  if (acc >= 85) return 'acc-high';
-  if (acc >= 70) return 'acc-mixed';
-  return 'acc-low';
 }
 
 function setNewsRegion(v) {
@@ -2901,10 +2840,10 @@ async function refreshNews() {
     // Hard client-side filter — drops any source not in the curated domain list
     const curated = articles.filter(isFromCuratedSource);
     const formatted = curated.map(a => ({
-      src:     a.source?.name || 'Wire',
+      src:     escHtml(a.source?.name || 'Wire'),
       srcRaw:  a.source?.name || 'Wire',          // raw name for bias lookup
-      title:   decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
-      loc:     decodeEntities(a.author || a.source?.name || 'International'),
+      title:   escHtml(decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim())),
+      loc:     escHtml(decodeEntities(a.author || a.source?.name || 'International')),
       time:    timeAgo(a.publishedAt),
       url:     a.url // URL used in window.open, not innerHTML
     }));
@@ -2927,12 +2866,13 @@ async function refreshXFeed() {
 function renderXFeedLive(articles) {
   const posts = articles.slice(0, 12).map((a, i) => {
     const p = OSINT_PERSONAS[i % OSINT_PERSONAS.length];
-    const rawText = decodeEntities((a.title || a.description || '')
-      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim());
-    return { ...p, text: rawText.length > 200 ? rawText.slice(0, 197) + '…' : rawText, time: timeAgo(a.publishedAt), url: a.url };
+    const rawText = (a.title || a.description || '')
+      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim();
+    const text = escHtml(rawText);
+    return { ...p, text: text.length > 200 ? text.slice(0, 197) + '…' : text, time: timeAgo(a.publishedAt), url: a.url };
   });
   document.getElementById('tab-xfeed').innerHTML = `
-    <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="alert('Add X OAuth credentials to enable personal feed overlay')">Sign in with X</button></div>
+    <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="showToast('Add X OAuth credentials in settings to enable personal feed overlay.', 'info')">Sign in with X</button></div>
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <span style="font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:1px;font-family:'JetBrains Mono',monospace">INTEL / OSINT FEED</span>
       <span style="font-size:9px;color:var(--accent-green);font-family:'JetBrains Mono',monospace;font-weight:600">● LIVE — NewsAPI</span>
@@ -2946,7 +2886,7 @@ function renderXFeedLive(articles) {
 function populateXFeed() {
   // Show placeholder while live data loads
   document.getElementById('tab-xfeed').innerHTML = `
-    <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="alert('Add X OAuth credentials to enable personal feed overlay')">Sign in with X</button></div>
+    <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="showToast('Add X OAuth credentials in settings to enable personal feed overlay.', 'info')">Sign in with X</button></div>
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><span style="font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:1px;font-family:'JetBrains Mono',monospace">INTEL / OSINT FEED</span><span style="font-size:9px;color:var(--accent-orange);font-family:'JetBrains Mono',monospace">○ Connecting…</span></div>
     <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:10px">Loading live intelligence feed…</div>`;
   refreshXFeed();
@@ -2971,25 +2911,17 @@ function populateNews(articles, isLive = false) {
   if (!container) return;
   const data = (articles && articles.length > 0) ? articles : NEWS_FALLBACK;
   const live = isLive && articles && articles.length > 0;
-  // Keep the NEWS tab badge in sync with the actual article count
-  const badgeEl = document.getElementById('newsCount');
-  if (badgeEl) badgeEl.textContent = data.length;
   container.innerHTML = `
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);background:var(--bg-tertiary);display:flex;align-items:center;gap:8px">
       <span style="font-size:10px;font-weight:700;color:${live ? 'var(--accent-green)' : 'var(--accent-orange)'};letter-spacing:.5px">${live ? '● LIVE' : '○ CACHED'}</span>
       <span style="font-size:10px;color:var(--text-muted)">${live ? 'NewsAPI · ' + data.length + ' articles' : 'Connecting to NewsAPI…'}</span>
       <button id="newsRefreshBtn" onclick="refreshNews()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--text-muted);padding:2px 8px;border-radius:3px;font-size:9px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border)'">↻ REFRESH</button>
     </div>
-    <div style="padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(6,182,212,0.04);font-size:9px;color:var(--text-muted);line-height:1.4">
-      ⓘ Bias &amp; factuality ratings reflect the <strong style="color:var(--text-secondary);font-weight:600">publication overall</strong>, not this individual article. Based on Ground News / Ad Fontes consensus.
-    </div>
     ${data.map(n => {
       const bias = getSourceBias(n.srcRaw || n.src);
       const biasPill = bias ? `<span class="bias-pill ${bias.cls}">${bias.label}</span>` : '';
-      const accClass = bias ? getAccuracyClass(bias.acc) : null;
-      const accPill  = accClass ? `<span class="accuracy-pill ${accClass}" title="Factuality score (Ground News / Ad Fontes consensus)">${bias.acc}%</span>` : '';
       return `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
-      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}${accPill}</div>
+      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}</div>
       <div class="news-title">${escHtml(n.title)}</div>
       <div class="news-meta"><span>📍 ${escHtml(n.loc || 'International')}</span><span>${escHtml(n.time)}</span></div>
     </div>`;
@@ -3065,7 +2997,7 @@ function sanitizeYtId(raw) {
 
 // ═══════════════ WATCH VIDEO ═══════════════
 function launchPip(name, liveUrl) {
-  if (!isSafeUrl(liveUrl)) return alert('Stream not available for this channel.');
+  if (!isSafeUrl(liveUrl)) return showToast('Stream URL not available for this channel.', 'warn');
   const w = 560, h = 315;
   const left = Math.max(0, window.screenX + window.outerWidth - w - 30);
   const top  = Math.max(0, window.screenY + window.outerHeight - h - 80);
@@ -3074,25 +3006,18 @@ function launchPip(name, liveUrl) {
 }
 
 function launchCustomPip() {
-  const url = document.getElementById('customYtUrl').value.trim();
-  if (!url) return;
-  // Extract video ID from YouTube URL patterns
-  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|live\/|embed\/))([A-Za-z0-9_-]{6,16})/);
-  const safeId = m ? sanitizeYtId(m[1]) : null;
-  if (!safeId) {
-    alert('Please paste a valid YouTube URL (youtube.com/watch?v=... or youtu.be/...)');
+  const raw = document.getElementById('customYtUrl').value.trim();
+  if (!raw) return;
+  // Accept full YouTube URLs (watch, live, channel/@handle) — open as popup, same as channel list
+  if (!isSafeUrl(raw) || !raw.includes('youtube.com') && !raw.includes('youtu.be')) {
+    showToast('Please paste a valid YouTube URL.', 'warn');
     return;
   }
-  document.getElementById('pipChannel').textContent = 'Custom Stream';
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://www.youtube.com/embed/${safeId}?autoplay=1&mute=1`;
-  iframe.allow = 'autoplay;encrypted-media';
-  iframe.allowFullscreen = true;
-  iframe.style.cssText = 'width:100%;height:100%;border:none';
-  const body = document.getElementById('pipBody');
-  body.innerHTML = '';
-  body.appendChild(iframe);
-  document.getElementById('pipOverlay').classList.add('visible');
+  const w = 560, h = 315;
+  const left = Math.max(0, window.screenX + window.outerWidth - w - 30);
+  const top  = Math.max(0, window.screenY + window.outerHeight - h - 80);
+  const popup = window.open(raw, '_blank', `width=${w},height=${h},left=${left},top=${top},resizable=yes,toolbar=no,menubar=no,scrollbars=no`);
+  if (!popup) window.open(raw, '_blank');
 }
 
 function closePip() {
@@ -3817,86 +3742,77 @@ document.addEventListener('click', e => {
   }
 });
 
-// ═══════════════ BRIEFING ZONE (replaces Trend Intel box) ═══════════════
-// Each briefing card is a synthesized top-signal story — pulled from TREND_DATA.
-// Clicking a card will filter the stream below by its keywords (wired in Commit 3).
-let briefingOpen = true;
-let selectedBriefingId = null;
+// ═══════════════ TRENDS STANDALONE BOX ═══════════════
+let trendsBoxOpen = true;
+let trendsView = 'compact'; // 'compact' | 'full'
 
-// Parse "14.2K" → 14200 so we can derive rough source counts per story
-function parsePostsCount(str) {
-  const m = String(str || '').match(/([\d.]+)\s*([KM])?/i);
-  if (!m) return 0;
-  const n = parseFloat(m[1]);
-  const mult = m[2] === 'K' ? 1000 : m[2] === 'M' ? 1000000 : 1;
-  return Math.round(n * mult);
+function toggleTrendsBox() {
+  trendsBoxOpen = !trendsBoxOpen;
+  const content = document.getElementById('trendsBoxContent');
+  const btn = document.getElementById('trendToggleBtn');
+  if (content) content.classList.toggle('collapsed', !trendsBoxOpen);
+  if (btn) btn.textContent = trendsBoxOpen ? '▲' : '▼';
 }
 
-function toggleBriefing() {
-  briefingOpen = !briefingOpen;
-  const content = document.getElementById('briefingContent');
-  const btn = document.getElementById('briefingToggleBtn');
-  if (content) content.classList.toggle('collapsed', !briefingOpen);
-  if (btn) btn.textContent = briefingOpen ? '▲' : '▼';
+function setTrendsView(view) {
+  trendsView = view;
+  document.getElementById('trendViewCompact')?.classList.toggle('active', view === 'compact');
+  document.getElementById('trendViewFull')?.classList.toggle('active', view === 'full');
+  document.getElementById('trendViewInsights')?.classList.toggle('active', view === 'insights');
+  populateTrendsBox();
 }
 
-function populateBriefing() {
-  const el = document.getElementById('briefingContent');
-  const cntEl = document.getElementById('briefingCount');
+function populateTrendsBox() {
+  const el = document.getElementById('trendsBoxContent');
   if (!el) return;
-  const stories = TREND_DATA.slice(0, 5); // top 5 by relevance — rest still live in INTEL panel
-  if (cntEl) cntEl.textContent = '· ' + stories.length + ' active';
-  el.innerHTML = stories.map((t, i) => {
-    const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-    const confBg = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
-    const labelMap = { high:'HIGH', medium:'MED', low:'ELEV' };
-    // Truncate analysis for the card teaser
-    const teaser = t.analysis || t.desc || '';
-    const teaserShort = teaser.length > 180 ? teaser.slice(0, 177).replace(/\s+\S*$/, '') + '…' : teaser;
-    // Rough source counts derived from posts volume — in Commit 3 these become real matched-item counts
-    const posts = parsePostsCount(t.posts);
-    const newsN  = Math.max(2, Math.floor(posts / 1800));
-    const alertN = Math.max(1, Math.floor(posts / 4200));
-    const xN     = Math.max(1, Math.floor(posts / 5500));
-    return `<div class="brief-card ${t.level}" data-brief-id="${i}" onclick="selectBriefingCard(${i})">
-      <div class="brief-row">
-        <span class="brief-tag ${t.level}">${labelMap[t.level]}</span>
-        <span class="brief-topic">${escHtml(t.topic)}</span>
-        <span class="brief-velo">${escHtml(t.velocity)}</span>
-      </div>
-      <div class="brief-desc">${escHtml(teaserShort)}</div>
-      <div class="brief-src">
-        <span class="brief-src-badge">📰 ${newsN}</span>
-        <span class="brief-src-badge">⚠ ${alertN}</span>
-        <span class="brief-src-badge">𝕏 ${xN}</span>
-        <span class="brief-conf" style="background:${confBg};color:${barColor}">${t.conf}%</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function selectBriefingCard(idx) {
-  const wasSelected = selectedBriefingId === idx;
-  selectedBriefingId = wasSelected ? null : idx;
-  document.querySelectorAll('.brief-card').forEach(c => {
-    c.classList.toggle('active', !wasSelected && c.dataset.briefId === String(idx));
-  });
-  // Jump to the unified stream when a card is clicked
-  // Commit 3 will add keyword-based filtering of the stream to match the selected story
-  if (!wasSelected) switchTab('all');
-}
-
-// ═══════════════ ALL / UNIFIED STREAM (placeholder — Commit 2 wires real data) ═══════════════
-function populateAll() {
-  const el = document.getElementById('tab-all');
-  if (!el) return;
-  el.innerHTML = `<div style="padding:36px 20px;text-align:center;color:var(--text-muted);font-size:11px;line-height:1.7">
-    <div style="font-size:22px;margin-bottom:10px;opacity:0.5">⚡</div>
-    <div style="color:var(--text-secondary);font-weight:600;margin-bottom:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px">UNIFIED STREAM</div>
-    <div style="font-size:10px;max-width:240px;margin:0 auto">Merges News · Alerts · X · Live into a single chronological feed with source-type badges.</div>
-    <div style="font-size:10px;margin-top:10px;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace">— arriving in Commit 2 —</div>
-    <div style="font-size:9px;margin-top:4px;color:var(--text-muted)">Use the tabs above to see each source directly</div>
-  </div>`;
+  if (trendsView === 'compact') {
+    el.innerHTML = TREND_DATA.map(t => {
+      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
+      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+      return `<div class="trends-mini-item">
+        <span class="trends-mini-topic">${t.topic}</span>
+        <span class="trends-mini-conf" style="background:${bg};color:${col}">${t.conf}%</span>
+        <span class="trends-mini-vel">${t.velocity}</span>
+      </div>`;
+    }).join('');
+  } else if (trendsView === 'insights') {
+    // Analyst-grade insights view
+    el.innerHTML = TREND_DATA.map(t => {
+      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+      const labelMap = { high:'HIGH RISK', medium:'MEDIUM RISK', low:'ELEVATED' };
+      const watchHtml = (t.watchPoints || []).map(w => `<li>${w}</li>`).join('');
+      return `<div class="insight-card">
+        <div class="insight-header">
+          <span class="insight-topic">${t.topic}</span>
+          <span class="insight-badge ${t.level}">${labelMap[t.level]}</span>
+        </div>
+        <div class="insight-analysis">${t.analysis || t.desc}</div>
+        ${watchHtml ? `<div class="insight-section-label">WATCH POINTS</div><ul class="insight-watch-list">${watchHtml}</ul>` : ''}
+        <div class="insight-divider"></div>
+        <div class="insight-conf-row">
+          <span class="insight-conf-label">CONFIDENCE</span>
+          <div class="insight-conf-bar"><div class="insight-conf-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
+          <span class="insight-conf-pct" style="color:${barColor}">${t.conf}%</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    // Full card view
+    el.innerHTML = TREND_DATA.map(t => {
+      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
+      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+      return `<div class="trend-card">
+        <div class="trend-header">
+          <span class="trend-topic">${t.topic}</span>
+          <span class="trend-conf ${t.level}" style="background:${bg};color:${col}">${t.conf}%</span>
+        </div>
+        <div class="trend-desc">${t.desc}</div>
+        <div class="trend-meta"><span>${t.posts} posts</span><span>${t.velocity}</span><span>${t.region}</span></div>
+        <div class="trend-bar"><div class="trend-bar-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
+      </div>`;
+    }).join('');
+  }
 }
 
 // ═══════════════ ISS LIVE TRACKER ═══════════════
@@ -4229,7 +4145,7 @@ function buildGeoPane() {
       el.innerHTML = gdeltEvents.slice(0,6).map(e => `
         <div style="padding:5px 0;border-bottom:1px solid var(--border)">
           <div style="color:var(--text-primary);font-weight:500;font-size:10px;margin-bottom:2px">${escHtml(e.title || 'Event')}</div>
-          <div style="color:var(--text-muted);font-size:9px;font-family:'JetBrains Mono',monospace">${escHtml(e.domain || '')} · ${e.seendatetime ? e.seendatetime.slice(0,10) : ''}</div>
+          <div style="color:var(--text-muted);font-size:9px;font-family:'JetBrains Mono',monospace">${escHtml(e.domain || '')} · ${escHtml(e.seendatetime ? e.seendatetime.slice(0,10) : '')}</div>
         </div>`).join('');
     } else {
       el.innerHTML = '<div style="color:var(--text-muted);font-size:10px">Fetching live events…</div>';
@@ -4515,8 +4431,8 @@ populateAlerts([]);
 populateXFeed();     // starts live fetch internally
 populateNews([]);    // shows skeleton while loading
 populateLive();
-populateBriefing();
-populateAll();
+populateTrends();
+populateTrendsBox();
 updateStats();
 
 // Init Cesium
