@@ -1,5 +1,13 @@
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const ALLOWED_ORIGINS = [
+  'https://thesituationmonitor.vercel.app',  // ← change to your actual deployed URL
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+].filter(Boolean);
+const origin = req.headers.origin;
+if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin');
+}
   res.setHeader('Cache-Control', 's-maxage=120, stale-while-revalidate=60');
 
   const FEEDS = [
