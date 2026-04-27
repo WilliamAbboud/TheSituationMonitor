@@ -15,28 +15,17 @@
       "headers": [
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "accelerometer=(), ambient-light-sensor=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" },
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cesium.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://cesium.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.gdeltproject.org https://api.bigdatacloud.net https://restcountries.com https://api.worldbank.org https://api.wheretheiss.at https://api.frankfurter.app https://cesium.com https://assets.cesium.com https://ion.cesium.com https://tile.openweathermap.org; worker-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
-        }
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     }
   ],
   "functions": {
-    "api/news.js": {
-      "memory": 128,
-      "maxDuration": 10
-    },
-    "api/market.js": {
-      "memory": 128,
-      "maxDuration": 10
-    },
-    "api/alerts.js": {
-      "memory": 128,
-      "maxDuration": 10
-    }
+    "api/news.js":    { "memory": 512, "maxDuration": 10 },
+    "api/market.js":  { "memory": 512, "maxDuration": 15 },
+   "api/vessels.js": { "memory": 512, "maxDuration": 15 },
+    "api/weather.js": { "memory": 256, "maxDuration": 15 }
   }
 }
