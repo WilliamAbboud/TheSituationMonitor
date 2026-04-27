@@ -774,7 +774,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
   <div class="layer-pill" data-layer="cables" style="--pill-color:#ec4899;--pill-bg:rgba(236,72,153,0.08);--pill-glow:rgba(236,72,153,0.1)" onclick="toggleLayer(this)"><div class="pill-dot"></div><span data-i18n="cables">Subsea Cables</span></div>
   <div class="layer-pill iss-pill" id="issLayerPill" onclick="toggleISS(this)" title="Live ISS orbital position — updates every 5 seconds"><div class="pill-dot"></div><span>ISS LIVE</span></div>
   <!-- Weather pill with sub-layer dropdown -->
-  <div class="sub-layer-wrap" id="pill-weather" data-layer="weather" style="--pill-color:#eab308;--pill-bg:rgba(234,179,8,0.08);--pill-glow:rgba(234,179,8,0.1)" onclick="toggleSubPill(this)">
+  <div class="sub-layer-wrap" id="pill-weather" data-layer="weather" style="display:none;--pill-color:#eab308;--pill-bg:rgba(234,179,8,0.08);--pill-glow:rgba(234,179,8,0.1)" onclick="toggleSubPill(this)">
     <div class="pill-dot"></div><span data-i18n="weather">Weather</span>
     <span class="sub-arrow" onclick="openSubMenu(event,'subWeather',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subWeather">
