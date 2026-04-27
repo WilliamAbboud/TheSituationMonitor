@@ -310,6 +310,12 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theater-sub { display:block; font-family:'JetBrains Mono',monospace; font-size:7px; font-weight:500; letter-spacing:3px; color:rgba(255,255,255,0.14); margin-top:2px; text-transform:uppercase; }
 .theater-corners { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:rgba(6,182,212,0.25); font-size:8px; font-family:'JetBrains Mono',monospace; letter-spacing:2px; pointer-events:none; }
 
+/* ── WINDY FULLSCREEN MODE — hide controls that don't apply when iframe is up ── */
+.globe-controls.windy-mode .gc-row { display:none; }
+.globe-controls.windy-mode #bordersToggleRow { display:none; }
+.globe-controls.windy-mode .marker-picker-section { display:none; }
+#camFab.windy-hidden { display:none !important; }
+  
 /* ── APPEARANCE FLOAT BUTTON (inside globe) ── */
 .appear-float-btn { position:absolute; bottom:14px; left:14px; z-index:500; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
@@ -835,6 +841,10 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 <div class="main-container">
   <div class="globe-container">
     <div id="cesiumContainer"></div>
+    <!-- Windy.com fullscreen overlay — shown when 'Advanced Weather Map' preset is active -->
+    <div id="windy-fullscreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;background:#0a0a0f;">
+      <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
+    </div>
 
     <!-- Theater Map HUD Title -->
     <div class="theater-title">
@@ -860,8 +870,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
         <div class="gc-presets" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
           <button class="gc-preset active-preset" id="preset-satellite" onclick="applyPreset('satellite')">SATELLITE</button>
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
-          <button class="gc-preset" id="preset-map"       onclick="applyPreset('map')">MAP</button>
-          <button class="gc-preset" id="preset-ocean"     onclick="applyPreset('ocean')">OCEAN</button>
+          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 ADVANCED WEATHER MAP</button>
         </div>
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
@@ -1644,16 +1653,10 @@ let graticuleLayer = null;
 const MAP_SOURCES = {
   satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   google:    'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
-  map:       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-  ocean:     'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
 };
-const OCEAN_REFERENCE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}';
-
 const MAP_STYLE_DEFAULTS = {
   satellite: { bright:1.00, contrast:1.05, sat:0.70, hue:0.00 },
   google:    { bright:1.00, contrast:1.05, sat:0.85, hue:0.00 },
-  map:       { bright:1.00, contrast:1.05, sat:0.85, hue:0.00 },
-  ocean:     { bright:1.00, contrast:1.10, sat:0.90, hue:0.00 },
 };
 
 function toggleGlobeControls() {
@@ -1686,30 +1689,35 @@ function updateGlobeAppearance() {
 
 function applyPreset(name) {
   if (!viewer) return;
+
+  // WINDY mode — show the embed.windy.com fullscreen overlay and pause Cesium interaction
+  const windyDiv = document.getElementById('windy-fullscreen');
+  if (name === 'windy') {
+    if (windyDiv) windyDiv.style.display = 'block';
+    document.getElementById('cesiumContainer').style.pointerEvents = 'none';
+    document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
+    document.getElementById('preset-windy')?.classList.add('active-preset');
+    document.getElementById('globeControls')?.classList.add('windy-mode');
+    document.getElementById('camFab')?.classList.add('windy-hidden');
+    return;
+  }
+  // Switching back from Windy — hide iframe, restore Cesium interaction
+  if (windyDiv) windyDiv.style.display = 'none';
+  document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
+  document.getElementById('globeControls')?.classList.remove('windy-mode');
+  document.getElementById('camFab')?.classList.remove('windy-hidden');
+
   currentMapStyle = name;
 
-  // Swap the base imagery source
+  // Swap the base imagery source (only Satellite and Google Hybrid now)
   viewer.imageryLayers.removeAll();
   graticuleLayer = null;
   const url = MAP_SOURCES[name] || MAP_SOURCES.satellite;
-  // ESRI Ocean Base only serves tiles to ~level 13; cap it to prevent blank tiles at high zoom
-  const maxZoom = name === 'ocean' ? 13 : 19;
   viewer.imageryLayers.addImageryProvider(
-    new Cesium.UrlTemplateImageryProvider({ url, maximumLevel: maxZoom })
+    new Cesium.UrlTemplateImageryProvider({ url, maximumLevel: 19 })
   );
-
-  // Ocean: stack the reference overlay (labels + coastlines) on top as a second layer
-  // Also restrict camera zoom so user can't zoom past where tiles exist
-  if (name === 'ocean') {
-    viewer.imageryLayers.addImageryProvider(
-      new Cesium.UrlTemplateImageryProvider({ url: OCEAN_REFERENCE_URL, maximumLevel: 13 })
-    );
-    viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500; // ~zoom level 13 limit
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // ~distant view, stop before reaching sun
-  } else {
-    viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100; // default: allow close zoom
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // cap zoom-out for all presets
-  }
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100;
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
 
   // Re-add graticule if toggled on
   const showGraticule = document.getElementById('toggleGraticule')?.checked;
@@ -1726,10 +1734,10 @@ function applyPreset(name) {
   document.getElementById('gsHue').value      = d.hue;
   updateGlobeAppearance();
 
-  // Show borders toggle only for satellite (terrain has built-in labels)
+  // Show borders toggle only for satellite (Google has built-in labels)
   const bordersRow = document.getElementById('bordersToggleRow');
   if (bordersRow) bordersRow.style.display = (name === 'satellite') ? '' : 'none';
-  // If switching away from satellite, remove borders layer
+  // If switching away from satellite, remove the borders layer
   if (name !== 'satellite' && bordersLayer) {
     viewer.imageryLayers.remove(bordersLayer);
     bordersLayer = null;
