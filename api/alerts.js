@@ -45,18 +45,21 @@ export default async function handler(req, res) {
 
   try {
     const results = await Promise.allSettled(
-      FEEDS.map(feed =>
-        fetch(feed.url, {
+      FEEDS.map(feed => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 6000);
+        return fetch(feed.url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SituationMonitor/1.0)' },
-          signal: AbortSignal.timeout(6000),
+          signal: controller.signal,
         })
+          .finally(() => clearTimeout(timer))
           .then(r => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return r.text();
           })
           .then(xml => parseRSS(xml, feed.name))
-          .catch(() => [])
-      )
+          .catch(() => []);
+      })
     );
 
     const items = results
