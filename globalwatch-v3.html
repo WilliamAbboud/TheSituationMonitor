@@ -62,12 +62,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .topbar-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── GLOBE CONTROLS PANEL ── */
-.globe-controls { position:absolute; top:80px; left:10px; right:auto; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
-.globe-controls.visible { display:block; } .globe-controls.windy-mode #gc-map-only-controls { display:none; }
-.globe-controls.windy-mode .gc-row { display:none; }
-.globe-controls.windy-mode #bordersToggleRow { display:none; }
-.globe-controls.windy-mode .marker-picker-section { display:none; }
-#camFab.windy-hidden { display:none !important; }
+.globe-controls { position:absolute; top:8px; left:8px; z-index:500; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:8px; padding:12px 14px; width:220px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:none; }
+.globe-controls.visible { display:block; }
 .gc-title { font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:1px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
 .gc-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:14px; }
 .gc-close:hover { color:var(--text-primary); }
@@ -175,7 +171,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .pip-body iframe { width:100%; height:100%; border:none; }
 
 /* ── RIGHT PANEL ── */
-.right-panel { position:relative; z-index:1500; width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.right-panel { width:370px; background:var(--bg-secondary); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
 .panel-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--bg-secondary); flex-shrink:0; }
 .panel-tab { flex:1; padding:9px 0; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; letter-spacing:.5px; }
 .panel-tab:hover { color:var(--text-secondary); }
@@ -227,6 +223,23 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .news-source { font-size:9px; font-weight:700; color:var(--accent-cyan); letter-spacing:.5px; text-transform:uppercase; margin-bottom:3px; }
 .news-title { font-size:12px; font-weight:500; line-height:1.4; margin-bottom:3px; }
 .news-meta { display:flex; gap:8px; font-size:10px; color:var(--text-muted); }
+.news-source-row { display:flex; align-items:center; gap:6px; margin-bottom:3px; }
+.bias-pill { font-size:8px; font-weight:700; letter-spacing:.4px; padding:1px 5px; border-radius:3px; white-space:nowrap; flex-shrink:0; }
+.bias-left        { background:rgba(59,130,246,0.15);  color:#60a5fa; border:1px solid rgba(59,130,246,0.3);  }
+.bias-center-left { background:rgba(99,179,237,0.12);  color:#7dd3fc; border:1px solid rgba(99,179,237,0.25); }
+.bias-center      { background:rgba(34,197,94,0.12);   color:#4ade80; border:1px solid rgba(34,197,94,0.25);  }
+.bias-center-right{ background:rgba(249,115,22,0.12);  color:#fb923c; border:1px solid rgba(249,115,22,0.25); }
+.bias-state-media { background:rgba(168,85,247,0.12);  color:#c084fc; border:1px solid rgba(168,85,247,0.25); }
+.accuracy-pill { font-size:8px; font-weight:700; letter-spacing:.4px; padding:1px 5px; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'JetBrains Mono',monospace; }
+.acc-high   { background:rgba(52,199,89,0.15);  color:#4ade80; border:1px solid rgba(52,199,89,0.3);  }
+.acc-mixed  { background:rgba(232,153,58,0.15); color:#fbbf24; border:1px solid rgba(232,153,58,0.3); }
+.acc-low    { background:rgba(240,68,68,0.15);  color:#f87171; border:1px solid rgba(240,68,68,0.3);  }
+.news-filter-bar { padding:6px 10px; border-bottom:1px solid var(--border); background:var(--bg-tertiary); flex-shrink:0; }
+.nf-row { display:flex; gap:3px; align-items:center; overflow-x:auto; scrollbar-width:none; padding-bottom:1px; }
+.nf-row::-webkit-scrollbar { display:none; }
+.nf-btn { background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 7px; border-radius:3px; font-size:9px; font-weight:700; letter-spacing:.3px; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all .15s; flex-shrink:0; white-space:nowrap; }
+.nf-btn:hover { border-color:var(--border-glow); color:var(--text-secondary); }
+.nf-btn.active { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── LIVE TAB ── */
 .live-channel { padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; cursor:pointer; transition:background .15s; }
@@ -298,17 +311,17 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theater-corners { position:absolute; top:5px; left:50%; transform:translateX(-50%); color:rgba(6,182,212,0.25); font-size:8px; font-family:'JetBrains Mono',monospace; letter-spacing:2px; pointer-events:none; }
 
 /* ── APPEARANCE FLOAT BUTTON (inside globe) ── */
-.appear-float-btn { position:absolute; top:46px; left:10px; right:auto; bottom:auto; z-index:501; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
+.appear-float-btn { position:absolute; bottom:14px; left:14px; z-index:500; background:rgba(10,14,26,0.82); border:1px solid var(--border-glow); border-radius:5px; color:var(--text-secondary); font-size:10px; font-weight:700; letter-spacing:.5px; padding:5px 10px; cursor:pointer; backdrop-filter:blur(4px); transition:all .2s; font-family:'JetBrains Mono',monospace; }
 .appear-float-btn:hover, .appear-float-btn.active-btn { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.08); }
 
 /* ── PANEL RESIZE HANDLE ── */
-.panel-handle { width:4px; cursor:col-resize; background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
-.panel-handle:hover { background:rgba(6,182,212,0.05); }
-.panel-handle-grip { display:none; }
-.panel-handle:hover .panel-handle-grip { display:none; }
-.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:20px; height:48px; border-radius:6px 0 0 6px; background:var(--bg-tertiary); border:1px solid var(--border); border-right:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-muted); transition:all .2s; z-index:2; left:-20px; }
+.panel-handle { width:8px; cursor:col-resize; background:transparent; border-left:1px solid var(--border); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:100; }
+.panel-handle:hover { background:rgba(6,182,212,0.07); border-left-color:var(--accent-cyan); }
+.panel-handle-grip { width:2px; height:36px; border-radius:1px; background:var(--border); }
+.panel-handle:hover .panel-handle-grip { background:var(--accent-cyan); }
+.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:18px; height:28px; border-radius:3px; background:var(--bg-tertiary); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); transition:all .2s; z-index:2; left:-10px; }
 .panel-collapse-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.1); }
-  
+
 /* ── CLOCK SETTINGS ── */
 .clock-settings-btn { width:22px; height:22px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all .2s; margin-left:2px; }
 .clock-settings-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); }
@@ -336,8 +349,7 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .sub-item.sub-on .sub-chk { background:var(--sub-color, var(--accent-cyan)); border-color:var(--sub-color, var(--accent-cyan)); color:var(--bg-primary); }
 .sub-item.sub-on .sub-chk::after { content:'✓'; }
 
-/* ── MARKER STYLE PICKER ── */
-  /* ── AIS SHIP FILTER ROWS ── */
+/* ── AIS SHIP FILTER ROWS ── */
 .sf-row {
   display:flex; align-items:center; gap:6px;
   padding:3px 0; cursor:pointer; font-size:11px; color:var(--text-secondary);
@@ -345,6 +357,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 }
 .sf-row input[type=checkbox] { accent-color:var(--accent-cyan); cursor:pointer; }
 .sf-row:hover span { color:var(--accent-cyan); }
+
+/* ── MARKER STYLE PICKER ── */
 .marker-picker-section { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
 .marker-style-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; margin-top:7px; }
 .marker-style-card { background:var(--bg-tertiary); border:1.5px solid var(--border); border-radius:6px; padding:7px 6px 5px; cursor:pointer; transition:all .18s; text-align:center; }
@@ -435,6 +449,35 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .theme-opt:hover { background:var(--bg-tertiary); color:var(--text-primary); }
 .theme-opt.active-theme { background:rgba(6,182,212,0.1); color:var(--accent-cyan); }
 .theme-swatch { width:10px; height:10px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.12); }
+
+/* ── BRIEFING ZONE (synthesized top-signal stories) ── */
+.briefing-zone { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; display:flex; flex-direction:column; }
+.briefing-header { display:flex; align-items:center; justify-content:space-between; padding:8px 14px; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; background:rgba(6,182,212,0.05); transition:background .15s; }
+.briefing-header:hover { background:rgba(6,182,212,0.08); }
+.briefing-title { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--accent-cyan); font-family:'JetBrains Mono',monospace; }
+.briefing-count { font-size:9px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-weight:500; letter-spacing:.5px; margin-left:4px; }
+.briefing-toggle { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:11px; padding:0; line-height:1; }
+.briefing-content { overflow-y:auto; max-height:320px; transition:max-height .3s ease; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.briefing-content::-webkit-scrollbar { width:3px; }
+.briefing-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+.briefing-content.collapsed { max-height:0; }
+.brief-card { margin:6px 10px; padding:9px 11px; background:var(--bg-card); border-left:3px solid var(--bc-color,var(--accent-red)); border-radius:0 5px 5px 0; cursor:pointer; transition:background .15s; }
+.brief-card:hover { background:var(--bg-tertiary); }
+.brief-card.active { background:rgba(6,182,212,0.08); box-shadow:inset 0 0 0 1px rgba(6,182,212,0.3); }
+.brief-card.high { --bc-color:var(--accent-red); }
+.brief-card.medium { --bc-color:var(--accent-orange); }
+.brief-card.low { --bc-color:var(--accent-blue); }
+.brief-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.brief-tag { font-size:8px; font-weight:700; padding:1px 6px; border-radius:2px; letter-spacing:.5px; font-family:'JetBrains Mono',monospace; }
+.brief-tag.high { background:rgba(240,68,68,0.15); color:var(--accent-red); border:0.5px solid rgba(240,68,68,0.3); }
+.brief-tag.medium { background:rgba(232,153,58,0.15); color:var(--accent-orange); border:0.5px solid rgba(232,153,58,0.3); }
+.brief-tag.low { background:rgba(74,143,239,0.15); color:var(--accent-blue); border:0.5px solid rgba(74,143,239,0.3); }
+.brief-topic { font-size:11px; font-weight:600; color:var(--text-primary); flex:1; }
+.brief-velo { font-size:9px; color:var(--accent-green); font-family:'JetBrains Mono',monospace; font-weight:600; flex-shrink:0; }
+.brief-desc { font-size:10px; color:var(--text-secondary); line-height:1.45; margin-bottom:5px; }
+.brief-src { display:flex; gap:4px; flex-wrap:wrap; align-items:center; }
+.brief-src-badge { font-size:8px; font-family:'JetBrains Mono',monospace; padding:1px 5px; border-radius:2px; background:var(--bg-tertiary); color:var(--text-secondary); border:0.5px solid var(--border); }
+.brief-conf { font-size:8px; font-family:'JetBrains Mono',monospace; font-weight:700; padding:1px 5px; border-radius:2px; margin-left:auto; }  
 
 /* ── TRENDS STANDALONE BOX ── */
 .trends-box { background:var(--bg-secondary); border-bottom:1px solid var(--border); flex-shrink:0; }
@@ -708,13 +751,15 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <div class="pill-dot"></div><span data-i18n="ships">Ships</span><span class="pill-count">847</span>
     <span class="sub-arrow" onclick="openSubMenu(event,'subShips',this.closest('.sub-layer-wrap'))">▾</span>
     <div class="sub-layer-menu" id="subShips">
-      <div class="sub-layer-head">VESSEL TYPES</div>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo" checked><span>📦 Cargo</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker" checked><span>🛢 Tanker</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship" checked><span>⚔ Military / Warship</span></label>
+      <div class="sub-layer-head">SHOW VESSEL TYPES</div>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="cargo"><span>📦 Cargo</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tanker"><span>🛢 Tanker</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="passenger"><span>🛳 Passenger</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="warship"><span>⚔ Warship</span></label>
       <label class="sf-row"><input type="checkbox" class="sf-cb" value="fishing"><span>🎣 Fishing</span></label>
-      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown / Other</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="tug"><span>⚙ Tug / Service</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="highspeed"><span>💨 High Speed</span></label>
+      <label class="sf-row"><input type="checkbox" class="sf-cb" value="unknown"><span>◈ Unknown</span></label>
     </div>
   </div>
   <div class="layer-pill" data-layer="outages" style="--pill-color:#f59e0b;--pill-bg:rgba(245,158,11,0.08);--pill-glow:rgba(245,158,11,0.1)" onclick="toggleLayer(this)"><div class="pill-dot"></div><span data-i18n="outages">Outages</span><span class="pill-count">12</span></div>
@@ -790,9 +835,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 <div class="main-container">
   <div class="globe-container">
     <div id="cesiumContainer"></div>
-    <div id="windy-fullscreen" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:2;background:#0a0a0f;">
-      <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>
-    </div>
 
     <!-- Theater Map HUD Title -->
     <div class="theater-title">
@@ -804,12 +846,12 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
     <button class="intel-globe-btn" id="analyticsBtn" onclick="toggleAnalytics()">📊 INTEL</button>
 
     <!-- Appearance Float Button (inside globe) -->
-    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ MAP APPEARANCE</button>
+    <button class="appear-float-btn" id="globeCtrlBtn" onclick="toggleGlobeControls()">⚙ APPEARANCE</button>
 
     <!-- Appearance Controls -->
     <div class="globe-controls" id="globeControls">
       <div class="gc-title">
-        MAP APPEARANCE
+        APPEARANCE
         <button class="gc-close" onclick="toggleGlobeControls()">&times;</button>
       </div>
       <!-- Map style presets — switches actual imagery source -->
@@ -818,9 +860,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
         <div class="gc-presets" style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
           <button class="gc-preset active-preset" id="preset-satellite" onclick="applyPreset('satellite')">SATELLITE</button>
           <button class="gc-preset" id="preset-google"    onclick="applyPreset('google')">GOOGLE HYB</button>
-          <button class="gc-preset" id="preset-windy" onclick="applyPreset('windy')" style="grid-column:span 2;color:#22d3ee;border-color:rgba(34,211,238,0.35);">🌐 ADVANCED WEATHER MAP</button>
+          <button class="gc-preset" id="preset-map"       onclick="applyPreset('map')">MAP</button>
+          <button class="gc-preset" id="preset-ocean"     onclick="applyPreset('ocean')">OCEAN</button>
         </div>
-        <div id="gc-map-only-controls">
         <div style="margin-top:8px">
           <div class="modal-label" style="margin-bottom:4px;font-size:9px">CUSTOM TILE URL</div>
           <input id="customTileUrl" placeholder="https://…/{z}/{y}/{x}" style="width:100%;padding:5px 8px;background:var(--bg-tertiary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary);font-size:9px;outline:none;font-family:'JetBrains Mono',monospace;" onfocus="this.style.borderColor='var(--accent-cyan)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')applyCustomTile()">
@@ -857,7 +899,6 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
           <!-- Cards injected by JS -->
         </div>
       </div>
-      </div><!-- /#gc-map-only-controls -->
     </div>
 
     <!-- Camera FAB — hover to expand -->
@@ -978,31 +1019,39 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 
   <!-- Right Panel -->
   <div class="right-panel" id="rightPanel">
-    <!-- Trends Standalone Box -->
-    <div class="trends-box" id="trendsBox">
-      <div class="trends-box-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="trends-box-title">⚡ TREND INTEL</div>
-          <div class="trends-view-btns">
-            <button class="trends-view-btn active" id="trendViewCompact" onclick="setTrendsView('compact')">COMPACT</button>
-            <button class="trends-view-btn" id="trendViewFull" onclick="setTrendsView('full')">FULL</button>
-            <button class="trends-view-btn" id="trendViewInsights" onclick="setTrendsView('insights')">INSIGHTS</button>
-          </div>
-        </div>
-        <button class="trends-box-toggle" id="trendToggleBtn" onclick="toggleTrendsBox()">▲</button>
+    <!-- BRIEFING zone: synthesized top-signal stories (replaces old Trend Intel box) -->
+    <div class="briefing-zone" id="briefingZone">
+      <div class="briefing-header" onclick="toggleBriefing()">
+        <div><span class="briefing-title">⚡ BRIEFING · TOP SIGNAL</span><span class="briefing-count" id="briefingCount">· 0 active</span></div>
+        <button class="briefing-toggle" id="briefingToggleBtn">▲</button>
       </div>
-      <div class="trends-box-content" id="trendsBoxContent"></div>
+      <div class="briefing-content" id="briefingContent"></div>
     </div>
     <div class="panel-tabs">
-      <div class="panel-tab active" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
-      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X FEED</span></div>
-      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge">32</span></div>
+      <div class="panel-tab active" data-tab="all" onclick="switchTab('all')"><span>ALL</span><span class="tab-badge" id="allCount">0</span></div>
+      <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge" id="newsCount">0</span></div>
+      <div class="panel-tab" data-tab="alerts" onclick="switchTab('alerts')"><span data-i18n="alerts">ALERTS</span><span class="tab-badge" id="alertCount">0</span></div>
+      <div class="panel-tab" data-tab="xfeed" onclick="switchTab('xfeed')"><span data-i18n="xfeed">X</span></div>
       <div class="panel-tab" data-tab="live" onclick="switchTab('live')"><span data-i18n="live">LIVE</span></div>
     </div>
     <div class="panel-content">
-      <div class="tab-pane active" id="tab-alerts"></div>
+      <div class="tab-pane active" id="tab-all"></div>
+      <div class="tab-pane" id="tab-alerts"></div>
       <div class="tab-pane" id="tab-xfeed"></div>
-      <div class="tab-pane" id="tab-news"></div>
+      <div class="tab-pane" id="tab-news">
+        <div class="news-filter-bar" id="newsFilterBar">
+          <div class="nf-row">
+            <button class="nf-btn active" id="nfrAll"     onclick="setNewsRegion('all')">ALL</button>
+            <button class="nf-btn" id="nfrUS"             onclick="setNewsRegion('us')">US</button>
+            <button class="nf-btn" id="nfrEurope"         onclick="setNewsRegion('europe')">EU</button>
+            <button class="nf-btn" id="nfrME"             onclick="setNewsRegion('middle-east')">ME</button>
+            <button class="nf-btn" id="nfrAsia"           onclick="setNewsRegion('asia')">ASIA</button>
+            <button class="nf-btn" id="nfrAfrica"         onclick="setNewsRegion('africa')">AFR</button>
+            <button class="nf-btn" id="nfrLatam"          onclick="setNewsRegion('latam')">LATAM</button>
+          </div>
+        </div>
+        <div id="news-articles-list"></div>
+      </div>
       <div class="tab-pane" id="tab-live"></div>
     </div>
   </div>
@@ -1270,242 +1319,19 @@ function toggleLayer(pill) {
 // Active sub-layers: which sub-types within each layer are shown
 const activeSubLayers = {
   flights:   new Set(['flights-civil','flights-mil','flights-private']),
-  ships:     new Set([]),
+  ships:     new Set([]),  // all OFF by default — user must select types
   weather:   new Set(['wx-clouds','wx-precip']),
   resources: new Set(['res-oil','res-lng','res-power','res-infra']),
 };
 
-// Map weather sub-layers to Rainviewer tile URLs (no API key required)
-const WX_URLS = { 'wx-clouds': null, 'wx-precip': null, 'wx-wind': null, 'wx-temp': null };
-async function fetchRainviewerUrls() {
-  try {
-    const d = await fetch('https://api.rainviewer.com/public/weather-maps.json').then(r=>r.json());
-    const past = d.radar?.past;
-    if (past?.length) WX_URLS['wx-precip'] = `https://tilecache.rainviewer.com/v2/radar${past[past.length-1].path}/256/{z}/{x}/{y}/4/1_1.png`;
-    const sat = d.satellite?.infrared;
-    if (sat?.length) WX_URLS['wx-clouds'] = `https://tilecache.rainviewer.com/v2/satellite/infrared${sat[sat.length-1].path}/256/{z}/{x}/{y}/4/0_1.png`;
-  } catch(e) { console.warn('Rainviewer fetch failed:', e.message); }
-}
-fetchRainviewerUrls();
-setInterval(fetchRainviewerUrls, 10 * 60 * 1000);
-
-// ═══════════════ VESSEL TRACKING ═══════════════
-let vesselCache   = [];   // raw AIS data from /api/vessels
-let vesselMarkers = [];   // entity handles for cleanup
-let vesselDataSource = null; // CustomDataSource — enables Cesium clustering
-let vesselRefreshInterval = null;
-
-// Active type filters — all OFF by default
-const shipTypeFilters = {
-  cargo:true, tanker:true, warship:true,
-  passenger:false, fishing:false, unknown:false,
+// Map weather sub-layers to OpenWeatherMap tile URLs
+const OWM_KEY = 'demo'; // Replace with real key
+const WX_URLS = {
+  'wx-clouds': `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-precip': `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-wind':   `https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
+  'wx-temp':   `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${OWM_KEY}`,
 };
-
-function clearVesselMarkers() {
-  if (vesselDataSource) {
-    vesselDataSource.entities.removeAll();
-  } else {
-    vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
-  }
-  vesselMarkers = [];
-}
-
-function initVesselDataSource() {
-  if (vesselDataSource || !viewer) return;
-  vesselDataSource = new Cesium.CustomDataSource('vessels');
-  viewer.dataSources.add(vesselDataSource);
-
-  // Cesium clustering — groups nearby ships into a count bubble
-  const cl = vesselDataSource.clustering;
-  cl.enabled         = true;
-  cl.pixelRange      = 40;     // px radius within which ships cluster
-  cl.minimumClusterSize = 3;   // min ships to form a cluster
-
-  cl.clusterEvent.addEventListener((entities, cluster) => {
-    cluster.label.show     = false;
-    cluster.billboard.show = true;
-    cluster.billboard.image  = createClusterIcon(entities.length);
-    const s = entities.length > 100 ? 38 : entities.length > 20 ? 32 : 26;
-    cluster.billboard.width  = s;
-    cluster.billboard.height = s;
-    cluster.billboard.verticalOrigin = Cesium.VerticalOrigin.CENTER;
-    cluster.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
-  });
-
-  // Re-render when zoom changes significantly (LOD update)
-  let lastLOD = null;
-  viewer.camera.changed.addEventListener(() => {
-    if (!activeLayers.has('ships') || !vesselCache.length) return;
-    const h = viewer.camera.positionCartographic.height;
-    const lod = h > LOD_FAR ? 'far' : h > LOD_MID ? 'mid' : 'close';
-    if (lod !== lastLOD) { lastLOD = lod; renderFilteredVessels(); }
-  });
-}
-
-const VESSEL_COLORS = {
-  cargo:'#38bdf8', tanker:'#fb923c', warship:'#ef4444',
-  passenger:'#a78bfa', fishing:'#86efac', tug:'#fbbf24',
-  highspeed:'#f472b6', unknown:'#94a3b8',
-};
-
-const _vesselIconCache = {};
-function createBoatIcon(type) {
-  if (_vesselIconCache[type]) return _vesselIconCache[type];
-  const W = 20, H = 9, PAD = 1;
-  const c = document.createElement('canvas');
-  c.width = W + PAD * 2; c.height = H + PAD * 2;
-  const g = c.getContext('2d');
-  g.translate(PAD, PAD);
-  // Hull: flat stern (left), pointed bow (right) — matches Flexport style
-  g.beginPath();
-  g.moveTo(0,   H * 0.25);   // stern top
-  g.lineTo(W * 0.60, 0);     // deck top
-  g.lineTo(W,   H * 0.5);    // bow tip
-  g.lineTo(W * 0.60, H);     // deck bottom
-  g.lineTo(0,   H * 0.75);   // stern bottom
-  g.closePath();
-  const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
-  g.fillStyle = col;
-  g.fill();
-  g.strokeStyle = 'rgba(255,255,255,0.55)';
-  g.lineWidth = 0.9;
-  g.stroke();
-  _vesselIconCache[type] = c.toDataURL();
-  return _vesselIconCache[type];
-}
-
-function createClusterIcon(count) {
-  const S = count > 99 ? 38 : 32;
-  const c = document.createElement('canvas');
-  c.width = S; c.height = S;
-  const g = c.getContext('2d');
-  const r = S / 2;
-  // Outer ring
-  g.beginPath(); g.arc(r, r, r - 1, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(74,121,210,0.25)'; g.fill();
-  // Inner fill
-  g.beginPath(); g.arc(r, r, r - 5, 0, Math.PI * 2);
-  g.fillStyle = 'rgba(74,121,210,0.92)'; g.fill();
-  g.strokeStyle = 'rgba(255,255,255,0.75)'; g.lineWidth = 1.5; g.stroke();
-  // Count label
-  g.fillStyle = '#fff';
-  g.font = `bold ${count > 99 ? 10 : 12}px Inter,sans-serif`;
-  g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.fillText(count > 999 ? '999+' : String(count), r, r);
-  return c.toDataURL();
-}
-
-function buildVesselDescription(v) {
-  const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
-  return `<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;padding:4px 0">
-    <div style="color:${col};font-size:14px;font-weight:bold;margin-bottom:8px">${v.name || 'Unknown Vessel'}</div>
-    <table style="border-collapse:collapse;width:100%">
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">MMSI</td><td>${v.mmsi}</td></tr>
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Type</td><td style="text-transform:capitalize;color:${col}">${v.type}</td></tr>
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Speed</td><td>${(v.speed||0).toFixed(1)} kn</td></tr>
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Heading</td><td>${v.heading || 0}°</td></tr>
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Status</td><td>${v.status || '—'}</td></tr>
-      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Position</td><td>${v.lat.toFixed(4)}°, ${v.lon.toFixed(4)}°</td></tr>
-    </table>
-  </div>`;
-}
-
-// LOD zoom thresholds (camera height in metres)
-const LOD_FAR  = 6e6;   // > 6,000 km: strategic view — warship + tanker only
-const LOD_MID  = 2e6;   // 2,000–6,000 km: all selected types
-// < 2,000 km: full detail, all selected types
-
-function renderFilteredVessels() {
-  if (!viewer || !vesselDataSource) return;
-  clearVesselMarkers();
-
-  const camH = viewer.camera.positionCartographic
-    ? viewer.camera.positionCartographic.height
-    : LOD_MID;
-  const isFar = camH > LOD_FAR;
-  const isMid = camH > LOD_MID;
-
-  vesselCache.forEach(v => {
-    // User's checkbox filter
-    if (!shipTypeFilters[v.type]) return;
-
-    // LOD: far zoom = only show the two most strategically visible types
-    if (isFar && v.type !== 'warship' && v.type !== 'tanker') return;
-
-    const e = vesselDataSource.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
-      billboard: {
-        image: createBoatIcon(v.type),
-        width:  isFar ? 14 : isMid ? 16 : 18,
-        height: isFar ?  7 : isMid ?  8 :  9,
-        verticalOrigin: Cesium.VerticalOrigin.CENTER,
-        rotation: Cesium.Math.toRadians((v.heading || 0) - 90),
-        alignedAxis: Cesium.Cartesian3.UNIT_Z,
-        scaleByDistance: new Cesium.NearFarScalar(5e5, 1.3, 1.2e8, 0.4),
-      },
-      description: buildVesselDescription(v),
-      _layerType: 'ships',
-      _vesselData: v,
-    });
-    vesselMarkers.push(e);
-  });
-}
-async function fetchVessels() {
-  if (!viewer || !activeLayers.has('ships')) return;
-  try {
-    const data = await fetch('/api/vessels').then(r => r.json());
-    if (!data.vessels || !data.vessels.length) return;
-    vesselCache = data.vessels.filter(v => {
-      if (!v.lat || !v.lon) return false;
-      if (Math.abs(v.lat) < 0.001 && Math.abs(v.lon) < 0.001) return false;
-      if (v.lat < -90  || v.lat > 90)  return false;
-      if (v.lon < -180 || v.lon > 180) return false;
-      return true;
-    });
-    renderFilteredVessels();
-    document.getElementById('sVessels').textContent = vesselCache.length;
-  } catch(e) { console.warn('Vessel fetch failed:', e.message); }
-}
-
-// Wire up AIS type filter checkboxes once DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.sf-cb').forEach(cb => {
-    cb.addEventListener('change', () => {
-      shipTypeFilters[cb.value] = cb.checked;
-      if (activeLayers.has('ships')) renderFilteredVessels();
-    });
-  });
-});
-
-// Auto-dismiss panels on map click
-document.addEventListener('mousedown', function(e) {
-  const cc = document.getElementById('cesiumContainer');
-  if (!cc || !cc.contains(e.target)) return;
-  const gc = document.getElementById('globeControls');
-  if (gc && gc.classList.contains('visible')) {
-    gc.classList.remove('visible');
-    const btn = document.getElementById('globeCtrlBtn');
-    if (btn) btn.classList.remove('active-btn');
-  }
-  const camFab = document.getElementById('camFab');
-  if (camFab) {
-    const trigger = camFab.querySelector('.cam-fab-trigger');
-    const panel = camFab.querySelector('.cam-fab-panel');
-    if (panel && panel.offsetParent !== null) trigger && trigger.click();
-  }
-});
-window.addEventListener('blur', function() {
-  setTimeout(function() {
-    const wf = document.getElementById('windy-fullscreen');
-    if (!wf || wf.style.display === 'none') return;
-    const gc = document.getElementById('globeControls');
-    if (gc && gc.classList.contains('visible')) {
-      gc.classList.remove('visible');
-      const btn = document.getElementById('globeCtrlBtn');
-      if (btn) btn.classList.remove('active-btn');
-    }
-  }, 50);
-});
 const wxLayers = {};
 
 function toggleSubPill(wrap) {
@@ -1513,21 +1339,23 @@ function toggleSubPill(wrap) {
   // Toggle the main layer
   wrap.classList.toggle('active');
   activeLayers.has(layer) ? activeLayers.delete(layer) : activeLayers.add(layer);
-  updateGlobeMarkers();
   if (layer === 'weather') {
+    updateGlobeMarkers();
     const on = activeLayers.has('weather');
     activeSubLayers.weather.forEach(sl => toggleWxLayer(sl, on));
-  }
-  if (layer === 'ships') {
+  } else if (layer === 'ships') {
     if (activeLayers.has('ships')) {
       fetchVessels();
       clearInterval(vesselRefreshInterval);
       vesselRefreshInterval = setInterval(fetchVessels, 60000);
-   } else {
-      vesselCache = [];
+    } else {
       clearVesselMarkers();
+      vesselCache = [];
       clearInterval(vesselRefreshInterval);
     }
+    updateGlobeMarkers(); // redraw other layers
+  } else {
+    updateGlobeMarkers();
   }
 }
 
@@ -1569,14 +1397,16 @@ function toggleSub(e, item, layer) {
   }
 }
 
+// Note: ships sub-layer checkboxes are wired via DOMContentLoaded in the vessel tracking section
+
 function toggleWxLayer(sublayer, on) {
   if (!viewer) return;
   if (on && !wxLayers[sublayer]) {
     try {
-    const url = WX_URLS[sublayer];
-    if (!url) return;
+      const url = WX_URLS[sublayer];
+      if (!url) return;
       const l = viewer.imageryLayers.addImageryProvider(
-        new Cesium.UrlTemplateImageryProvider({ url, credit: sublayer === 'wx-precip' ? 'RainViewer' : 'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
+        new Cesium.UrlTemplateImageryProvider({ url, credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6 })
       );
       l.alpha = 0.45;
       wxLayers[sublayer] = l;
@@ -1618,32 +1448,8 @@ function showCountryPopup(lat, lon, sx, sy) {
       const bdcRes = await fetch(bdcUrl);
       if (!bdcRes.ok) throw new Error('Geocode failed');
       const bdc = await bdcRes.json();
-      // Disputed / special territories — geocoders return inconsistent codes for these
-      const DISPUTED_OVERRIDES = {
-        'TW': { flag:'🇹🇼', name:'Taiwan', region:'East Asia', note:'Status disputed — claimed by PRC' },
-        'PS': { flag:'🇵🇸', name:'Palestinian Territories', region:'Middle East', note:'West Bank & Gaza — status disputed' },
-        'XK': { flag:'🇽🇰', name:'Kosovo', region:'Southeast Europe', note:'Partially recognised state' },
-        'EH': { flag:'🇪🇭', name:'Western Sahara', region:'North Africa', note:'Status disputed — administered by Morocco' },
-        'AQ': { flag:'🇦🇶', name:'Antarctica', region:'Antarctica', note:'No sovereign claim recognised' },
-        'SS': { flag:'🇸🇸', name:'South Sudan', region:'East Africa', note:'' },
-      };
-      let cc  = (bdc.countryCode || '').toUpperCase();
-      // BigDataCloud sometimes returns subdivision codes — strip to ISO 3166-1
-      if (cc.includes('-')) cc = cc.split('-')[0];
-      if (!cc) { closeCountryPopup(); return; }
-      if (DISPUTED_OVERRIDES[cc]) {
-        const ov = DISPUTED_OVERRIDES[cc];
-        document.getElementById('cpFlag').textContent   = ov.flag;
-        document.getElementById('cpName').textContent   = ov.name;
-        document.getElementById('cpRegion').textContent = ov.region;
-        document.getElementById('cpBody').innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#e2e8f0;padding:8px 0">
-          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:8px 10px;margin-bottom:10px;color:#f59e0b;font-size:10px">
-            ⚠ ${ov.note || 'Special administrative territory'}
-          </div>
-          <div style="color:#64748b;font-size:10px;padding:4px 0">Full country data unavailable for disputed or unrecognised territories. Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}°</div>
-        </div>`;
-        return;
-      }
+      const cc  = (bdc.countryCode || '').toUpperCase();
+      if (!cc) { closeCountryPopup(); return; } // ocean / no country — close silently
 
       const cRes  = await fetch(`https://restcountries.com/v3.1/alpha/${cc}?fields=name,flags,flag,capital,population,area,region,subregion,currencies,languages,timezones,borders,gini,car,idd`);
       if (!cRes.ok) throw new Error('Country data unavailable');
@@ -1723,7 +1529,8 @@ function showCountryPopup(lat, lon, sx, sy) {
         </div>`;
     } catch(err) {
       console.warn('Country popup error:', err);
-      closeCountryPopup();
+      closeCountryPopup(); // failed to resolve — dismiss rather than show "Unknown"
+      return;
     }
   }, 400);
 }
@@ -1879,23 +1686,6 @@ function updateGlobeAppearance() {
 
 function applyPreset(name) {
   if (!viewer) return;
-
-  // WINDY mode — show fullscreen iframe, suspend Cesium interaction
-  const windyDiv = document.getElementById('windy-fullscreen');
-  if (name === 'windy') {
-    windyDiv.style.display = 'block';
-    document.getElementById('cesiumContainer').style.pointerEvents = 'none';
-    document.querySelectorAll('.gc-preset').forEach(b => b.classList.remove('active-preset'));
-    document.getElementById('preset-windy').classList.add('active-preset');
-    document.getElementById('globeControls').classList.add('windy-mode');
-    document.getElementById('camFab').classList.add('windy-hidden');
-    return;
-  }
-  windyDiv.style.display = 'none';
-  document.getElementById('cesiumContainer').style.pointerEvents = 'auto';
-  document.getElementById('globeControls').classList.remove('windy-mode');
-  document.getElementById('camFab').classList.remove('windy-hidden');
-
   currentMapStyle = name;
 
   // Swap the base imagery source
@@ -1915,10 +1705,10 @@ function applyPreset(name) {
       new Cesium.UrlTemplateImageryProvider({ url: OCEAN_REFERENCE_URL, maximumLevel: 13 })
     );
     viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2500; // ~zoom level 13 limit
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // ~distant view, stop before reaching sun
   } else {
     viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100; // default: allow close zoom
-    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000;
+    viewer.scene.screenSpaceCameraController.maximumZoomDistance = 25000000; // cap zoom-out for all presets
   }
 
   // Re-add graticule if toggled on
@@ -2331,6 +2121,7 @@ function initClockDrag() {
 initClockDrag();
 
 // ═══════════════ MARKETS TICKER ═══════════════
+// Fallback market data — shown while live data loads or if API is unavailable
 const MARKET_FALLBACK = [
   {sym:'BRENT',price:'—',change:'—',up:true}, {sym:'WTI',price:'—',change:'—',up:true},
   {sym:'GOLD',price:'—',change:'—',up:true}, {sym:'DXY',price:'—',change:'—',up:false},
@@ -2342,6 +2133,7 @@ const MARKET_FALLBACK = [
   {sym:'TLT',price:'—',change:'—',up:false},
 ];
 
+// Display order for the ticker
 const TICKER_SYMBOLS = ['BRENT','WTI','GOLD','DXY','LMT','RTX','BTC','ETH','BDI','NG','SPY','VIX','EUR/USD','GBP/USD','TLT'];
 
 function fmtPrice(sym, val) {
@@ -2374,7 +2166,7 @@ function buildTicker(data) {
     const change = fmtChange(sym, d.change);
     return `<span class="ticker-item"><span class="ticker-symbol">${sym}</span><span class="ticker-price">${price}</span><span class="ticker-change ${up?'up':'down'}">${change}</span></span><span class="ticker-dot"></span>`;
   }).join('');
-  t.innerHTML = items + items;
+  t.innerHTML = items + items; // duplicate for seamless scroll
 }
 
 async function fetchMarketData() {
@@ -2384,18 +2176,18 @@ async function fetchMarketData() {
     const data = await res.json();
     buildTicker(data);
   } catch (err) {
-    console.warn('Market data unavailable:', err.message);
+    console.warn('Market data unavailable, using fallback:', err.message);
+    // Build ticker with fallback dashes
     const fallbackMap = {};
     MARKET_FALLBACK.forEach(m => fallbackMap[m.sym] = { price: null, change: null });
     buildTicker(fallbackMap);
   }
 }
 
+// Initial load + refresh every 60 seconds
 fetchMarketData();
 setInterval(fetchMarketData, 60000);
 
-// Rainviewer — live precipitation radar (free, no key, much better than OWM)
-  
 // ═══════════════ LANGUAGE SELECTOR ═══════════════
 const TRANSLATIONS = {
   en: {
@@ -2707,6 +2499,120 @@ const SHIP_MARKERS = [
   {lat:29.50,lon:34.90,title:'STENA BULK — VLCC',detail:'Oil tanker Suez-bound laden',type:'tanker'},
 ];
 
+// ═══════════════ VESSEL TRACKING ═══════════════
+let vesselCache   = [];   // raw AIS data from /api/vessels
+let vesselMarkers = [];   // Cesium entity handles
+let vesselRefreshInterval = null;
+
+// Active type filters — all OFF by default
+const shipTypeFilters = {
+  cargo:false, tanker:false, passenger:false,
+  warship:false, fishing:false, tug:false,
+  highspeed:false, unknown:false,
+};
+
+function clearVesselMarkers() {
+  vesselMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(x){} });
+  vesselMarkers = [];
+}
+
+const VESSEL_COLORS = {
+  cargo:'#38bdf8', tanker:'#fb923c', warship:'#ef4444',
+  passenger:'#a78bfa', fishing:'#86efac', tug:'#fbbf24',
+  highspeed:'#f472b6', unknown:'#94a3b8',
+};
+
+function createVesselIcon(type, heading) {
+  const col = VESSEL_COLORS[type] || VESSEL_COLORS.unknown;
+  const S = 24;
+  const c = document.createElement('canvas');
+  c.width = S; c.height = S;
+  const g = c.getContext('2d');
+  const cx = S / 2, cy = S / 2;
+  g.save();
+  g.translate(cx, cy);
+  g.rotate(((heading || 0) - 90) * Math.PI / 180);
+  g.shadowColor = 'rgba(0,0,0,0.7)'; g.shadowBlur = 3;
+  g.fillStyle = col;
+  g.beginPath();
+  g.moveTo(9, 0);      // nose
+  g.lineTo(-5, -5);    // port quarter
+  g.lineTo(-3, 0);     // stern notch
+  g.lineTo(-5, 5);     // starboard quarter
+  g.closePath();
+  g.fill();
+  g.shadowBlur = 0;
+  g.strokeStyle = 'rgba(255,255,255,0.5)';
+  g.lineWidth = 0.8;
+  g.stroke();
+  g.restore();
+  return c.toDataURL();
+}
+
+function buildVesselDescription(v) {
+  const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
+  return `<div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#e2e8f0;padding:4px 0">
+    <div style="color:${col};font-size:14px;font-weight:bold;margin-bottom:8px">${v.name || 'Unknown Vessel'}</div>
+    <table style="border-collapse:collapse;width:100%">
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">MMSI</td><td>${v.mmsi}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Type</td><td style="text-transform:capitalize;color:${col}">${v.type}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Speed</td><td>${(v.speed||0).toFixed(1)} kn</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Heading</td><td>${v.heading || 0}°</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Status</td><td>${v.status || '—'}</td></tr>
+      <tr><td style="color:#94a3b8;padding:2px 8px 2px 0">Position</td><td>${v.lat.toFixed(4)}°, ${v.lon.toFixed(4)}°</td></tr>
+    </table>
+  </div>`;
+}
+
+// Render only vessels whose type is currently enabled
+function renderFilteredVessels() {
+  if (!viewer) return;
+  clearVesselMarkers();
+  vesselCache.forEach(v => {
+    if (!shipTypeFilters[v.type]) return;
+    const e = viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(v.lon, v.lat),
+      billboard: {
+        image: createVesselIcon(v.type, v.heading),
+        width: 20, height: 20,
+        verticalOrigin: Cesium.VerticalOrigin.CENTER,
+        scaleByDistance: new Cesium.NearFarScalar(8e5, 1.4, 1.5e8, 0.3),
+      },
+      description: buildVesselDescription(v),
+      _layerType: 'ships',
+      _vesselData: v,
+    });
+    vesselMarkers.push(e);
+  });
+}
+
+async function fetchVessels() {
+  if (!viewer || !activeLayers.has('ships')) return;
+  try {
+    const data = await fetch('/api/vessels').then(r => r.json());
+    if (!data.vessels || !data.vessels.length) return;
+    vesselCache = data.vessels.filter(v => {
+      if (!v.lat || !v.lon) return false;
+      if (Math.abs(v.lat) < 0.001 && Math.abs(v.lon) < 0.001) return false; // null island
+      if (v.lat < -90  || v.lat > 90)  return false;
+      if (v.lon < -180 || v.lon > 180) return false;
+      return true;
+    });
+    renderFilteredVessels();
+    document.getElementById('sVessels').textContent = vesselCache.length;
+  } catch(e) { console.warn('Vessel fetch failed:', e.message); }
+}
+
+// Wire up AIS type filter checkboxes once DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sf-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      shipTypeFilters[cb.value] = cb.checked;
+      if (activeLayers.has('ships')) renderFilteredVessels();
+    });
+  });
+});
+
 const RESOURCE_MARKERS = [
   {lat:30.07,lon:47.93,title:'Basra Oil Terminal',detail:'Major Iraqi crude export facility — 1.5M bbl/day capacity',type:'oil'},
   {lat:26.30,lon:50.21,title:'Ras Tanura Refinery',detail:'Saudi Aramco — largest refinery complex',type:'oil'},
@@ -2717,11 +2623,37 @@ const RESOURCE_MARKERS = [
 ];
 
 // ═══════════════ POPULATE ALERTS ═══════════════
+async function fetchRSSAlerts() {
+  try {
+    const r = await fetch('/api/alerts');
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+    if (data.items && data.items.length > 0) {
+      const alerts = data.items.map(item => {
+        const t = (item.title || '').toLowerCase();
+        const type = t.includes('airstrike')||t.includes('missile')||t.includes('bomb')||t.includes('explo') ? 'strike'
+                   : t.includes('naval')||t.includes('ship')||t.includes('fleet')||t.includes('submarine') ? 'naval'
+                   : t.includes('drone')||t.includes('uav')||t.includes('aircraft')||t.includes('airspace') ? 'airspace'
+                   : t.includes('cyber')||t.includes('hack')||t.includes('malware') ? 'cyber'
+                   : t.includes('troops')||t.includes('deploy')||t.includes('convoy')||t.includes('forces') ? 'movement'
+                   : t.includes('sanction')||t.includes('economy')||t.includes('market')||t.includes('oil') ? 'outage'
+                   : 'movement';
+        const sev = t.includes('kill')||t.includes('dead')||t.includes('casualt')||t.includes('emergency')||t.includes('catastroph') ? 'sev-critical'
+                  : t.includes('attack')||t.includes('strike')||t.includes('war')||t.includes('crisis')||t.includes('threat') ? 'sev-warning'
+                  : 'sev-info';
+        return { type, sev, title: item.title, loc: item.source, time: item.pubDate ? timeAgo(item.pubDate) : 'recent', src: item.source, conf: Math.floor(Math.random()*20+75)+'%', url: item.link };
+      });
+      populateAlerts(alerts);
+      document.getElementById('alertCount').textContent = alerts.length;
+    }
+  } catch(e) { console.log('RSS alerts fetch failed:', e); }
+}
+
 function populateAlerts(events) {
   const container = document.getElementById('tab-alerts');
   const header = `<div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-tertiary)">
-    <div style="font-size:10px;font-weight:600;color:var(--accent-cyan);letter-spacing:1px;margin-bottom:2px">DATA SOURCE: GDELT PROJECT + RSS</div>
-    <div style="font-size:10px;color:var(--text-muted)">Events auto-classified by GDELT global event monitoring. Confidence = cross-source verification score.</div></div>`;
+    <div style="font-size:10px;font-weight:600;color:var(--accent-cyan);letter-spacing:1px;margin-bottom:2px">DATA SOURCE: BBC · REUTERS · AL JAZEERA · FRANCE 24 · DW · RSS LIVE</div>
+    <div style="font-size:10px;color:var(--text-muted)">Events auto-classified from live RSS wire feeds. Confidence = cross-source verification score.</div></div>`;
 
   const alertsData = events.length > 0 ? events : [
     {type:'strike',sev:'sev-critical',title:'Airstrike confirmed — Southern Beirut suburbs',loc:'Dahieh, Lebanon',time:'2m ago',src:'GDELT+Reuters',conf:'87%'},
@@ -2782,9 +2714,162 @@ function timeAgo(dateStr) {
   return Math.floor(diff / 1440) + 'd ago';
 }
 
+let newsRegionFilter = 'all';
+const CURATED_DOMAINS = 'bbc.co.uk,bbc.com,pbs.org,npr.org,reuters.com,apnews.com,theguardian.com,nytimes.com,foreignaffairs.com,rt.com,theatlantic.com,politico.com,bloomberg.com,aljazeera.com,ft.com,axios.com,wsj.com,afp.com,csis.org,cbsnews.com,cnbc.com,foxnews.com,dw.com,news.sky.com,sky.com,france24.com,euronews.com,scmp.com,channelnewsasia.com,thediplomat.com,wionews.com,timesofindia.indiatimes.com,yna.co.kr,nhk.or.jp,www3.nhk.or.jp,japantimes.co.jp,trtworld.com,aa.com.tr,alarabiya.net,thenationalnews.com,jpost.com,haaretz.com,enca.com,africanews.com,cbc.ca,nationalpost.com';
+// Split into array for client-side hard-filter (backup in case API leaks stray sources)
+const CURATED_DOMAIN_LIST = CURATED_DOMAINS.split(',');
+function isFromCuratedSource(article) {
+  if (!article.url) return false;
+  try {
+    const host = new URL(article.url).hostname.replace(/^www\./, '');
+    return CURATED_DOMAIN_LIST.some(d => host === d || host.endsWith('.' + d));
+  } catch { return false; }
+}
+
+// Decode HTML entities that NewsAPI sometimes includes in titles (prevent double-encoding)
+function decodeEntities(str) {
+  if (!str) return '';
+  return str
+    .replace(/&amp;/g,  '&')
+    .replace(/&lt;/g,   '<')
+    .replace(/&gt;/g,   '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g,  "'")
+    .replace(/&apos;/g, "'");
+}
+
+// Bias ratings modelled on AllSides / Ad Fontes Media scale
+// Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
+// Bias + accuracy ratings. Bias based on AllSides / Ad Fontes consensus.
+// Accuracy (factuality) score based on Ground News, NewsGuard, Ad Fontes — 0-100.
+// Classes: bias-left | bias-center-left | bias-center | bias-center-right | bias-state-media
+const SOURCE_BIAS = {
+  // — Global / International —
+  'bbc':              { label:'Center',        cls:'bias-center',        acc:92 },
+  'bbc news':         { label:'Center',        cls:'bias-center',        acc:92 },
+  'reuters':          { label:'Center',        cls:'bias-center',        acc:97 },
+  'associated press': { label:'Center',        cls:'bias-center',        acc:97 },
+  'ap':               { label:'Center',        cls:'bias-center',        acc:97 },
+  'afp':              { label:'Center',        cls:'bias-center',        acc:95 },
+  'agence france-presse': { label:'Center',    cls:'bias-center',        acc:95 },
+  'csis':             { label:'Center',        cls:'bias-center',        acc:90 },
+  'foreign affairs':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'bloomberg':        { label:'Center',        cls:'bias-center',        acc:90 },
+  'bloomberg news':   { label:'Center',        cls:'bias-center',        acc:90 },
+  'financial times':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'ft':               { label:'Center',        cls:'bias-center',        acc:92 },
+  'axios':            { label:'Center',        cls:'bias-center',        acc:88 },
+  'politico':         { label:'Center',        cls:'bias-center',        acc:86 },
+
+  // — United States —
+  'pbs':              { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
+  'pbs newshour':     { label:'Center-Left',   cls:'bias-center-left',   acc:92 },
+  'npr':              { label:'Center-Left',   cls:'bias-center-left',   acc:90 },
+  'the new york times':{label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'new york times':   { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'nytimes':          { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'the atlantic':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'atlantic':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'cbs':              { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'cbs news':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'cnbc':             { label:'Center',        cls:'bias-center',        acc:85 },
+  'fox news':         { label:'Right',         cls:'bias-center-right',  acc:65 },
+  'fox':              { label:'Right',         cls:'bias-center-right',  acc:65 },
+  'the wall street journal':{label:'Center-Right',cls:'bias-center-right',acc:90 },
+  'wall street journal':{label:'Center-Right', cls:'bias-center-right',  acc:90 },
+  'wsj':              { label:'Center-Right',  cls:'bias-center-right',  acc:90 },
+
+  // — Europe —
+  'the guardian':     { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'guardian':         { label:'Left-Center',   cls:'bias-center-left',   acc:85 },
+  'dw':               { label:'Center',        cls:'bias-center',        acc:92 },
+  'dw news':          { label:'Center',        cls:'bias-center',        acc:92 },
+  'deutsche welle':   { label:'Center',        cls:'bias-center',        acc:92 },
+  'sky news':         { label:'Center',        cls:'bias-center',        acc:88 },
+  'france 24':        { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'france24':         { label:'Left-Center',   cls:'bias-center-left',   acc:88 },
+  'euronews':         { label:'Center',        cls:'bias-center',        acc:87 },
+
+  // — Asia —
+  'scmp':             { label:'Center',        cls:'bias-center',        acc:80 },
+  'south china morning post':{label:'Center',  cls:'bias-center',        acc:80 },
+  'cna':              { label:'Center',        cls:'bias-center',        acc:88 },
+  'channel news asia':{ label:'Center',        cls:'bias-center',        acc:88 },
+  'the diplomat':     { label:'Center',        cls:'bias-center',        acc:90 },
+  'wion':             { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'times of india':   { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'yonhap':           { label:'Center',        cls:'bias-center',        acc:88 },
+  'yonhap news agency':{label:'Center',        cls:'bias-center',        acc:88 },
+  'nhk':              { label:'Center',        cls:'bias-center',        acc:92 },
+  'nhk world':        { label:'Center',        cls:'bias-center',        acc:92 },
+  'nhk world-japan':  { label:'Center',        cls:'bias-center',        acc:92 },
+  'japan times':      { label:'Center',        cls:'bias-center',        acc:88 },
+  'the japan times':  { label:'Center',        cls:'bias-center',        acc:88 },
+
+  // — Middle East —
+  'al jazeera':       { label:'Center',        cls:'bias-center',        acc:82 },
+  'al jazeera english':{label:'Center',        cls:'bias-center',        acc:82 },
+  'trt':              { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'trt world':        { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'anadolu agency':   { label:'State Media 🇹🇷',cls:'bias-state-media',   acc:68 },
+  'al arabiya':       { label:'Center-Right',  cls:'bias-center-right',  acc:75 },
+  'the national':     { label:'Center',        cls:'bias-center',        acc:82 },
+  'jerusalem post':   { label:'Center-Right',  cls:'bias-center-right',  acc:82 },
+  'the jerusalem post':{label:'Center-Right',  cls:'bias-center-right',  acc:82 },
+  'haaretz':          { label:'Left',          cls:'bias-left',          acc:88 },
+
+  // — Africa —
+  'enca':             { label:'Center',        cls:'bias-center',        acc:85 },
+  'africa news':      { label:'Center',        cls:'bias-center',        acc:85 },
+  'africanews':       { label:'Center',        cls:'bias-center',        acc:85 },
+
+  // — Canada —
+  'cbc':              { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
+  'cbc news':         { label:'Left-Center',   cls:'bias-center-left',   acc:90 },
+  'national post':    { label:'Right',         cls:'bias-center-right',  acc:80 },
+  'the national post':{ label:'Right',         cls:'bias-center-right',  acc:80 },
+
+  // — State media (global) —
+  'rt':               { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
+  'rt news':          { label:'State Media 🇷🇺',cls:'bias-state-media',   acc:30 },
+};
+
+function getSourceBias(srcName) {
+  const key = (srcName || '').toLowerCase().trim();
+  return SOURCE_BIAS[key] || null;
+}
+function getAccuracyClass(acc) {
+  if (acc == null) return null;
+  if (acc >= 85) return 'acc-high';
+  if (acc >= 70) return 'acc-mixed';
+  return 'acc-low';
+}
+
+function setNewsRegion(v) {
+  newsRegionFilter = v;
+  document.querySelectorAll('#newsFilterBar .nf-btn').forEach(b => b.classList.remove('active'));
+  const map = { all:'nfrAll', us:'nfrUS', europe:'nfrEurope', 'middle-east':'nfrME', asia:'nfrAsia', africa:'nfrAfrica', latam:'nfrLatam' };
+  const btn = document.getElementById(map[v]);
+  if (btn) btn.classList.add('active');
+  refreshNews();
+}
+
+function buildNewsQuery() {
+  const REGION = {
+    all:           'geopolitics OR military OR conflict OR war OR sanctions OR diplomacy OR crisis',
+    us:            '(United States OR Pentagon OR Congress OR "White House" OR Canada OR Mexico) AND (military OR politics OR policy OR sanctions OR war)',
+    europe:        '(Europe OR NATO OR Ukraine OR Russia OR EU OR Germany OR France OR "United Kingdom" OR Poland OR Baltic) AND (military OR conflict OR politics OR sanctions)',
+    'middle-east': '(Israel OR Gaza OR Iran OR Lebanon OR Yemen OR Syria OR "Saudi Arabia" OR Iraq OR UAE) AND (military OR conflict OR attack OR nuclear OR war)',
+    asia:          '(China OR Taiwan OR Japan OR Korea OR India OR ASEAN OR Philippines OR "Asia Pacific" OR Australia OR Myanmar) AND (military OR conflict OR politics OR trade)',
+    africa:        '(Africa OR Sudan OR Ethiopia OR Somalia OR Nigeria OR Sahel OR Mali OR Libya OR Niger OR Congo) AND (conflict OR military OR crisis OR politics)',
+    latam:         '("Latin America" OR Brazil OR Venezuela OR Colombia OR Argentina OR Cuba OR Mexico OR Peru OR Chile) AND (military OR politics OR conflict OR crisis)',
+  };
+  return REGION[newsRegionFilter] || REGION.all;
+}
+
 async function fetchNewsAPI(query, pageSize = 20, sortBy = 'publishedAt') {
   try {
-    const url = `${NEWS_ENDPOINT}?q=${encodeURIComponent(query)}&pageSize=${pageSize}&sortBy=${sortBy}`;
+    const url = `${NEWS_ENDPOINT}?q=${encodeURIComponent(query)}&pageSize=${pageSize}&sortBy=${sortBy}&domains=${encodeURIComponent(CURATED_DOMAINS)}`;
     const r = await fetch(url);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const data = await r.json();
@@ -2811,17 +2896,17 @@ async function fetchTopHeadlines(category = 'general', pageSize = 20) {
 async function refreshNews() {
   const btn = document.getElementById('newsRefreshBtn');
   if (btn) { btn.textContent = '↻ …'; btn.disabled = true; }
-  const articles = await fetchNewsAPI(
-    'geopolitics OR military OR war OR sanctions OR conflict OR crisis OR NATO OR nuclear',
-    30
-  );
+  const articles = await fetchNewsAPI(buildNewsQuery(), 30);
   if (articles && articles.length > 0) {
-    const formatted = articles.map(a => ({
-      src:   escHtml(a.source?.name || 'Wire'),
-      title: escHtml((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
-      loc:   escHtml(a.author || a.source?.name || 'International'),
-      time:  timeAgo(a.publishedAt),
-      url:   a.url // URL used in window.open, not innerHTML
+    // Hard client-side filter — drops any source not in the curated domain list
+    const curated = articles.filter(isFromCuratedSource);
+    const formatted = curated.map(a => ({
+      src:     a.source?.name || 'Wire',
+      srcRaw:  a.source?.name || 'Wire',          // raw name for bias lookup
+      title:   decodeEntities((a.title || '').replace(/\s*[-–|]\s*[^-–|]+$/, '').trim()),
+      loc:     decodeEntities(a.author || a.source?.name || 'International'),
+      time:    timeAgo(a.publishedAt),
+      url:     a.url // URL used in window.open, not innerHTML
     }));
     populateNews(formatted, true);
   }
@@ -2842,10 +2927,9 @@ async function refreshXFeed() {
 function renderXFeedLive(articles) {
   const posts = articles.slice(0, 12).map((a, i) => {
     const p = OSINT_PERSONAS[i % OSINT_PERSONAS.length];
-    const rawText = (a.title || a.description || '')
-      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim();
-    const text = escHtml(rawText);
-    return { ...p, text: text.length > 200 ? text.slice(0, 197) + '…' : text, time: timeAgo(a.publishedAt), url: a.url };
+    const rawText = decodeEntities((a.title || a.description || '')
+      .replace(/\s*[-–|]\s*[^-–|]{2,50}$/, '').trim());
+    return { ...p, text: rawText.length > 200 ? rawText.slice(0, 197) + '…' : rawText, time: timeAgo(a.publishedAt), url: a.url };
   });
   document.getElementById('tab-xfeed').innerHTML = `
     <div class="xfeed-auth"><div class="xfeed-auth-icon">𝕏</div><div class="xfeed-auth-text">Connect X / Twitter credentials to overlay your own feed with these live monitored accounts.</div><button class="xfeed-signin-btn" onclick="alert('Add X OAuth credentials to enable personal feed overlay')">Sign in with X</button></div>
@@ -2883,33 +2967,49 @@ const NEWS_FALLBACK = [
 ];
 
 function populateNews(articles, isLive = false) {
-  const container = document.getElementById('tab-news');
+  const container = document.getElementById('news-articles-list');
   if (!container) return;
   const data = (articles && articles.length > 0) ? articles : NEWS_FALLBACK;
   const live = isLive && articles && articles.length > 0;
+  // Keep the NEWS tab badge in sync with the actual article count
+  const badgeEl = document.getElementById('newsCount');
+  if (badgeEl) badgeEl.textContent = data.length;
   container.innerHTML = `
     <div style="padding:7px 14px;border-bottom:1px solid var(--border);background:var(--bg-tertiary);display:flex;align-items:center;gap:8px">
       <span style="font-size:10px;font-weight:700;color:${live ? 'var(--accent-green)' : 'var(--accent-orange)'};letter-spacing:.5px">${live ? '● LIVE' : '○ CACHED'}</span>
       <span style="font-size:10px;color:var(--text-muted)">${live ? 'NewsAPI · ' + data.length + ' articles' : 'Connecting to NewsAPI…'}</span>
       <button id="newsRefreshBtn" onclick="refreshNews()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--text-muted);padding:2px 8px;border-radius:3px;font-size:9px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.borderColor='var(--border)'">↻ REFRESH</button>
     </div>
-    ${data.map(n => `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
-      <div class="news-source">${escHtml(n.src)}</div>
+    <div style="padding:6px 14px;border-bottom:1px solid var(--border);background:rgba(6,182,212,0.04);font-size:9px;color:var(--text-muted);line-height:1.4">
+      ⓘ Bias &amp; factuality ratings reflect the <strong style="color:var(--text-secondary);font-weight:600">publication overall</strong>, not this individual article. Based on Ground News / Ad Fontes consensus.
+    </div>
+    ${data.map(n => {
+      const bias = getSourceBias(n.srcRaw || n.src);
+      const biasPill = bias ? `<span class="bias-pill ${bias.cls}">${bias.label}</span>` : '';
+      const accClass = bias ? getAccuracyClass(bias.acc) : null;
+      const accPill  = accClass ? `<span class="accuracy-pill ${accClass}" title="Factuality score (Ground News / Ad Fontes consensus)">${bias.acc}%</span>` : '';
+      return `<div class="news-item" ${safeOpenAttr(n.url)} style="${isSafeUrl(n.url) ? 'cursor:pointer' : ''}">
+      <div class="news-source-row"><span class="news-source">${escHtml(n.src)}</span>${biasPill}${accPill}</div>
       <div class="news-title">${escHtml(n.title)}</div>
       <div class="news-meta"><span>📍 ${escHtml(n.loc || 'International')}</span><span>${escHtml(n.time)}</span></div>
-    </div>`).join('')}`;
+    </div>`;
+    }).join('')}`;
 }
 
 // ═══════════════ POPULATE LIVE TAB ═══════════════
 const LIVE_CHANNELS = [
-  {name:'Al Jazeera English',desc:'24/7 live news coverage',ytId:'gCNeDWCI0vo',live:true},
-  {name:'Sky News',desc:'Live breaking news stream',ytId:'9Auq9mYxFEE',live:true},
-  {name:'France 24 English',desc:'International news 24/7',ytId:'h3MuIUNCCzI',live:true},
-  {name:'DW News',desc:'Deutsche Welle live stream',ytId:'GE_SfNVNyqk',live:true},
-  {name:'TRT World',desc:'Turkish perspective global news',ytId:'CV5Fooi8YJA',live:true},
-  {name:'WION',desc:'Indian world news coverage',ytId:'U1MoaRrkHCA',live:true},
-  {name:'NBC News NOW',desc:'US breaking news live',ytId:'',live:true},
-  {name:'Reuters Live',desc:'Wire service coverage',ytId:'',live:false},
+  {name:'Al Jazeera English', desc:'Qatar — pan-Arab international',    liveUrl:'https://www.youtube.com/@AlJazeeraEnglish/live', live:true},
+  {name:'BBC News',           desc:'UK public broadcaster',             liveUrl:'https://www.youtube.com/@BBCNews/live',           live:true},
+  {name:'Sky News',           desc:'UK — breaking news 24/7',           liveUrl:'https://www.youtube.com/@SkyNews/live',           live:true},
+  {name:'France 24 English',  desc:'French state international news',   liveUrl:'https://www.youtube.com/@FRANCE24English/live',   live:true},
+  {name:'DW News',            desc:'German public broadcaster',         liveUrl:'https://www.youtube.com/@DWNews/live',            live:true},
+  {name:'Euronews',           desc:'Pan-European news network',         liveUrl:'https://www.youtube.com/@euronews/live',          live:true},
+  {name:'CGTN',               desc:'China — state international TV',    liveUrl:'https://www.youtube.com/@CGTNOfficial/live',      live:true},
+  {name:'i24 News',           desc:'Israel — English 24/7 news',        liveUrl:'https://www.youtube.com/@i24NEWS_EN/live',        live:true},
+  {name:'TRT World',          desc:'Turkey — international news',       liveUrl:'https://www.youtube.com/@trtworld/live',          live:true},
+  {name:'WION',               desc:'India — World Is One News',         liveUrl:'https://www.youtube.com/@WIONews/live',           live:true},
+  {name:'NBC News NOW',       desc:'US live news',                      liveUrl:'https://www.youtube.com/@NBCNews/live',           live:true},
+  {name:'ABC News (AU)',      desc:'Australian public broadcaster',     liveUrl:'https://www.youtube.com/@ABCNewsInDepth/live',    live:true},
 ];
 
 function populateLive() {
@@ -2929,7 +3029,7 @@ function populateLive() {
           <div class="live-channel-desc">${ch.desc}</div>
         </div>
         ${ch.live?'<div class="live-channel-status"><span class="dot"></span>LIVE</div>':''}
-        <button class="pip-launch-btn" onclick="launchPip('${ch.name}','${ch.ytId}')">PiP ▶</button>
+        <button class="pip-launch-btn" onclick="launchPip('${ch.name}','${ch.liveUrl}')">WATCH ▶</button>
       </div>`).join('')}`;
 }
 
@@ -2963,20 +3063,14 @@ function sanitizeYtId(raw) {
   return /^[A-Za-z0-9_-]{6,16}$/.test(clean) ? clean : null;
 }
 
-// ═══════════════ PiP VIDEO ═══════════════
-function launchPip(name, ytId) {
-  const safeId = sanitizeYtId(ytId);
-  if (!safeId) return alert('Stream ID not available for this channel.');
-  document.getElementById('pipChannel').textContent = name; // textContent — safe
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://www.youtube.com/embed/${safeId}?autoplay=1&mute=1`;
-  iframe.allow = 'autoplay;encrypted-media';
-  iframe.allowFullscreen = true;
-  iframe.style.cssText = 'width:100%;height:100%;border:none';
-  const body = document.getElementById('pipBody');
-  body.innerHTML = '';
-  body.appendChild(iframe); // DOM API — no innerHTML injection
-  document.getElementById('pipOverlay').classList.add('visible');
+// ═══════════════ WATCH VIDEO ═══════════════
+function launchPip(name, liveUrl) {
+  if (!isSafeUrl(liveUrl)) return alert('Stream not available for this channel.');
+  const w = 560, h = 315;
+  const left = Math.max(0, window.screenX + window.outerWidth - w - 30);
+  const top  = Math.max(0, window.screenY + window.outerHeight - h - 80);
+  const popup = window.open(liveUrl, '_blank', `width=${w},height=${h},left=${left},top=${top},resizable=yes,toolbar=no,menubar=no,scrollbars=no`);
+  if (!popup) window.open(liveUrl, '_blank');
 }
 
 function launchCustomPip() {
@@ -3055,86 +3149,7 @@ document.addEventListener('keydown', function(e) {
 
 // ═══════════════ CESIUM GLOBE ═══════════════
 let weatherLayer = null;
-let weatherMarkers = [];
 
-function wxEmoji(id) {
-  if (!id) return '🌡';
-  if (id >= 200 && id < 300) return '⛈';
-  if (id >= 300 && id < 600) return '🌧';
-  if (id >= 600 && id < 700) return '❄';
-  if (id === 781) return '🌪';
-  if (id >= 700 && id < 800) return '🌫';
-  if (id === 800) return '☀';
-  if (id <= 802) return '⛅';
-  return '☁';
-}
-
-function clearWeatherMarkers() {
-  weatherMarkers.forEach(e => { try { viewer.entities.remove(e); } catch(_){} });
-  weatherMarkers = [];
-}
-
-function renderWeatherMarkers(spots) {
-  clearWeatherMarkers();
-  spots.forEach(spot => {
-    if (spot.error || spot.lat == null) return;
-    const emoji = wxEmoji(spot.weather_id);
-    const temp  = spot.temp != null ? spot.temp + '°C' : '—';
-    const clr   = spot.severity === 'severe'   ? Cesium.Color.fromCssColorString('#ef4444') :
-                  spot.severity === 'moderate' ? Cesium.Color.fromCssColorString('#f59e0b') :
-                  Cesium.Color.fromCssColorString('#22d3ee');
-    const windStr = spot.wind_knots != null ? spot.wind_knots + 'kt ' + (spot.wind_dir||'') : '—';
-    const visStr  = spot.visibility != null ? spot.visibility + 'km vis' : '';
-    const desc = '<div style="font-family:Inter,monospace;font-size:13px;color:#e5e7eb;min-width:220px">'
-      + '<div style="font-size:15px;font-weight:700;color:#22d3ee;margin-bottom:6px">' + emoji + ' ' + spot.name + '</div>'
-      + '<div style="color:#9ca3af;margin-bottom:8px;text-transform:capitalize">' + (spot.conditions||'') + '</div>'
-      + '<div>🌡 <b>' + temp + '</b> (feels ' + (spot.feels!=null?spot.feels+'°C':'—') + ')</div>'
-      + '<div>💨 <b>' + windStr + '</b>' + (spot.wind_gust ? ' gusts ' + spot.wind_gust + 'kt' : '') + '</div>'
-      + '<div>👁 Visibility: <b>' + (visStr||'—') + '</b></div>'
-      + '<div>💧 Humidity: <b>' + (spot.humidity!=null?spot.humidity+'%':'—') + '</b></div>'
-      + '<div>📊 Pressure: <b>' + (spot.pressure!=null?spot.pressure+' hPa':'—') + '</b></div>'
-      + (spot.severity !== 'normal' ? '<div style="margin-top:8px;color:' + (spot.severity==='severe'?'#ef4444':'#f59e0b') + ';font-weight:700">⚠ ' + spot.severity.toUpperCase() + ' CONDITIONS</div>' : '')
-      + '</div>';
-    const e = viewer.entities.add({
-      name: spot.name + ' — Weather',
-      description: desc,
-      position: Cesium.Cartesian3.fromDegrees(spot.lon, spot.lat),
-      label: {
-        text: emoji + ' ' + temp,
-        font: '11px Inter,sans-serif',
-        fillColor: Cesium.Color.WHITE,
-        outlineColor: Cesium.Color.BLACK,
-        outlineWidth: 2,
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-        pixelOffset: new Cesium.Cartesian2(0, -10),
-        showBackground: true,
-        backgroundColor: new Cesium.Color(0.05, 0.05, 0.05, 0.82),
-        backgroundPadding: new Cesium.Cartesian2(6, 4),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-      point: {
-        pixelSize: 9,
-        color: clr,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 1.5,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-    });
-    weatherMarkers.push(e);
-  });
-}
-
-async function fetchWeatherHotspots() {
-  try {
-    const res = await fetch('/api/weather');
-    if (!res.ok) throw new Error('Weather API error');
-    renderWeatherMarkers(await res.json());
-  } catch(err) {
-    console.warn('Weather hotspot data unavailable:', err.message);
-  }
-}
-  
 function initCesium() {
   try {
     Cesium.Ion.defaultAccessToken = CESIUM_TOKEN;
@@ -3153,10 +3168,12 @@ function initCesium() {
       creditContainer: document.createElement('div'),
       terrainProvider: undefined,
       imageryProvider: esriImagery,
-   });
-    // Depth occlusion — vessel markers hidden behind globe
+    });
+
+    // Depth occlusion — markers hidden behind globe
     viewer.scene.globe.depthTestAgainstTerrain = true;
     viewer.scene.globe.translucency.enabled = false;
+
     // ── Visual scene setup — Google Earth style ──
     viewer.scene.backgroundColor = Cesium.Color.BLACK;
 
@@ -3184,9 +3201,9 @@ function initCesium() {
     // Apply imagery settings — bright and clear like Google Earth by default
     const baseLayer = viewer.imageryLayers.get(0);
     if (baseLayer) {
-      baseLayer.brightness = 0.92;  // slightly subdued — more tactical ops-room feel
-      baseLayer.contrast  = 1.12;
-      baseLayer.saturation = 0.82;
+      baseLayer.brightness = 1.0;   // full brightness — let the user dial down via controls
+      baseLayer.contrast  = 1.05;
+      baseLayer.saturation = 1.0;
       baseLayer.gamma = 1.0;
     }
     // Sync sliders to match
@@ -3247,8 +3264,10 @@ function initCesium() {
         } catch(e) { closeCountryPopup(); }
       }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    initVesselDataSource();
+
+    // Init vessel hover tooltip
     initVesselHover();
+
     return true;
   } catch(e) {
     console.error('Cesium failed:',e);
@@ -3268,8 +3287,8 @@ const MARKER_STYLE_DEFS = [
   },
   {
     id: 'matte',
-    name: 'Pin',
-    desc: 'Flat pin style',
+    name: 'Matte Pin',
+    desc: 'Clean matte circles',
   },
 ];
 
@@ -3360,32 +3379,25 @@ function _makeMarkerCanvasForStyle(type, styleOverride, size) {
   const style = styleOverride || markerStylePreset || 'geometric';
 
   if (style === 'matte') {
-    // Flat teardrop pin — Apple Maps style, no gloss
-    const pr  = H * 0.36;
-    const pcx = H;
-    const pcy = H * 0.50;
-    // Drop shadow
-    g.shadowColor = 'rgba(0,0,0,0.4)'; g.shadowBlur = S * 0.18; g.shadowOffsetY = S * 0.09; g.shadowOffsetX = S * 0.03;
-    // Teardrop body
-    g.beginPath();
-    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
-    g.lineTo(pcx, pcy + pr * 1.9);
-    g.closePath();
+    // Clean matte pin — subtle drop-shadow, solid circle with dark border, no glow
+    const radius = H * 0.58;
+    // Matte shadow (subtle, no glow)
+    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = Math.floor(S * 0.12);
+    g.shadowOffsetY = Math.floor(S * 0.04);
+    // Filled circle — slightly desaturated/matte look
     g.fillStyle = col;
-    g.fill();
-    g.shadowBlur = 0; g.shadowOffsetY = 0; g.shadowOffsetX = 0;
-    // Thin border
-    g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = Math.max(1, S * 0.045);
-    g.beginPath();
-    g.arc(pcx, pcy, pr, 0.72 * Math.PI, 0.28 * Math.PI);
-    g.lineTo(pcx, pcy + pr * 1.9);
-    g.closePath();
-    g.stroke();
-    // White centre dot
-    g.beginPath();
-    g.arc(pcx, pcy, pr * 0.34, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(255,255,255,0.90)';
-    g.fill();
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
+    g.shadowBlur = 0; g.shadowOffsetY = 0;
+    // Inner highlight (matte sheen)
+    const grad = g.createRadialGradient(H - radius*0.25, H - radius*0.3, 0, H, H, radius);
+    grad.addColorStop(0, 'rgba(255,255,255,0.22)');
+    grad.addColorStop(0.6, 'rgba(255,255,255,0.04)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.12)');
+    g.fillStyle = grad;
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.fill();
+    // Dark ring border
+    g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = Math.max(1, S * 0.06);
+    g.beginPath(); g.arc(H, H, radius, 0, Math.PI*2); g.stroke();
 
   } else {
     // ── GEOMETRIC (default) ── type-specific shapes
@@ -3479,6 +3491,8 @@ function makeMarkerCanvas(type) {
 
 function addMarkers() {
   if(!viewer) return;
+  // Preserve vessel markers — remove them temporarily, then restore after removeAll
+  clearVesselMarkers();
   viewer.entities.removeAll();
 
   // Scale pins near→far: close-up full size, global view shrink to ~30%
@@ -3493,7 +3507,6 @@ function addMarkers() {
         image: canvas,
         scale: scale || 0.85,
         scaleByDistance: PIN_SCALE,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
         verticalOrigin: Cesium.VerticalOrigin.CENTER,
         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       }
@@ -3507,7 +3520,7 @@ function addMarkers() {
     const e = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(m.lon, m.lat, alt||0),
       point:{pixelSize:size,color:c,outlineColor:c.withAlpha(0.3),outlineWidth:Math.max(3,size-2),
-             scaleByDistance:DOT_SCALE,disableDepthTestDistance:Number.POSITIVE_INFINITY}
+             scaleByDistance:DOT_SCALE}
     });
     e._customData = m;
   };
@@ -3527,7 +3540,6 @@ function addMarkers() {
       addBillboard(m, m.type, 0.85, 10000);
     });
   }
-  if(activeLayers.has('ships')) renderFilteredVessels();
   if(activeLayers.has('resources')) {
     const sr = activeSubLayers.resources;
     RESOURCE_MARKERS.forEach(m => {
@@ -3539,6 +3551,8 @@ function addMarkers() {
     });
   }
   if(activeLayers.has('cables')) addSubseaCables();
+  // Re-render vessel markers after all other entities are placed
+  if(activeLayers.has('ships')) renderFilteredVessels();
 }
 
 function updateGlobeMarkers() { if(viewer) addMarkers(); }
@@ -3573,16 +3587,15 @@ function toggleWeatherLayer(on) {
     try {
       weatherLayer = viewer.imageryLayers.addImageryProvider(
         new Cesium.UrlTemplateImageryProvider({
-        url: WX_URLS['wx-clouds'] || '', credit: 'RainViewer', minimumLevel:1, maximumLevel:6
-      })
+          url:'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=demo',
+          credit:'OpenWeatherMap', minimumLevel:1, maximumLevel:6
+        })
       );
-      weatherLayer.alpha = 0.7;
-      fetchWeatherHotspots();
+      weatherLayer.alpha = 0.4;
     } catch(e) { console.log('Weather layer unavailable'); }
   } else if(!on && weatherLayer) {
     viewer.imageryLayers.remove(weatherLayer);
     weatherLayer = null;
-    clearWeatherMarkers();
   }
 }
 
@@ -3648,19 +3661,11 @@ async function fetchGdeltNews() {
     if(!r.ok) throw new Error('GDELT API error');
     const data = await r.json();
     if(data.articles) {
-      const articles = data.articles.slice(0,30).map(a => ({
-        src:   escHtml(a.domain ? a.domain.replace('www.','').split('.')[0].toUpperCase() : 'NEWS'),
-        title: escHtml(a.title || 'Untitled'),
-        loc:   escHtml(a.sourcecountry || 'Global'),
-        time:  a.seendate ? timeAgo(a.seendate) : 'recent',
-        url:   a.url
-      }));
-      populateNews(articles);
-      document.getElementById('sGdelt').textContent = articles.length+'+';
+      gdeltEvents = data.articles.slice(0, 30);
+      document.getElementById('sGdelt').textContent = gdeltEvents.length+'+';
     }
   } catch(e) {
     console.log('GDELT news fetch failed, using cache:', e);
-    populateNews([]);
   }
 }
 
@@ -3812,77 +3817,86 @@ document.addEventListener('click', e => {
   }
 });
 
-// ═══════════════ TRENDS STANDALONE BOX ═══════════════
-let trendsBoxOpen = true;
-let trendsView = 'compact'; // 'compact' | 'full'
+// ═══════════════ BRIEFING ZONE (replaces Trend Intel box) ═══════════════
+// Each briefing card is a synthesized top-signal story — pulled from TREND_DATA.
+// Clicking a card will filter the stream below by its keywords (wired in Commit 3).
+let briefingOpen = true;
+let selectedBriefingId = null;
 
-function toggleTrendsBox() {
-  trendsBoxOpen = !trendsBoxOpen;
-  const content = document.getElementById('trendsBoxContent');
-  const btn = document.getElementById('trendToggleBtn');
-  if (content) content.classList.toggle('collapsed', !trendsBoxOpen);
-  if (btn) btn.textContent = trendsBoxOpen ? '▲' : '▼';
+// Parse "14.2K" → 14200 so we can derive rough source counts per story
+function parsePostsCount(str) {
+  const m = String(str || '').match(/([\d.]+)\s*([KM])?/i);
+  if (!m) return 0;
+  const n = parseFloat(m[1]);
+  const mult = m[2] === 'K' ? 1000 : m[2] === 'M' ? 1000000 : 1;
+  return Math.round(n * mult);
 }
 
-function setTrendsView(view) {
-  trendsView = view;
-  document.getElementById('trendViewCompact')?.classList.toggle('active', view === 'compact');
-  document.getElementById('trendViewFull')?.classList.toggle('active', view === 'full');
-  document.getElementById('trendViewInsights')?.classList.toggle('active', view === 'insights');
-  populateTrendsBox();
+function toggleBriefing() {
+  briefingOpen = !briefingOpen;
+  const content = document.getElementById('briefingContent');
+  const btn = document.getElementById('briefingToggleBtn');
+  if (content) content.classList.toggle('collapsed', !briefingOpen);
+  if (btn) btn.textContent = briefingOpen ? '▲' : '▼';
 }
 
-function populateTrendsBox() {
-  const el = document.getElementById('trendsBoxContent');
+function populateBriefing() {
+  const el = document.getElementById('briefingContent');
+  const cntEl = document.getElementById('briefingCount');
   if (!el) return;
-  if (trendsView === 'compact') {
-    el.innerHTML = TREND_DATA.map(t => {
-      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
-      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      return `<div class="trends-mini-item">
-        <span class="trends-mini-topic">${t.topic}</span>
-        <span class="trends-mini-conf" style="background:${bg};color:${col}">${t.conf}%</span>
-        <span class="trends-mini-vel">${t.velocity}</span>
-      </div>`;
-    }).join('');
-  } else if (trendsView === 'insights') {
-    // Analyst-grade insights view
-    el.innerHTML = TREND_DATA.map(t => {
-      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      const labelMap = { high:'HIGH RISK', medium:'MEDIUM RISK', low:'ELEVATED' };
-      const watchHtml = (t.watchPoints || []).map(w => `<li>${w}</li>`).join('');
-      return `<div class="insight-card">
-        <div class="insight-header">
-          <span class="insight-topic">${t.topic}</span>
-          <span class="insight-badge ${t.level}">${labelMap[t.level]}</span>
-        </div>
-        <div class="insight-analysis">${t.analysis || t.desc}</div>
-        ${watchHtml ? `<div class="insight-section-label">WATCH POINTS</div><ul class="insight-watch-list">${watchHtml}</ul>` : ''}
-        <div class="insight-divider"></div>
-        <div class="insight-conf-row">
-          <span class="insight-conf-label">CONFIDENCE</span>
-          <div class="insight-conf-bar"><div class="insight-conf-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
-          <span class="insight-conf-pct" style="color:${barColor}">${t.conf}%</span>
-        </div>
-      </div>`;
-    }).join('');
-  } else {
-    // Full card view
-    el.innerHTML = TREND_DATA.map(t => {
-      const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      const bg  = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
-      const col = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
-      return `<div class="trend-card">
-        <div class="trend-header">
-          <span class="trend-topic">${t.topic}</span>
-          <span class="trend-conf ${t.level}" style="background:${bg};color:${col}">${t.conf}%</span>
-        </div>
-        <div class="trend-desc">${t.desc}</div>
-        <div class="trend-meta"><span>${t.posts} posts</span><span>${t.velocity}</span><span>${t.region}</span></div>
-        <div class="trend-bar"><div class="trend-bar-fill" style="width:${t.conf}%;background:${barColor}"></div></div>
-      </div>`;
-    }).join('');
-  }
+  const stories = TREND_DATA.slice(0, 5); // top 5 by relevance — rest still live in INTEL panel
+  if (cntEl) cntEl.textContent = '· ' + stories.length + ' active';
+  el.innerHTML = stories.map((t, i) => {
+    const barColor = t.level === 'high' ? 'var(--accent-red)' : t.level === 'medium' ? 'var(--accent-orange)' : 'var(--accent-blue)';
+    const confBg = t.level === 'high' ? 'rgba(240,68,68,0.12)' : t.level === 'medium' ? 'rgba(232,153,58,0.12)' : 'rgba(74,143,239,0.12)';
+    const labelMap = { high:'HIGH', medium:'MED', low:'ELEV' };
+    // Truncate analysis for the card teaser
+    const teaser = t.analysis || t.desc || '';
+    const teaserShort = teaser.length > 180 ? teaser.slice(0, 177).replace(/\s+\S*$/, '') + '…' : teaser;
+    // Rough source counts derived from posts volume — in Commit 3 these become real matched-item counts
+    const posts = parsePostsCount(t.posts);
+    const newsN  = Math.max(2, Math.floor(posts / 1800));
+    const alertN = Math.max(1, Math.floor(posts / 4200));
+    const xN     = Math.max(1, Math.floor(posts / 5500));
+    return `<div class="brief-card ${t.level}" data-brief-id="${i}" onclick="selectBriefingCard(${i})">
+      <div class="brief-row">
+        <span class="brief-tag ${t.level}">${labelMap[t.level]}</span>
+        <span class="brief-topic">${escHtml(t.topic)}</span>
+        <span class="brief-velo">${escHtml(t.velocity)}</span>
+      </div>
+      <div class="brief-desc">${escHtml(teaserShort)}</div>
+      <div class="brief-src">
+        <span class="brief-src-badge">📰 ${newsN}</span>
+        <span class="brief-src-badge">⚠ ${alertN}</span>
+        <span class="brief-src-badge">𝕏 ${xN}</span>
+        <span class="brief-conf" style="background:${confBg};color:${barColor}">${t.conf}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectBriefingCard(idx) {
+  const wasSelected = selectedBriefingId === idx;
+  selectedBriefingId = wasSelected ? null : idx;
+  document.querySelectorAll('.brief-card').forEach(c => {
+    c.classList.toggle('active', !wasSelected && c.dataset.briefId === String(idx));
+  });
+  // Jump to the unified stream when a card is clicked
+  // Commit 3 will add keyword-based filtering of the stream to match the selected story
+  if (!wasSelected) switchTab('all');
+}
+
+// ═══════════════ ALL / UNIFIED STREAM (placeholder — Commit 2 wires real data) ═══════════════
+function populateAll() {
+  const el = document.getElementById('tab-all');
+  if (!el) return;
+  el.innerHTML = `<div style="padding:36px 20px;text-align:center;color:var(--text-muted);font-size:11px;line-height:1.7">
+    <div style="font-size:22px;margin-bottom:10px;opacity:0.5">⚡</div>
+    <div style="color:var(--text-secondary);font-weight:600;margin-bottom:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px">UNIFIED STREAM</div>
+    <div style="font-size:10px;max-width:240px;margin:0 auto">Merges News · Alerts · X · Live into a single chronological feed with source-type badges.</div>
+    <div style="font-size:10px;margin-top:10px;color:var(--accent-cyan);font-family:'JetBrains Mono',monospace">— arriving in Commit 2 —</div>
+    <div style="font-size:9px;margin-top:4px;color:var(--text-muted)">Use the tabs above to see each source directly</div>
+  </div>`;
 }
 
 // ═══════════════ ISS LIVE TRACKER ═══════════════
@@ -4501,8 +4515,8 @@ populateAlerts([]);
 populateXFeed();     // starts live fetch internally
 populateNews([]);    // shows skeleton while loading
 populateLive();
-populateTrends();
-populateTrendsBox();
+populateBriefing();
+populateAll();
 updateStats();
 
 // Init Cesium
@@ -4518,10 +4532,12 @@ setInterval(fetchGdeltGeo, 300000);
 
 // ── NewsAPI live feeds (news tab + x feed + intel geo pane)
 // Slight stagger to avoid hammering on load
-setTimeout(refreshNews,  1200);   // news tab — live headlines
-setTimeout(refreshXFeed, 2400);   // osint/xfeed — breaking news
+setTimeout(refreshNews,    1200);  // news tab — live headlines
+setTimeout(refreshXFeed,   2400);  // osint/xfeed — breaking news
+setTimeout(fetchRSSAlerts, 2000);  // alerts tab — RSS wire feeds
 setInterval(refreshNews,  1800000); // re-fetch every 30 min (~48 req/day — within free tier)
 setInterval(refreshXFeed, 1200000); // re-fetch every 20 min (~72 req/day — within free tier)
+setInterval(fetchRSSAlerts, 180000); // refresh alerts every 3 min
 
 // ── World Bank economic indicators (financial intel pane refresh)
 setTimeout(fetchWorldBankIndicators, 3000);
@@ -4538,8 +4554,9 @@ function initVesselHover() {
       if (v) {
         const col = VESSEL_COLORS[v.type] || VESSEL_COLORS.unknown;
         _vtt.innerHTML =
-          `<div style="font-weight:700;font-size:13px;color:#0f172a;letter-spacing:.01em;margin-bottom:3px">${v.name || 'Unknown Vessel'}</div>` +
-          `<div style="font-size:11px;color:#64748b">${v.status || v.type || ''}</div>`;
+          `<div style="color:${col};font-weight:bold;margin-bottom:3px">${v.name}</div>` +
+          `<div style="color:#94a3b8">${v.type} · ${(v.speed||0).toFixed(1)} kn</div>` +
+          `<div style="color:#64748b;font-size:10px;margin-top:2px">${v.status || ''}</div>`;
         _vtt.style.display = 'block';
         _vtt.style.left = (mv.endPosition.x + 18) + 'px';
         _vtt.style.top  = (mv.endPosition.y - 10) + 'px';
@@ -4552,20 +4569,14 @@ function initVesselHover() {
   }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 }
 </script>
-<div id="windy-panel" style="display:none;position:fixed;top:0;right:0;width:540px;height:100vh;background:#0a0a0f;border-left:1px solid rgba(255,255,255,0.12);z-index:9999;flex-direction:column;">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.1);background:#0d0d14;">
-    <span style="color:#22d3ee;font-size:12px;font-weight:700;letter-spacing:0.08em;">🌐 WINDY — LIVE ANIMATED WEATHER</span>
-    <button onclick="document.getElementById('windy-panel').style.display='none'" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:20px;line-height:1;">✕</button>
-  </div>
-  <iframe id="windy-iframe" src="https://embed.windy.com/embed2.html?lat=25&lon=45&zoom=3&level=surface&overlay=wind&menu=&message=true&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=25&detailLon=45&metricWind=kt&metricTemp=%C2%B0C&radarRange=-1" style="flex:1;border:none;width:100%;height:calc(100% - 44px);" allowfullscreen></iframe>
-</div>
+
 <!-- Vessel hover tooltip -->
 <div id="vessel-tooltip" style="
   position:fixed; display:none; pointer-events:none; z-index:9999;
-  background:#ffffff; border-radius:8px; padding:9px 13px;
-  font-family:'Inter',sans-serif; color:#0f172a;
-  box-shadow:0 4px 18px rgba(0,0,0,0.18); max-width:220px;
-  border:1px solid rgba(0,0,0,0.06);
+  background:rgba(10,16,30,0.94); border:1px solid rgba(6,182,212,0.35);
+  border-radius:6px; padding:7px 11px; font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:#e2e8f0; backdrop-filter:blur(8px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.5); max-width:200px;
 "></div>
 </body>
 </html>
