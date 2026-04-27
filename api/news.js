@@ -9,7 +9,8 @@
 module.exports = async function handler(req, res) {
   // CORS — allow the monitor to call this from any origin
   const ALLOWED_ORIGINS = [
-  'https://thesituationmonitor.vercel.app',  // ← change to your actual deployed URL
+  'https://the-situation-monitor.vercel.app',
+  'https://the-situation-monitor-git-dev-the-situation-monitor.vercel.app',
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
 ].filter(Boolean);
 const origin = req.headers.origin;
