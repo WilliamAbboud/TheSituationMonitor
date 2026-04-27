@@ -49,7 +49,7 @@ README.md             # This file
 
 The `vercel.json` config applies these security headers to all routes:
 
-- `X-Frame-Options: SAMEORIGIN` — prevents clickjacking
+- `X-Frame-Options: DENY` — prevents clickjacking (page cannot be framed by anyone)
 - `X-Content-Type-Options: nosniff` — prevents MIME sniffing
 - `X-XSS-Protection: 1; mode=block` — legacy XSS filter
 - `Referrer-Policy: strict-origin-when-cross-origin` — limits referrer leakage
