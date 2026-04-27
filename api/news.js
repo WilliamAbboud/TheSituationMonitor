@@ -8,7 +8,15 @@
 
 module.exports = async function handler(req, res) {
   // CORS — allow the monitor to call this from any origin
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const ALLOWED_ORIGINS = [
+  'https://thesituationmonitor.vercel.app',  // ← change to your actual deployed URL
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+].filter(Boolean);
+const origin = req.headers.origin;
+if (origin && ALLOWED_ORIGINS.includes(origin)) {
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Vary', 'Origin');
+}
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
