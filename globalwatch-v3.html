@@ -325,8 +325,8 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .panel-handle:hover { background:rgba(6,182,212,0.07); border-left-color:var(--accent-cyan); }
 .panel-handle-grip { width:2px; height:36px; border-radius:1px; background:var(--border); }
 .panel-handle:hover .panel-handle-grip { background:var(--accent-cyan); }
-.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:18px; height:28px; border-radius:3px; background:var(--bg-tertiary); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); transition:all .2s; z-index:2; left:-10px; }
-.panel-collapse-btn:hover { border-color:var(--accent-cyan); color:var(--accent-cyan); background:rgba(6,182,212,0.1); }
+.panel-collapse-btn { position:absolute; top:50%; transform:translateY(-50%); width:22px; height:36px; border-radius:7px; background:rgba(10,14,26,0.88); border:1px solid var(--accent-cyan); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--accent-cyan); transition:all .2s; z-index:200; left:-12px; backdrop-filter:blur(6px); box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+.panel-collapse-btn:hover { background:rgba(6,182,212,0.18); transform:translateY(-50%) scale(1.06); box-shadow:0 0 14px rgba(6,182,212,0.4); }
 
 /* ── CLOCK SETTINGS ── */
 .clock-settings-btn { width:22px; height:22px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; transition:all .2s; margin-left:2px; }
@@ -466,7 +466,13 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
 .briefing-content { overflow-y:auto; max-height:320px; transition:max-height .3s ease; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
 .briefing-content::-webkit-scrollbar { width:3px; }
 .briefing-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-.briefing-content.collapsed { max-height:0; }
+.briefing-content.collapsed { max-height:0 !important; }
+.briefing-content.resizing { transition:none; }
+/* Vertical resize handle between Briefing zone and the tabs below */
+.briefing-handle { height:8px; cursor:row-resize; background:transparent; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:center; transition:background .15s; flex-shrink:0; position:relative; z-index:10; }
+.briefing-handle:hover { background:rgba(6,182,212,0.07); border-bottom-color:var(--accent-cyan); }
+.briefing-handle-grip { width:36px; height:2px; border-radius:1px; background:var(--border); }
+.briefing-handle:hover .briefing-handle-grip { background:var(--accent-cyan); }
 .brief-card { margin:6px 10px; padding:9px 11px; background:var(--bg-card); border-left:3px solid var(--bc-color,var(--accent-red)); border-radius:0 5px 5px 0; cursor:pointer; transition:background .15s; }
 .brief-card:hover { background:var(--bg-tertiary); }
 .brief-card.active { background:rgba(6,182,212,0.08); box-shadow:inset 0 0 0 1px rgba(6,182,212,0.3); }
@@ -1034,8 +1040,9 @@ body { font-family:'Inter',sans-serif; background:var(--bg-primary); color:var(-
         <div><span class="briefing-title">⚡ BRIEFING · TOP SIGNAL</span><span class="briefing-count" id="briefingCount">· 0 active</span></div>
         <button class="briefing-toggle" id="briefingToggleBtn">▲</button>
       </div>
-      <div class="briefing-content" id="briefingContent"></div>
+    <div class="briefing-content" id="briefingContent"></div>
     </div>
+    <div class="briefing-handle" id="briefingHandle" title="Drag to resize"><div class="briefing-handle-grip"></div></div>
     <div class="panel-tabs">
       <div class="panel-tab active" data-tab="all" onclick="switchTab('all')"><span>ALL</span><span class="tab-badge" id="allCount">0</span></div>
       <div class="panel-tab" data-tab="news" onclick="switchTab('news')"><span data-i18n="news">NEWS</span><span class="tab-badge" id="newsCount">0</span></div>
@@ -3918,6 +3925,54 @@ function populateAll() {
     <div style="font-size:9px;margin-top:4px;color:var(--text-muted)">Use the tabs above to see each source directly</div>
   </div>`;
 }
+
+// ── Briefing zone vertical resize handle + default 1/3 sizing ──
+(function initBriefingResize() {
+  const handle = document.getElementById('briefingHandle');
+  const content = document.getElementById('briefingContent');
+  const panel  = document.getElementById('rightPanel');
+  const header = document.querySelector('.briefing-header');
+  if (!handle || !content || !panel || !header) return;
+
+  // Default to 1/3 of right panel height on first paint and on window resize
+  const setDefault = () => {
+    if (typeof briefingOpen !== 'undefined' && !briefingOpen) return;
+    if (content.dataset.userResized === '1') return; // user has dragged — don't override
+    const target = Math.max(120, Math.floor(panel.offsetHeight / 3) - header.offsetHeight);
+    content.style.maxHeight = target + 'px';
+  };
+  setTimeout(setDefault, 120);
+  window.addEventListener('resize', setDefault);
+
+  // Drag-to-resize
+  let dragging = false, startY = 0, startH = 0;
+  handle.addEventListener('mousedown', e => {
+    if (typeof briefingOpen !== 'undefined' && !briefingOpen) return;
+    dragging = true;
+    startY = e.clientY;
+    startH = content.offsetHeight;
+    content.classList.add('resizing');
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const diff = e.clientY - startY;
+    const minH = 80;
+    const maxH = panel.offsetHeight - header.offsetHeight - 100; // leave room for tabs + at least one item
+    const newH = Math.max(minH, Math.min(maxH, startH + diff));
+    content.style.maxHeight = newH + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    content.classList.remove('resizing');
+    content.dataset.userResized = '1';
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
 
 // ═══════════════ ISS LIVE TRACKER ═══════════════
 let issActive = false;
